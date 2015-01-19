@@ -1,0 +1,11 @@
+{
+	"require" : {
+		"symfony/security" : "*",
+		"monolog/monolog" : "*",
+		"slim/slim" : "*"
+	},
+	"require-dev" : {
+		"phpunit/phpunit" : "*",
+		"behat/behat" : "*"
+	}
+}
