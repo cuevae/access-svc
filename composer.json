@@ -1,11 +1,13 @@
 {
-	"require" : {
-		"symfony/security" : "*",
-		"monolog/monolog" : "*",
-		"slim/slim" : "*"
-	},
-	"require-dev" : {
-		"phpunit/phpunit" : "*",
-		"behat/behat" : "*"
-	}
+  "require": {
+    "symfony/security": "*",
+    "monolog/monolog": "*",
+    "slim/slim": "*",
+    "palanik/corsslim": "dev-master",
+    "symfony/config": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "*",
+    "behat/behat": "*"
+  }
 }
