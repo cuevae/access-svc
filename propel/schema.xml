@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database name="abcbank" defaultIdMethod="native" >
+    <table name="client" phpName="Client">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="title" type="varchar" size="255" required="true" />
+        <column name="first name" type="varchar" size="255" required="true" />
+        <column name="second name" type="varchar" size="255" required="false" />
+        <column name="first surname" type="varchar" size="255" required="true" />
+        <column name="second surname" type="varchar" size="255" required="true" />
+        <behavior name="timestampable" />
+    </table>
+    <table name="address" phpName="Address">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="client_id" type="integer" required="true" />
+        <column name="number" type="varchar" size="255" required="true" />
+        <column name="line_1" type="varchar" size="255" required="true" />
+        <column name="line_2" type="varchar" size="255" required="false" />
+        <column name="line_3" type="varchar" size="255" required="false" />
+        <column name="postcode" type="varchar" size="255" required="true" />
+        <column name="town" type="varchar" size="255" required="true" />
+        <column name="county" type="varchar" size="255" required="true" />
+        <column name="country" type="varchar" size="255" required="true" />
+        <column name="telephone_1" type="varchar" size="255" required="true" />
+        <column name="telephone_2" type="varchar" size="255" required="false" />
+        <column name="telephone_3" type="varchar" size="255" required="false" />
+        <foreign-key foreignTable="client">
+            <reference local="client_id" foreign="id"/>
+        </foreign-key>
+        <behavior name="timestampable" />
+    </table>
+    <table name="account" phpName="Account">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="client_id" type="integer" required="true" />
+        <column name="type" type="varchar" size="255" required="true" />
+        <column name="balance" type="float" required="true" />
+        <foreign-key foreignTable="client">
+            <reference local="client_id" foreign="id"/>
+        </foreign-key>
+        <behavior name="timestampable" />
+    </table>
+    <table name="transaction" phpName="Transaction">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="client_id" type="integer" required="true" />
+        <column name="account_id" type="integer" required="true" />
+        <column name="type" type="varchar" size="255" required="true" />
+        <column name="amount" type="float" required="true" />
+        <behavior name="timestampable" />
+    </table>
+</database>
