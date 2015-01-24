@@ -4,7 +4,8 @@
     "monolog/monolog": "*",
     "silex/silex": "~1.2",
     "palanik/corsslim": "dev-master",
-    "symfony/config": "*"
+    "symfony/config": "*",
+    "propel/propel": "~2.0@dev"
   },
   "require-dev": {
     "phpunit/phpunit": "*",
