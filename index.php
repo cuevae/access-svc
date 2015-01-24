@@ -1,39 +1,36 @@
 <?php
 
 require_once 'vendor/autoload.php';
-require( 'vendor/palanik/corsslim/CorsSlim.php' );
 
-use \Slim\Slim as SlimRouter;
-use \CorsSlim\CorsSlim as CORSMiddleware;
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\Yaml\Yaml;
+use Auth\ApiKeyAuthenticationServiceProvider,
+    Auth\ApiKeyUserServiceProvider;
 
-$configDirectories = array( __DIR__ . '/config/server' );
-$locator = new FileLocator( $configDirectories );
+$app = new \Silex\Application();
+$app['debug'] = true;
 
-$corsConfig = Yaml::parse( $locator->locate( 'cors.yml', null, true ) );
+$app->register(new Silex\Provider\MonologServiceProvider(), array(
+    'monolog.logfile' => __DIR__.'/development.log',
+));
 
-$router = new SlimRouter();
-$router->add( new CORSMiddleware( $corsConfig ) );
+$app->register(new ApiKeyUserServiceProvider());
+$app->register(new ApiKeyAuthenticationServiceProvider(), array(
+    'security.apikey.param' => 'access_token',
+));
+$app->register(new Silex\Provider\SecurityServiceProvider(), array(
+    'security.firewalls' => array(
+        'api' => array(
+            'apikey'    => true,
+            'pattern'   => '^/*',
+            'stateless' => true,
+        ),
+    )
+));
 
+$account = $app['controllers_factory'];
 
-/**
- * Routes
- */
+$account->get('/', function(){
+   return "Secured";
+});
 
-$router->get(
-    '/',
-    function (){
-        echo "Hello world!";
-    }
-);
-
-$router->get(
-    '/authenticate/?',
-    function () use ( $router ){
-        echo "Authenticating";
-        echo "API key received: " . $router->request()->get('apikey');
-    }
-);
-
-$router->run();
+$app->mount('/account', $account);
+$app->run();

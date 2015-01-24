@@ -2,12 +2,15 @@
   "require": {
     "symfony/security": "*",
     "monolog/monolog": "*",
-    "slim/slim": "*",
+    "silex/silex": "~1.2",
     "palanik/corsslim": "dev-master",
     "symfony/config": "*"
   },
   "require-dev": {
     "phpunit/phpunit": "*",
     "behat/behat": "*"
+  },
+  "autoload": {
+    "psr-4": {"Auth\\": "auth/"}
   }
 }
