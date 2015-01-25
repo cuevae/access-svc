@@ -1,9 +1,11 @@
 <?php
 
-use Base\ClientQuery as BaseClientQuery;
+namespace AbcBank\Resources;
+
+use AbcBank\Resources\Base\AddressQuery as BaseAddressQuery;
 
 /**
- * Skeleton subclass for performing query and update operations on the 'client' table.
+ * Skeleton subclass for performing query and update operations on the 'address' table.
  *
  *
  *
@@ -12,7 +14,7 @@ use Base\ClientQuery as BaseClientQuery;
  * long as it does not already exist in the output directory.
  *
  */
-class ClientQuery extends BaseClientQuery
+class AddressQuery extends BaseAddressQuery
 {
 
 }

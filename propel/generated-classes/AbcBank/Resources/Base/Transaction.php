@@ -1,15 +1,13 @@
 <?php
 
-namespace Base;
+namespace AbcBank\Resources\Base;
 
-use \Account as ChildAccount;
-use \AccountQuery as ChildAccountQuery;
-use \Client as ChildClient;
-use \ClientQuery as ChildClientQuery;
 use \DateTime;
 use \Exception;
 use \PDO;
-use Map\AccountTableMap;
+use AbcBank\Resources\Transaction as ChildTransaction;
+use AbcBank\Resources\TransactionQuery as ChildTransactionQuery;
+use AbcBank\Resources\Map\TransactionTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
@@ -24,18 +22,18 @@ use Propel\Runtime\Parser\AbstractParser;
 use Propel\Runtime\Util\PropelDateTime;
 
 /**
- * Base class that represents a row from the 'account' table.
+ * Base class that represents a row from the 'transaction' table.
  *
  *
  *
-* @package    propel.generator..Base
+* @package    propel.generator.AbcBank.Resources.Base
 */
-abstract class Account implements ActiveRecordInterface
+abstract class Transaction implements ActiveRecordInterface
 {
     /**
      * TableMap class name
      */
-    const TABLE_MAP = '\\Map\\AccountTableMap';
+    const TABLE_MAP = '\\AbcBank\\Resources\\Map\\TransactionTableMap';
 
 
     /**
@@ -77,16 +75,22 @@ abstract class Account implements ActiveRecordInterface
     protected $client_id;
 
     /**
+     * The value for the account_id field.
+     * @var        int
+     */
+    protected $account_id;
+
+    /**
      * The value for the type field.
      * @var        string
      */
     protected $type;
 
     /**
-     * The value for the balance field.
+     * The value for the amount field.
      * @var        double
      */
-    protected $balance;
+    protected $amount;
 
     /**
      * The value for the created_at field.
@@ -101,11 +105,6 @@ abstract class Account implements ActiveRecordInterface
     protected $updated_at;
 
     /**
-     * @var        ChildClient
-     */
-    protected $aClient;
-
-    /**
      * Flag to prevent endless save loop, if this object is referenced
      * by another object which falls in this transaction.
      *
@@ -114,7 +113,7 @@ abstract class Account implements ActiveRecordInterface
     protected $alreadyInSave = false;
 
     /**
-     * Initializes internal state of Base\Account object.
+     * Initializes internal state of AbcBank\Resources\Base\Transaction object.
      */
     public function __construct()
     {
@@ -209,9 +208,9 @@ abstract class Account implements ActiveRecordInterface
     }
 
     /**
-     * Compares this with another <code>Account</code> instance.  If
-     * <code>obj</code> is an instance of <code>Account</code>, delegates to
-     * <code>equals(Account)</code>.  Otherwise, returns <code>false</code>.
+     * Compares this with another <code>Transaction</code> instance.  If
+     * <code>obj</code> is an instance of <code>Transaction</code>, delegates to
+     * <code>equals(Transaction)</code>.  Otherwise, returns <code>false</code>.
      *
      * @param  mixed   $obj The object to compare to.
      * @return boolean Whether equal to the object specified.
@@ -277,7 +276,7 @@ abstract class Account implements ActiveRecordInterface
      * @param string $name  The virtual column name
      * @param mixed  $value The value to give to the virtual column
      *
-     * @return $this|Account The current object, for fluid interface
+     * @return $this|Transaction The current object, for fluid interface
      */
     public function setVirtualColumn($name, $value)
     {
@@ -351,6 +350,16 @@ abstract class Account implements ActiveRecordInterface
     }
 
     /**
+     * Get the [account_id] column value.
+     *
+     * @return int
+     */
+    public function getAccountId()
+    {
+        return $this->account_id;
+    }
+
+    /**
      * Get the [type] column value.
      *
      * @return string
@@ -361,13 +370,13 @@ abstract class Account implements ActiveRecordInterface
     }
 
     /**
-     * Get the [balance] column value.
+     * Get the [amount] column value.
      *
      * @return double
      */
-    public function getBalance()
+    public function getAmount()
     {
-        return $this->balance;
+        return $this->amount;
     }
 
     /**
@@ -414,7 +423,7 @@ abstract class Account implements ActiveRecordInterface
      * Set the value of [id] column.
      *
      * @param  int $v new value
-     * @return $this|\Account The current object (for fluent API support)
+     * @return $this|\AbcBank\Resources\Transaction The current object (for fluent API support)
      */
     public function setId($v)
     {
@@ -424,7 +433,7 @@ abstract class Account implements ActiveRecordInterface
 
         if ($this->id !== $v) {
             $this->id = $v;
-            $this->modifiedColumns[AccountTableMap::COL_ID] = true;
+            $this->modifiedColumns[TransactionTableMap::COL_ID] = true;
         }
 
         return $this;
@@ -434,7 +443,7 @@ abstract class Account implements ActiveRecordInterface
      * Set the value of [client_id] column.
      *
      * @param  int $v new value
-     * @return $this|\Account The current object (for fluent API support)
+     * @return $this|\AbcBank\Resources\Transaction The current object (for fluent API support)
      */
     public function setClientId($v)
     {
@@ -444,21 +453,37 @@ abstract class Account implements ActiveRecordInterface
 
         if ($this->client_id !== $v) {
             $this->client_id = $v;
-            $this->modifiedColumns[AccountTableMap::COL_CLIENT_ID] = true;
-        }
-
-        if ($this->aClient !== null && $this->aClient->getId() !== $v) {
-            $this->aClient = null;
+            $this->modifiedColumns[TransactionTableMap::COL_CLIENT_ID] = true;
         }
 
         return $this;
     } // setClientId()
 
     /**
+     * Set the value of [account_id] column.
+     *
+     * @param  int $v new value
+     * @return $this|\AbcBank\Resources\Transaction The current object (for fluent API support)
+     */
+    public function setAccountId($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->account_id !== $v) {
+            $this->account_id = $v;
+            $this->modifiedColumns[TransactionTableMap::COL_ACCOUNT_ID] = true;
+        }
+
+        return $this;
+    } // setAccountId()
+
+    /**
      * Set the value of [type] column.
      *
      * @param  string $v new value
-     * @return $this|\Account The current object (for fluent API support)
+     * @return $this|\AbcBank\Resources\Transaction The current object (for fluent API support)
      */
     public function setType($v)
     {
@@ -468,38 +493,38 @@ abstract class Account implements ActiveRecordInterface
 
         if ($this->type !== $v) {
             $this->type = $v;
-            $this->modifiedColumns[AccountTableMap::COL_TYPE] = true;
+            $this->modifiedColumns[TransactionTableMap::COL_TYPE] = true;
         }
 
         return $this;
     } // setType()
 
     /**
-     * Set the value of [balance] column.
+     * Set the value of [amount] column.
      *
      * @param  double $v new value
-     * @return $this|\Account The current object (for fluent API support)
+     * @return $this|\AbcBank\Resources\Transaction The current object (for fluent API support)
      */
-    public function setBalance($v)
+    public function setAmount($v)
     {
         if ($v !== null) {
             $v = (double) $v;
         }
 
-        if ($this->balance !== $v) {
-            $this->balance = $v;
-            $this->modifiedColumns[AccountTableMap::COL_BALANCE] = true;
+        if ($this->amount !== $v) {
+            $this->amount = $v;
+            $this->modifiedColumns[TransactionTableMap::COL_AMOUNT] = true;
         }
 
         return $this;
-    } // setBalance()
+    } // setAmount()
 
     /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
      *
      * @param  mixed $v string, integer (timestamp), or \DateTime value.
      *               Empty strings are treated as NULL.
-     * @return $this|\Account The current object (for fluent API support)
+     * @return $this|\AbcBank\Resources\Transaction The current object (for fluent API support)
      */
     public function setCreatedAt($v)
     {
@@ -507,7 +532,7 @@ abstract class Account implements ActiveRecordInterface
         if ($this->created_at !== null || $dt !== null) {
             if ($dt !== $this->created_at) {
                 $this->created_at = $dt;
-                $this->modifiedColumns[AccountTableMap::COL_CREATED_AT] = true;
+                $this->modifiedColumns[TransactionTableMap::COL_CREATED_AT] = true;
             }
         } // if either are not null
 
@@ -519,7 +544,7 @@ abstract class Account implements ActiveRecordInterface
      *
      * @param  mixed $v string, integer (timestamp), or \DateTime value.
      *               Empty strings are treated as NULL.
-     * @return $this|\Account The current object (for fluent API support)
+     * @return $this|\AbcBank\Resources\Transaction The current object (for fluent API support)
      */
     public function setUpdatedAt($v)
     {
@@ -527,7 +552,7 @@ abstract class Account implements ActiveRecordInterface
         if ($this->updated_at !== null || $dt !== null) {
             if ($dt !== $this->updated_at) {
                 $this->updated_at = $dt;
-                $this->modifiedColumns[AccountTableMap::COL_UPDATED_AT] = true;
+                $this->modifiedColumns[TransactionTableMap::COL_UPDATED_AT] = true;
             }
         } // if either are not null
 
@@ -570,25 +595,28 @@ abstract class Account implements ActiveRecordInterface
     {
         try {
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : AccountTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : TransactionTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
             $this->id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : AccountTableMap::translateFieldName('ClientId', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : TransactionTableMap::translateFieldName('ClientId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->client_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : AccountTableMap::translateFieldName('Type', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : TransactionTableMap::translateFieldName('AccountId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->account_id = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : TransactionTableMap::translateFieldName('Type', TableMap::TYPE_PHPNAME, $indexType)];
             $this->type = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : AccountTableMap::translateFieldName('Balance', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->balance = (null !== $col) ? (double) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : TransactionTableMap::translateFieldName('Amount', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->amount = (null !== $col) ? (double) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : AccountTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : TransactionTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : AccountTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : TransactionTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -601,10 +629,10 @@ abstract class Account implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 6; // 6 = AccountTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 7; // 7 = TransactionTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
-            throw new PropelException(sprintf('Error populating %s object', '\\Account'), 0, $e);
+            throw new PropelException(sprintf('Error populating %s object', '\\AbcBank\\Resources\\Transaction'), 0, $e);
         }
     }
 
@@ -623,9 +651,6 @@ abstract class Account implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
-        if ($this->aClient !== null && $this->client_id !== $this->aClient->getId()) {
-            $this->aClient = null;
-        }
     } // ensureConsistency
 
     /**
@@ -649,13 +674,13 @@ abstract class Account implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getReadConnection(AccountTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getReadConnection(TransactionTableMap::DATABASE_NAME);
         }
 
         // We don't need to alter the object instance pool; we're just modifying this instance
         // already in the pool.
 
-        $dataFetcher = ChildAccountQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
+        $dataFetcher = ChildTransactionQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
         $row = $dataFetcher->fetch();
         $dataFetcher->close();
         if (!$row) {
@@ -665,7 +690,6 @@ abstract class Account implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->aClient = null;
         } // if (deep)
     }
 
@@ -675,8 +699,8 @@ abstract class Account implements ActiveRecordInterface
      * @param      ConnectionInterface $con
      * @return void
      * @throws PropelException
-     * @see Account::setDeleted()
-     * @see Account::isDeleted()
+     * @see Transaction::setDeleted()
+     * @see Transaction::isDeleted()
      */
     public function delete(ConnectionInterface $con = null)
     {
@@ -685,11 +709,11 @@ abstract class Account implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(AccountTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(TransactionTableMap::DATABASE_NAME);
         }
 
         $con->transaction(function () use ($con) {
-            $deleteQuery = ChildAccountQuery::create()
+            $deleteQuery = ChildTransactionQuery::create()
                 ->filterByPrimaryKey($this->getPrimaryKey());
             $ret = $this->preDelete($con);
             if ($ret) {
@@ -720,7 +744,7 @@ abstract class Account implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(AccountTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(TransactionTableMap::DATABASE_NAME);
         }
 
         return $con->transaction(function () use ($con) {
@@ -730,16 +754,16 @@ abstract class Account implements ActiveRecordInterface
                 $ret = $ret && $this->preInsert($con);
                 // timestampable behavior
 
-                if (!$this->isColumnModified(AccountTableMap::COL_CREATED_AT)) {
+                if (!$this->isColumnModified(TransactionTableMap::COL_CREATED_AT)) {
                     $this->setCreatedAt(time());
                 }
-                if (!$this->isColumnModified(AccountTableMap::COL_UPDATED_AT)) {
+                if (!$this->isColumnModified(TransactionTableMap::COL_UPDATED_AT)) {
                     $this->setUpdatedAt(time());
                 }
             } else {
                 $ret = $ret && $this->preUpdate($con);
                 // timestampable behavior
-                if ($this->isModified() && !$this->isColumnModified(AccountTableMap::COL_UPDATED_AT)) {
+                if ($this->isModified() && !$this->isColumnModified(TransactionTableMap::COL_UPDATED_AT)) {
                     $this->setUpdatedAt(time());
                 }
             }
@@ -751,7 +775,7 @@ abstract class Account implements ActiveRecordInterface
                     $this->postUpdate($con);
                 }
                 $this->postSave($con);
-                AccountTableMap::addInstanceToPool($this);
+                TransactionTableMap::addInstanceToPool($this);
             } else {
                 $affectedRows = 0;
             }
@@ -776,18 +800,6 @@ abstract class Account implements ActiveRecordInterface
         $affectedRows = 0; // initialize var to track total num of affected rows
         if (!$this->alreadyInSave) {
             $this->alreadyInSave = true;
-
-            // We call the save method on the following object(s) if they
-            // were passed to this object by their corresponding set
-            // method.  This object relates to these object(s) by a
-            // foreign key reference.
-
-            if ($this->aClient !== null) {
-                if ($this->aClient->isModified() || $this->aClient->isNew()) {
-                    $affectedRows += $this->aClient->save($con);
-                }
-                $this->setClient($this->aClient);
-            }
 
             if ($this->isNew() || $this->isModified()) {
                 // persist changes
@@ -820,33 +832,36 @@ abstract class Account implements ActiveRecordInterface
         $modifiedColumns = array();
         $index = 0;
 
-        $this->modifiedColumns[AccountTableMap::COL_ID] = true;
+        $this->modifiedColumns[TransactionTableMap::COL_ID] = true;
         if (null !== $this->id) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key (' . AccountTableMap::COL_ID . ')');
+            throw new PropelException('Cannot insert a value for auto-increment primary key (' . TransactionTableMap::COL_ID . ')');
         }
 
          // check the columns in natural order for more readable SQL queries
-        if ($this->isColumnModified(AccountTableMap::COL_ID)) {
+        if ($this->isColumnModified(TransactionTableMap::COL_ID)) {
             $modifiedColumns[':p' . $index++]  = 'id';
         }
-        if ($this->isColumnModified(AccountTableMap::COL_CLIENT_ID)) {
+        if ($this->isColumnModified(TransactionTableMap::COL_CLIENT_ID)) {
             $modifiedColumns[':p' . $index++]  = 'client_id';
         }
-        if ($this->isColumnModified(AccountTableMap::COL_TYPE)) {
+        if ($this->isColumnModified(TransactionTableMap::COL_ACCOUNT_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'account_id';
+        }
+        if ($this->isColumnModified(TransactionTableMap::COL_TYPE)) {
             $modifiedColumns[':p' . $index++]  = 'type';
         }
-        if ($this->isColumnModified(AccountTableMap::COL_BALANCE)) {
-            $modifiedColumns[':p' . $index++]  = 'balance';
+        if ($this->isColumnModified(TransactionTableMap::COL_AMOUNT)) {
+            $modifiedColumns[':p' . $index++]  = 'amount';
         }
-        if ($this->isColumnModified(AccountTableMap::COL_CREATED_AT)) {
+        if ($this->isColumnModified(TransactionTableMap::COL_CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'created_at';
         }
-        if ($this->isColumnModified(AccountTableMap::COL_UPDATED_AT)) {
+        if ($this->isColumnModified(TransactionTableMap::COL_UPDATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'updated_at';
         }
 
         $sql = sprintf(
-            'INSERT INTO account (%s) VALUES (%s)',
+            'INSERT INTO transaction (%s) VALUES (%s)',
             implode(', ', $modifiedColumns),
             implode(', ', array_keys($modifiedColumns))
         );
@@ -861,11 +876,14 @@ abstract class Account implements ActiveRecordInterface
                     case 'client_id':
                         $stmt->bindValue($identifier, $this->client_id, PDO::PARAM_INT);
                         break;
+                    case 'account_id':
+                        $stmt->bindValue($identifier, $this->account_id, PDO::PARAM_INT);
+                        break;
                     case 'type':
                         $stmt->bindValue($identifier, $this->type, PDO::PARAM_STR);
                         break;
-                    case 'balance':
-                        $stmt->bindValue($identifier, $this->balance, PDO::PARAM_STR);
+                    case 'amount':
+                        $stmt->bindValue($identifier, $this->amount, PDO::PARAM_STR);
                         break;
                     case 'created_at':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -919,7 +937,7 @@ abstract class Account implements ActiveRecordInterface
      */
     public function getByName($name, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = AccountTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = TransactionTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
         $field = $this->getByPosition($pos);
 
         return $field;
@@ -942,15 +960,18 @@ abstract class Account implements ActiveRecordInterface
                 return $this->getClientId();
                 break;
             case 2:
-                return $this->getType();
+                return $this->getAccountId();
                 break;
             case 3:
-                return $this->getBalance();
+                return $this->getType();
                 break;
             case 4:
-                return $this->getCreatedAt();
+                return $this->getAmount();
                 break;
             case 5:
+                return $this->getCreatedAt();
+                break;
+            case 6:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -970,38 +991,38 @@ abstract class Account implements ActiveRecordInterface
      *                    Defaults to TableMap::TYPE_PHPNAME.
      * @param     boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns. Defaults to TRUE.
      * @param     array $alreadyDumpedObjects List of objects to skip to avoid recursion
-     * @param     boolean $includeForeignObjects (optional) Whether to include hydrated related objects. Default to FALSE.
      *
      * @return array an associative array containing the field names (as keys) and field values
      */
-    public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
+    public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array())
     {
 
-        if (isset($alreadyDumpedObjects['Account'][$this->hashCode()])) {
+        if (isset($alreadyDumpedObjects['Transaction'][$this->hashCode()])) {
             return '*RECURSION*';
         }
-        $alreadyDumpedObjects['Account'][$this->hashCode()] = true;
-        $keys = AccountTableMap::getFieldNames($keyType);
+        $alreadyDumpedObjects['Transaction'][$this->hashCode()] = true;
+        $keys = TransactionTableMap::getFieldNames($keyType);
         $result = array(
             $keys[0] => $this->getId(),
             $keys[1] => $this->getClientId(),
-            $keys[2] => $this->getType(),
-            $keys[3] => $this->getBalance(),
-            $keys[4] => $this->getCreatedAt(),
-            $keys[5] => $this->getUpdatedAt(),
+            $keys[2] => $this->getAccountId(),
+            $keys[3] => $this->getType(),
+            $keys[4] => $this->getAmount(),
+            $keys[5] => $this->getCreatedAt(),
+            $keys[6] => $this->getUpdatedAt(),
         );
 
         $utc = new \DateTimeZone('utc');
-        if ($result[$keys[4]] instanceof \DateTime) {
-            // When changing timezone we don't want to change existing instances
-            $dateTime = clone $result[$keys[4]];
-            $result[$keys[4]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
-        }
-
         if ($result[$keys[5]] instanceof \DateTime) {
             // When changing timezone we don't want to change existing instances
             $dateTime = clone $result[$keys[5]];
             $result[$keys[5]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+        }
+
+        if ($result[$keys[6]] instanceof \DateTime) {
+            // When changing timezone we don't want to change existing instances
+            $dateTime = clone $result[$keys[6]];
+            $result[$keys[6]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -1009,23 +1030,6 @@ abstract class Account implements ActiveRecordInterface
             $result[$key] = $virtualColumn;
         }
 
-        if ($includeForeignObjects) {
-            if (null !== $this->aClient) {
-
-                switch ($keyType) {
-                    case TableMap::TYPE_CAMELNAME:
-                        $key = 'client';
-                        break;
-                    case TableMap::TYPE_FIELDNAME:
-                        $key = 'client';
-                        break;
-                    default:
-                        $key = 'Client';
-                }
-
-                $result[$key] = $this->aClient->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
-            }
-        }
 
         return $result;
     }
@@ -1039,11 +1043,11 @@ abstract class Account implements ActiveRecordInterface
      *                one of the class type constants TableMap::TYPE_PHPNAME, TableMap::TYPE_CAMELNAME
      *                TableMap::TYPE_COLNAME, TableMap::TYPE_FIELDNAME, TableMap::TYPE_NUM.
      *                Defaults to TableMap::TYPE_PHPNAME.
-     * @return $this|\Account
+     * @return $this|\AbcBank\Resources\Transaction
      */
     public function setByName($name, $value, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = AccountTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = TransactionTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
 
         return $this->setByPosition($pos, $value);
     }
@@ -1054,7 +1058,7 @@ abstract class Account implements ActiveRecordInterface
      *
      * @param  int $pos position in xml schema
      * @param  mixed $value field value
-     * @return $this|\Account
+     * @return $this|\AbcBank\Resources\Transaction
      */
     public function setByPosition($pos, $value)
     {
@@ -1066,15 +1070,18 @@ abstract class Account implements ActiveRecordInterface
                 $this->setClientId($value);
                 break;
             case 2:
-                $this->setType($value);
+                $this->setAccountId($value);
                 break;
             case 3:
-                $this->setBalance($value);
+                $this->setType($value);
                 break;
             case 4:
-                $this->setCreatedAt($value);
+                $this->setAmount($value);
                 break;
             case 5:
+                $this->setCreatedAt($value);
+                break;
+            case 6:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1101,7 +1108,7 @@ abstract class Account implements ActiveRecordInterface
      */
     public function fromArray($arr, $keyType = TableMap::TYPE_PHPNAME)
     {
-        $keys = AccountTableMap::getFieldNames($keyType);
+        $keys = TransactionTableMap::getFieldNames($keyType);
 
         if (array_key_exists($keys[0], $arr)) {
             $this->setId($arr[$keys[0]]);
@@ -1110,16 +1117,19 @@ abstract class Account implements ActiveRecordInterface
             $this->setClientId($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setType($arr[$keys[2]]);
+            $this->setAccountId($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setBalance($arr[$keys[3]]);
+            $this->setType($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setCreatedAt($arr[$keys[4]]);
+            $this->setAmount($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setUpdatedAt($arr[$keys[5]]);
+            $this->setCreatedAt($arr[$keys[5]]);
+        }
+        if (array_key_exists($keys[6], $arr)) {
+            $this->setUpdatedAt($arr[$keys[6]]);
         }
     }
 
@@ -1140,7 +1150,7 @@ abstract class Account implements ActiveRecordInterface
      * @param string $data The source data to import from
      * @param string $keyType The type of keys the array uses.
      *
-     * @return $this|\Account The current object, for fluid interface
+     * @return $this|\AbcBank\Resources\Transaction The current object, for fluid interface
      */
     public function importFrom($parser, $data, $keyType = TableMap::TYPE_PHPNAME)
     {
@@ -1160,25 +1170,28 @@ abstract class Account implements ActiveRecordInterface
      */
     public function buildCriteria()
     {
-        $criteria = new Criteria(AccountTableMap::DATABASE_NAME);
+        $criteria = new Criteria(TransactionTableMap::DATABASE_NAME);
 
-        if ($this->isColumnModified(AccountTableMap::COL_ID)) {
-            $criteria->add(AccountTableMap::COL_ID, $this->id);
+        if ($this->isColumnModified(TransactionTableMap::COL_ID)) {
+            $criteria->add(TransactionTableMap::COL_ID, $this->id);
         }
-        if ($this->isColumnModified(AccountTableMap::COL_CLIENT_ID)) {
-            $criteria->add(AccountTableMap::COL_CLIENT_ID, $this->client_id);
+        if ($this->isColumnModified(TransactionTableMap::COL_CLIENT_ID)) {
+            $criteria->add(TransactionTableMap::COL_CLIENT_ID, $this->client_id);
         }
-        if ($this->isColumnModified(AccountTableMap::COL_TYPE)) {
-            $criteria->add(AccountTableMap::COL_TYPE, $this->type);
+        if ($this->isColumnModified(TransactionTableMap::COL_ACCOUNT_ID)) {
+            $criteria->add(TransactionTableMap::COL_ACCOUNT_ID, $this->account_id);
         }
-        if ($this->isColumnModified(AccountTableMap::COL_BALANCE)) {
-            $criteria->add(AccountTableMap::COL_BALANCE, $this->balance);
+        if ($this->isColumnModified(TransactionTableMap::COL_TYPE)) {
+            $criteria->add(TransactionTableMap::COL_TYPE, $this->type);
         }
-        if ($this->isColumnModified(AccountTableMap::COL_CREATED_AT)) {
-            $criteria->add(AccountTableMap::COL_CREATED_AT, $this->created_at);
+        if ($this->isColumnModified(TransactionTableMap::COL_AMOUNT)) {
+            $criteria->add(TransactionTableMap::COL_AMOUNT, $this->amount);
         }
-        if ($this->isColumnModified(AccountTableMap::COL_UPDATED_AT)) {
-            $criteria->add(AccountTableMap::COL_UPDATED_AT, $this->updated_at);
+        if ($this->isColumnModified(TransactionTableMap::COL_CREATED_AT)) {
+            $criteria->add(TransactionTableMap::COL_CREATED_AT, $this->created_at);
+        }
+        if ($this->isColumnModified(TransactionTableMap::COL_UPDATED_AT)) {
+            $criteria->add(TransactionTableMap::COL_UPDATED_AT, $this->updated_at);
         }
 
         return $criteria;
@@ -1196,8 +1209,8 @@ abstract class Account implements ActiveRecordInterface
      */
     public function buildPkeyCriteria()
     {
-        $criteria = ChildAccountQuery::create();
-        $criteria->add(AccountTableMap::COL_ID, $this->id);
+        $criteria = ChildTransactionQuery::create();
+        $criteria->add(TransactionTableMap::COL_ID, $this->id);
 
         return $criteria;
     }
@@ -1259,7 +1272,7 @@ abstract class Account implements ActiveRecordInterface
      * If desired, this method can also make copies of all associated (fkey referrers)
      * objects.
      *
-     * @param      object $copyObj An object of \Account (or compatible) type.
+     * @param      object $copyObj An object of \AbcBank\Resources\Transaction (or compatible) type.
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
      * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
      * @throws PropelException
@@ -1267,8 +1280,9 @@ abstract class Account implements ActiveRecordInterface
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
         $copyObj->setClientId($this->getClientId());
+        $copyObj->setAccountId($this->getAccountId());
         $copyObj->setType($this->getType());
-        $copyObj->setBalance($this->getBalance());
+        $copyObj->setAmount($this->getAmount());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
         if ($makeNew) {
@@ -1286,7 +1300,7 @@ abstract class Account implements ActiveRecordInterface
      * objects.
      *
      * @param  boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
-     * @return \Account Clone of current object.
+     * @return \AbcBank\Resources\Transaction Clone of current object.
      * @throws PropelException
      */
     public function copy($deepCopy = false)
@@ -1300,70 +1314,17 @@ abstract class Account implements ActiveRecordInterface
     }
 
     /**
-     * Declares an association between this object and a ChildClient object.
-     *
-     * @param  ChildClient $v
-     * @return $this|\Account The current object (for fluent API support)
-     * @throws PropelException
-     */
-    public function setClient(ChildClient $v = null)
-    {
-        if ($v === null) {
-            $this->setClientId(NULL);
-        } else {
-            $this->setClientId($v->getId());
-        }
-
-        $this->aClient = $v;
-
-        // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the ChildClient object, it will not be re-added.
-        if ($v !== null) {
-            $v->addAccount($this);
-        }
-
-
-        return $this;
-    }
-
-
-    /**
-     * Get the associated ChildClient object
-     *
-     * @param  ConnectionInterface $con Optional Connection object.
-     * @return ChildClient The associated ChildClient object.
-     * @throws PropelException
-     */
-    public function getClient(ConnectionInterface $con = null)
-    {
-        if ($this->aClient === null && ($this->client_id !== null)) {
-            $this->aClient = ChildClientQuery::create()->findPk($this->client_id, $con);
-            /* The following can be used additionally to
-                guarantee the related object contains a reference
-                to this object.  This level of coupling may, however, be
-                undesirable since it could result in an only partially populated collection
-                in the referenced object.
-                $this->aClient->addAccounts($this);
-             */
-        }
-
-        return $this->aClient;
-    }
-
-    /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
      * change of those foreign objects when you call `save` there).
      */
     public function clear()
     {
-        if (null !== $this->aClient) {
-            $this->aClient->removeAccount($this);
-        }
         $this->id = null;
         $this->client_id = null;
+        $this->account_id = null;
         $this->type = null;
-        $this->balance = null;
+        $this->amount = null;
         $this->created_at = null;
         $this->updated_at = null;
         $this->alreadyInSave = false;
@@ -1386,7 +1347,6 @@ abstract class Account implements ActiveRecordInterface
         if ($deep) {
         } // if ($deep)
 
-        $this->aClient = null;
     }
 
     /**
@@ -1396,7 +1356,7 @@ abstract class Account implements ActiveRecordInterface
      */
     public function __toString()
     {
-        return (string) $this->exportTo(AccountTableMap::DEFAULT_STRING_FORMAT);
+        return (string) $this->exportTo(TransactionTableMap::DEFAULT_STRING_FORMAT);
     }
 
     // timestampable behavior
@@ -1404,11 +1364,11 @@ abstract class Account implements ActiveRecordInterface
     /**
      * Mark the current object so that the update date doesn't get updated during next save
      *
-     * @return     $this|ChildAccount The current object (for fluent API support)
+     * @return     $this|ChildTransaction The current object (for fluent API support)
      */
     public function keepUpdateDateUnchanged()
     {
-        $this->modifiedColumns[AccountTableMap::COL_UPDATED_AT] = true;
+        $this->modifiedColumns[TransactionTableMap::COL_UPDATED_AT] = true;
 
         return $this;
     }

@@ -5,13 +5,18 @@
     "silex/silex": "~1.2",
     "palanik/corsslim": "dev-master",
     "symfony/config": "*",
-    "propel/propel": "~2.0@dev"
+    "propel/propel": "~2.0@dev",
+    "symfony/dependency-injection": "*"
   },
   "require-dev": {
     "phpunit/phpunit": "*",
     "behat/behat": "*"
   },
   "autoload": {
-    "psr-4": {"Auth\\": "auth/"}
+    "psr-4": {
+      "Auth\\": "auth/",
+      "AbcBank\\Resources\\": "propel/generated-classes/AbcBank/Resources",
+      "AbcBank\\Models\\": "src/models"
+    }
   }
 }

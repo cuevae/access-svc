@@ -1,9 +1,11 @@
 <?php
 
-use Base\Client as BaseClient;
+namespace AbcBank\Resources;
+
+use AbcBank\Resources\Base\Transaction as BaseTransaction;
 
 /**
- * Skeleton subclass for representing a row from the 'client' table.
+ * Skeleton subclass for representing a row from the 'transaction' table.
  *
  *
  *
@@ -12,7 +14,7 @@ use Base\Client as BaseClient;
  * long as it does not already exist in the output directory.
  *
  */
-class Client extends BaseClient
+class Transaction extends BaseTransaction
 {
 
 }

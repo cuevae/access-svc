@@ -1,13 +1,15 @@
 <?php
 
-namespace Base;
+namespace AbcBank\Resources\Base;
 
-use \Transaction as ChildTransaction;
-use \TransactionQuery as ChildTransactionQuery;
 use \DateTime;
 use \Exception;
 use \PDO;
-use Map\TransactionTableMap;
+use AbcBank\Resources\Address as ChildAddress;
+use AbcBank\Resources\AddressQuery as ChildAddressQuery;
+use AbcBank\Resources\Client as ChildClient;
+use AbcBank\Resources\ClientQuery as ChildClientQuery;
+use AbcBank\Resources\Map\AddressTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
@@ -22,18 +24,18 @@ use Propel\Runtime\Parser\AbstractParser;
 use Propel\Runtime\Util\PropelDateTime;
 
 /**
- * Base class that represents a row from the 'transaction' table.
+ * Base class that represents a row from the 'address' table.
  *
  *
  *
-* @package    propel.generator..Base
+* @package    propel.generator.AbcBank.Resources.Base
 */
-abstract class Transaction implements ActiveRecordInterface
+abstract class Address implements ActiveRecordInterface
 {
     /**
      * TableMap class name
      */
-    const TABLE_MAP = '\\Map\\TransactionTableMap';
+    const TABLE_MAP = '\\AbcBank\\Resources\\Map\\AddressTableMap';
 
 
     /**
@@ -75,22 +77,70 @@ abstract class Transaction implements ActiveRecordInterface
     protected $client_id;
 
     /**
-     * The value for the account_id field.
-     * @var        int
-     */
-    protected $account_id;
-
-    /**
-     * The value for the type field.
+     * The value for the number field.
      * @var        string
      */
-    protected $type;
+    protected $number;
 
     /**
-     * The value for the amount field.
-     * @var        double
+     * The value for the line_1 field.
+     * @var        string
      */
-    protected $amount;
+    protected $line_1;
+
+    /**
+     * The value for the line_2 field.
+     * @var        string
+     */
+    protected $line_2;
+
+    /**
+     * The value for the line_3 field.
+     * @var        string
+     */
+    protected $line_3;
+
+    /**
+     * The value for the postcode field.
+     * @var        string
+     */
+    protected $postcode;
+
+    /**
+     * The value for the town field.
+     * @var        string
+     */
+    protected $town;
+
+    /**
+     * The value for the county field.
+     * @var        string
+     */
+    protected $county;
+
+    /**
+     * The value for the country field.
+     * @var        string
+     */
+    protected $country;
+
+    /**
+     * The value for the telephone_1 field.
+     * @var        string
+     */
+    protected $telephone_1;
+
+    /**
+     * The value for the telephone_2 field.
+     * @var        string
+     */
+    protected $telephone_2;
+
+    /**
+     * The value for the telephone_3 field.
+     * @var        string
+     */
+    protected $telephone_3;
 
     /**
      * The value for the created_at field.
@@ -105,6 +155,11 @@ abstract class Transaction implements ActiveRecordInterface
     protected $updated_at;
 
     /**
+     * @var        ChildClient
+     */
+    protected $aClient;
+
+    /**
      * Flag to prevent endless save loop, if this object is referenced
      * by another object which falls in this transaction.
      *
@@ -113,7 +168,7 @@ abstract class Transaction implements ActiveRecordInterface
     protected $alreadyInSave = false;
 
     /**
-     * Initializes internal state of Base\Transaction object.
+     * Initializes internal state of AbcBank\Resources\Base\Address object.
      */
     public function __construct()
     {
@@ -208,9 +263,9 @@ abstract class Transaction implements ActiveRecordInterface
     }
 
     /**
-     * Compares this with another <code>Transaction</code> instance.  If
-     * <code>obj</code> is an instance of <code>Transaction</code>, delegates to
-     * <code>equals(Transaction)</code>.  Otherwise, returns <code>false</code>.
+     * Compares this with another <code>Address</code> instance.  If
+     * <code>obj</code> is an instance of <code>Address</code>, delegates to
+     * <code>equals(Address)</code>.  Otherwise, returns <code>false</code>.
      *
      * @param  mixed   $obj The object to compare to.
      * @return boolean Whether equal to the object specified.
@@ -276,7 +331,7 @@ abstract class Transaction implements ActiveRecordInterface
      * @param string $name  The virtual column name
      * @param mixed  $value The value to give to the virtual column
      *
-     * @return $this|Transaction The current object, for fluid interface
+     * @return $this|Address The current object, for fluid interface
      */
     public function setVirtualColumn($name, $value)
     {
@@ -350,33 +405,113 @@ abstract class Transaction implements ActiveRecordInterface
     }
 
     /**
-     * Get the [account_id] column value.
-     *
-     * @return int
-     */
-    public function getAccountId()
-    {
-        return $this->account_id;
-    }
-
-    /**
-     * Get the [type] column value.
+     * Get the [number] column value.
      *
      * @return string
      */
-    public function getType()
+    public function getNumber()
     {
-        return $this->type;
+        return $this->number;
     }
 
     /**
-     * Get the [amount] column value.
+     * Get the [line_1] column value.
      *
-     * @return double
+     * @return string
      */
-    public function getAmount()
+    public function getLine1()
     {
-        return $this->amount;
+        return $this->line_1;
+    }
+
+    /**
+     * Get the [line_2] column value.
+     *
+     * @return string
+     */
+    public function getLine2()
+    {
+        return $this->line_2;
+    }
+
+    /**
+     * Get the [line_3] column value.
+     *
+     * @return string
+     */
+    public function getLine3()
+    {
+        return $this->line_3;
+    }
+
+    /**
+     * Get the [postcode] column value.
+     *
+     * @return string
+     */
+    public function getPostcode()
+    {
+        return $this->postcode;
+    }
+
+    /**
+     * Get the [town] column value.
+     *
+     * @return string
+     */
+    public function getTown()
+    {
+        return $this->town;
+    }
+
+    /**
+     * Get the [county] column value.
+     *
+     * @return string
+     */
+    public function getCounty()
+    {
+        return $this->county;
+    }
+
+    /**
+     * Get the [country] column value.
+     *
+     * @return string
+     */
+    public function getCountry()
+    {
+        return $this->country;
+    }
+
+    /**
+     * Get the [telephone_1] column value.
+     *
+     * @return string
+     */
+    public function getTelephone1()
+    {
+        return $this->telephone_1;
+    }
+
+    /**
+     * Get the [telephone_2] column value.
+     *
+     * @return string
+     */
+    public function getTelephone2()
+    {
+        return $this->telephone_2;
+    }
+
+    /**
+     * Get the [telephone_3] column value.
+     *
+     * @return string
+     */
+    public function getTelephone3()
+    {
+        return $this->telephone_3;
     }
 
     /**
@@ -423,7 +558,7 @@ abstract class Transaction implements ActiveRecordInterface
      * Set the value of [id] column.
      *
      * @param  int $v new value
-     * @return $this|\Transaction The current object (for fluent API support)
+     * @return $this|\AbcBank\Resources\Address The current object (for fluent API support)
      */
     public function setId($v)
     {
@@ -433,7 +568,7 @@ abstract class Transaction implements ActiveRecordInterface
 
         if ($this->id !== $v) {
             $this->id = $v;
-            $this->modifiedColumns[TransactionTableMap::COL_ID] = true;
+            $this->modifiedColumns[AddressTableMap::COL_ID] = true;
         }
 
         return $this;
@@ -443,7 +578,7 @@ abstract class Transaction implements ActiveRecordInterface
      * Set the value of [client_id] column.
      *
      * @param  int $v new value
-     * @return $this|\Transaction The current object (for fluent API support)
+     * @return $this|\AbcBank\Resources\Address The current object (for fluent API support)
      */
     public function setClientId($v)
     {
@@ -453,78 +588,242 @@ abstract class Transaction implements ActiveRecordInterface
 
         if ($this->client_id !== $v) {
             $this->client_id = $v;
-            $this->modifiedColumns[TransactionTableMap::COL_CLIENT_ID] = true;
+            $this->modifiedColumns[AddressTableMap::COL_CLIENT_ID] = true;
+        }
+
+        if ($this->aClient !== null && $this->aClient->getId() !== $v) {
+            $this->aClient = null;
         }
 
         return $this;
     } // setClientId()
 
     /**
-     * Set the value of [account_id] column.
-     *
-     * @param  int $v new value
-     * @return $this|\Transaction The current object (for fluent API support)
-     */
-    public function setAccountId($v)
-    {
-        if ($v !== null) {
-            $v = (int) $v;
-        }
-
-        if ($this->account_id !== $v) {
-            $this->account_id = $v;
-            $this->modifiedColumns[TransactionTableMap::COL_ACCOUNT_ID] = true;
-        }
-
-        return $this;
-    } // setAccountId()
-
-    /**
-     * Set the value of [type] column.
+     * Set the value of [number] column.
      *
      * @param  string $v new value
-     * @return $this|\Transaction The current object (for fluent API support)
+     * @return $this|\AbcBank\Resources\Address The current object (for fluent API support)
      */
-    public function setType($v)
+    public function setNumber($v)
     {
         if ($v !== null) {
             $v = (string) $v;
         }
 
-        if ($this->type !== $v) {
-            $this->type = $v;
-            $this->modifiedColumns[TransactionTableMap::COL_TYPE] = true;
+        if ($this->number !== $v) {
+            $this->number = $v;
+            $this->modifiedColumns[AddressTableMap::COL_NUMBER] = true;
         }
 
         return $this;
-    } // setType()
+    } // setNumber()
 
     /**
-     * Set the value of [amount] column.
+     * Set the value of [line_1] column.
      *
-     * @param  double $v new value
-     * @return $this|\Transaction The current object (for fluent API support)
+     * @param  string $v new value
+     * @return $this|\AbcBank\Resources\Address The current object (for fluent API support)
      */
-    public function setAmount($v)
+    public function setLine1($v)
     {
         if ($v !== null) {
-            $v = (double) $v;
+            $v = (string) $v;
         }
 
-        if ($this->amount !== $v) {
-            $this->amount = $v;
-            $this->modifiedColumns[TransactionTableMap::COL_AMOUNT] = true;
+        if ($this->line_1 !== $v) {
+            $this->line_1 = $v;
+            $this->modifiedColumns[AddressTableMap::COL_LINE_1] = true;
         }
 
         return $this;
-    } // setAmount()
+    } // setLine1()
+
+    /**
+     * Set the value of [line_2] column.
+     *
+     * @param  string $v new value
+     * @return $this|\AbcBank\Resources\Address The current object (for fluent API support)
+     */
+    public function setLine2($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->line_2 !== $v) {
+            $this->line_2 = $v;
+            $this->modifiedColumns[AddressTableMap::COL_LINE_2] = true;
+        }
+
+        return $this;
+    } // setLine2()
+
+    /**
+     * Set the value of [line_3] column.
+     *
+     * @param  string $v new value
+     * @return $this|\AbcBank\Resources\Address The current object (for fluent API support)
+     */
+    public function setLine3($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->line_3 !== $v) {
+            $this->line_3 = $v;
+            $this->modifiedColumns[AddressTableMap::COL_LINE_3] = true;
+        }
+
+        return $this;
+    } // setLine3()
+
+    /**
+     * Set the value of [postcode] column.
+     *
+     * @param  string $v new value
+     * @return $this|\AbcBank\Resources\Address The current object (for fluent API support)
+     */
+    public function setPostcode($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->postcode !== $v) {
+            $this->postcode = $v;
+            $this->modifiedColumns[AddressTableMap::COL_POSTCODE] = true;
+        }
+
+        return $this;
+    } // setPostcode()
+
+    /**
+     * Set the value of [town] column.
+     *
+     * @param  string $v new value
+     * @return $this|\AbcBank\Resources\Address The current object (for fluent API support)
+     */
+    public function setTown($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->town !== $v) {
+            $this->town = $v;
+            $this->modifiedColumns[AddressTableMap::COL_TOWN] = true;
+        }
+
+        return $this;
+    } // setTown()
+
+    /**
+     * Set the value of [county] column.
+     *
+     * @param  string $v new value
+     * @return $this|\AbcBank\Resources\Address The current object (for fluent API support)
+     */
+    public function setCounty($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->county !== $v) {
+            $this->county = $v;
+            $this->modifiedColumns[AddressTableMap::COL_COUNTY] = true;
+        }
+
+        return $this;
+    } // setCounty()
+
+    /**
+     * Set the value of [country] column.
+     *
+     * @param  string $v new value
+     * @return $this|\AbcBank\Resources\Address The current object (for fluent API support)
+     */
+    public function setCountry($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->country !== $v) {
+            $this->country = $v;
+            $this->modifiedColumns[AddressTableMap::COL_COUNTRY] = true;
+        }
+
+        return $this;
+    } // setCountry()
+
+    /**
+     * Set the value of [telephone_1] column.
+     *
+     * @param  string $v new value
+     * @return $this|\AbcBank\Resources\Address The current object (for fluent API support)
+     */
+    public function setTelephone1($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->telephone_1 !== $v) {
+            $this->telephone_1 = $v;
+            $this->modifiedColumns[AddressTableMap::COL_TELEPHONE_1] = true;
+        }
+
+        return $this;
+    } // setTelephone1()
+
+    /**
+     * Set the value of [telephone_2] column.
+     *
+     * @param  string $v new value
+     * @return $this|\AbcBank\Resources\Address The current object (for fluent API support)
+     */
+    public function setTelephone2($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->telephone_2 !== $v) {
+            $this->telephone_2 = $v;
+            $this->modifiedColumns[AddressTableMap::COL_TELEPHONE_2] = true;
+        }
+
+        return $this;
+    } // setTelephone2()
+
+    /**
+     * Set the value of [telephone_3] column.
+     *
+     * @param  string $v new value
+     * @return $this|\AbcBank\Resources\Address The current object (for fluent API support)
+     */
+    public function setTelephone3($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->telephone_3 !== $v) {
+            $this->telephone_3 = $v;
+            $this->modifiedColumns[AddressTableMap::COL_TELEPHONE_3] = true;
+        }
+
+        return $this;
+    } // setTelephone3()
 
     /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
      *
      * @param  mixed $v string, integer (timestamp), or \DateTime value.
      *               Empty strings are treated as NULL.
-     * @return $this|\Transaction The current object (for fluent API support)
+     * @return $this|\AbcBank\Resources\Address The current object (for fluent API support)
      */
     public function setCreatedAt($v)
     {
@@ -532,7 +831,7 @@ abstract class Transaction implements ActiveRecordInterface
         if ($this->created_at !== null || $dt !== null) {
             if ($dt !== $this->created_at) {
                 $this->created_at = $dt;
-                $this->modifiedColumns[TransactionTableMap::COL_CREATED_AT] = true;
+                $this->modifiedColumns[AddressTableMap::COL_CREATED_AT] = true;
             }
         } // if either are not null
 
@@ -544,7 +843,7 @@ abstract class Transaction implements ActiveRecordInterface
      *
      * @param  mixed $v string, integer (timestamp), or \DateTime value.
      *               Empty strings are treated as NULL.
-     * @return $this|\Transaction The current object (for fluent API support)
+     * @return $this|\AbcBank\Resources\Address The current object (for fluent API support)
      */
     public function setUpdatedAt($v)
     {
@@ -552,7 +851,7 @@ abstract class Transaction implements ActiveRecordInterface
         if ($this->updated_at !== null || $dt !== null) {
             if ($dt !== $this->updated_at) {
                 $this->updated_at = $dt;
-                $this->modifiedColumns[TransactionTableMap::COL_UPDATED_AT] = true;
+                $this->modifiedColumns[AddressTableMap::COL_UPDATED_AT] = true;
             }
         } // if either are not null
 
@@ -595,28 +894,52 @@ abstract class Transaction implements ActiveRecordInterface
     {
         try {
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : TransactionTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : AddressTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
             $this->id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : TransactionTableMap::translateFieldName('ClientId', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : AddressTableMap::translateFieldName('ClientId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->client_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : TransactionTableMap::translateFieldName('AccountId', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->account_id = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : AddressTableMap::translateFieldName('Number', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->number = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : TransactionTableMap::translateFieldName('Type', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->type = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : AddressTableMap::translateFieldName('Line1', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->line_1 = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : TransactionTableMap::translateFieldName('Amount', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->amount = (null !== $col) ? (double) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : AddressTableMap::translateFieldName('Line2', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->line_2 = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : TransactionTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : AddressTableMap::translateFieldName('Line3', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->line_3 = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : AddressTableMap::translateFieldName('Postcode', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->postcode = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : AddressTableMap::translateFieldName('Town', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->town = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : AddressTableMap::translateFieldName('County', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->county = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : AddressTableMap::translateFieldName('Country', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->country = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 10 + $startcol : AddressTableMap::translateFieldName('Telephone1', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->telephone_1 = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 11 + $startcol : AddressTableMap::translateFieldName('Telephone2', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->telephone_2 = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 12 + $startcol : AddressTableMap::translateFieldName('Telephone3', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->telephone_3 = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 13 + $startcol : AddressTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : TransactionTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 14 + $startcol : AddressTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -629,10 +952,10 @@ abstract class Transaction implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 7; // 7 = TransactionTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 15; // 15 = AddressTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
-            throw new PropelException(sprintf('Error populating %s object', '\\Transaction'), 0, $e);
+            throw new PropelException(sprintf('Error populating %s object', '\\AbcBank\\Resources\\Address'), 0, $e);
         }
     }
 
@@ -651,6 +974,9 @@ abstract class Transaction implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
+        if ($this->aClient !== null && $this->client_id !== $this->aClient->getId()) {
+            $this->aClient = null;
+        }
     } // ensureConsistency
 
     /**
@@ -674,13 +1000,13 @@ abstract class Transaction implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getReadConnection(TransactionTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getReadConnection(AddressTableMap::DATABASE_NAME);
         }
 
         // We don't need to alter the object instance pool; we're just modifying this instance
         // already in the pool.
 
-        $dataFetcher = ChildTransactionQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
+        $dataFetcher = ChildAddressQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
         $row = $dataFetcher->fetch();
         $dataFetcher->close();
         if (!$row) {
@@ -690,6 +1016,7 @@ abstract class Transaction implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
+            $this->aClient = null;
         } // if (deep)
     }
 
@@ -699,8 +1026,8 @@ abstract class Transaction implements ActiveRecordInterface
      * @param      ConnectionInterface $con
      * @return void
      * @throws PropelException
-     * @see Transaction::setDeleted()
-     * @see Transaction::isDeleted()
+     * @see Address::setDeleted()
+     * @see Address::isDeleted()
      */
     public function delete(ConnectionInterface $con = null)
     {
@@ -709,11 +1036,11 @@ abstract class Transaction implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(TransactionTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(AddressTableMap::DATABASE_NAME);
         }
 
         $con->transaction(function () use ($con) {
-            $deleteQuery = ChildTransactionQuery::create()
+            $deleteQuery = ChildAddressQuery::create()
                 ->filterByPrimaryKey($this->getPrimaryKey());
             $ret = $this->preDelete($con);
             if ($ret) {
@@ -744,7 +1071,7 @@ abstract class Transaction implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(TransactionTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(AddressTableMap::DATABASE_NAME);
         }
 
         return $con->transaction(function () use ($con) {
@@ -754,16 +1081,16 @@ abstract class Transaction implements ActiveRecordInterface
                 $ret = $ret && $this->preInsert($con);
                 // timestampable behavior
 
-                if (!$this->isColumnModified(TransactionTableMap::COL_CREATED_AT)) {
+                if (!$this->isColumnModified(AddressTableMap::COL_CREATED_AT)) {
                     $this->setCreatedAt(time());
                 }
-                if (!$this->isColumnModified(TransactionTableMap::COL_UPDATED_AT)) {
+                if (!$this->isColumnModified(AddressTableMap::COL_UPDATED_AT)) {
                     $this->setUpdatedAt(time());
                 }
             } else {
                 $ret = $ret && $this->preUpdate($con);
                 // timestampable behavior
-                if ($this->isModified() && !$this->isColumnModified(TransactionTableMap::COL_UPDATED_AT)) {
+                if ($this->isModified() && !$this->isColumnModified(AddressTableMap::COL_UPDATED_AT)) {
                     $this->setUpdatedAt(time());
                 }
             }
@@ -775,7 +1102,7 @@ abstract class Transaction implements ActiveRecordInterface
                     $this->postUpdate($con);
                 }
                 $this->postSave($con);
-                TransactionTableMap::addInstanceToPool($this);
+                AddressTableMap::addInstanceToPool($this);
             } else {
                 $affectedRows = 0;
             }
@@ -800,6 +1127,18 @@ abstract class Transaction implements ActiveRecordInterface
         $affectedRows = 0; // initialize var to track total num of affected rows
         if (!$this->alreadyInSave) {
             $this->alreadyInSave = true;
+
+            // We call the save method on the following object(s) if they
+            // were passed to this object by their corresponding set
+            // method.  This object relates to these object(s) by a
+            // foreign key reference.
+
+            if ($this->aClient !== null) {
+                if ($this->aClient->isModified() || $this->aClient->isNew()) {
+                    $affectedRows += $this->aClient->save($con);
+                }
+                $this->setClient($this->aClient);
+            }
 
             if ($this->isNew() || $this->isModified()) {
                 // persist changes
@@ -832,36 +1171,60 @@ abstract class Transaction implements ActiveRecordInterface
         $modifiedColumns = array();
         $index = 0;
 
-        $this->modifiedColumns[TransactionTableMap::COL_ID] = true;
+        $this->modifiedColumns[AddressTableMap::COL_ID] = true;
         if (null !== $this->id) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key (' . TransactionTableMap::COL_ID . ')');
+            throw new PropelException('Cannot insert a value for auto-increment primary key (' . AddressTableMap::COL_ID . ')');
         }
 
          // check the columns in natural order for more readable SQL queries
-        if ($this->isColumnModified(TransactionTableMap::COL_ID)) {
+        if ($this->isColumnModified(AddressTableMap::COL_ID)) {
             $modifiedColumns[':p' . $index++]  = 'id';
         }
-        if ($this->isColumnModified(TransactionTableMap::COL_CLIENT_ID)) {
+        if ($this->isColumnModified(AddressTableMap::COL_CLIENT_ID)) {
             $modifiedColumns[':p' . $index++]  = 'client_id';
         }
-        if ($this->isColumnModified(TransactionTableMap::COL_ACCOUNT_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'account_id';
+        if ($this->isColumnModified(AddressTableMap::COL_NUMBER)) {
+            $modifiedColumns[':p' . $index++]  = 'number';
         }
-        if ($this->isColumnModified(TransactionTableMap::COL_TYPE)) {
-            $modifiedColumns[':p' . $index++]  = 'type';
+        if ($this->isColumnModified(AddressTableMap::COL_LINE_1)) {
+            $modifiedColumns[':p' . $index++]  = 'line_1';
         }
-        if ($this->isColumnModified(TransactionTableMap::COL_AMOUNT)) {
-            $modifiedColumns[':p' . $index++]  = 'amount';
+        if ($this->isColumnModified(AddressTableMap::COL_LINE_2)) {
+            $modifiedColumns[':p' . $index++]  = 'line_2';
         }
-        if ($this->isColumnModified(TransactionTableMap::COL_CREATED_AT)) {
+        if ($this->isColumnModified(AddressTableMap::COL_LINE_3)) {
+            $modifiedColumns[':p' . $index++]  = 'line_3';
+        }
+        if ($this->isColumnModified(AddressTableMap::COL_POSTCODE)) {
+            $modifiedColumns[':p' . $index++]  = 'postcode';
+        }
+        if ($this->isColumnModified(AddressTableMap::COL_TOWN)) {
+            $modifiedColumns[':p' . $index++]  = 'town';
+        }
+        if ($this->isColumnModified(AddressTableMap::COL_COUNTY)) {
+            $modifiedColumns[':p' . $index++]  = 'county';
+        }
+        if ($this->isColumnModified(AddressTableMap::COL_COUNTRY)) {
+            $modifiedColumns[':p' . $index++]  = 'country';
+        }
+        if ($this->isColumnModified(AddressTableMap::COL_TELEPHONE_1)) {
+            $modifiedColumns[':p' . $index++]  = 'telephone_1';
+        }
+        if ($this->isColumnModified(AddressTableMap::COL_TELEPHONE_2)) {
+            $modifiedColumns[':p' . $index++]  = 'telephone_2';
+        }
+        if ($this->isColumnModified(AddressTableMap::COL_TELEPHONE_3)) {
+            $modifiedColumns[':p' . $index++]  = 'telephone_3';
+        }
+        if ($this->isColumnModified(AddressTableMap::COL_CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'created_at';
         }
-        if ($this->isColumnModified(TransactionTableMap::COL_UPDATED_AT)) {
+        if ($this->isColumnModified(AddressTableMap::COL_UPDATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'updated_at';
         }
 
         $sql = sprintf(
-            'INSERT INTO transaction (%s) VALUES (%s)',
+            'INSERT INTO address (%s) VALUES (%s)',
             implode(', ', $modifiedColumns),
             implode(', ', array_keys($modifiedColumns))
         );
@@ -876,14 +1239,38 @@ abstract class Transaction implements ActiveRecordInterface
                     case 'client_id':
                         $stmt->bindValue($identifier, $this->client_id, PDO::PARAM_INT);
                         break;
-                    case 'account_id':
-                        $stmt->bindValue($identifier, $this->account_id, PDO::PARAM_INT);
+                    case 'number':
+                        $stmt->bindValue($identifier, $this->number, PDO::PARAM_STR);
                         break;
-                    case 'type':
-                        $stmt->bindValue($identifier, $this->type, PDO::PARAM_STR);
+                    case 'line_1':
+                        $stmt->bindValue($identifier, $this->line_1, PDO::PARAM_STR);
                         break;
-                    case 'amount':
-                        $stmt->bindValue($identifier, $this->amount, PDO::PARAM_STR);
+                    case 'line_2':
+                        $stmt->bindValue($identifier, $this->line_2, PDO::PARAM_STR);
+                        break;
+                    case 'line_3':
+                        $stmt->bindValue($identifier, $this->line_3, PDO::PARAM_STR);
+                        break;
+                    case 'postcode':
+                        $stmt->bindValue($identifier, $this->postcode, PDO::PARAM_STR);
+                        break;
+                    case 'town':
+                        $stmt->bindValue($identifier, $this->town, PDO::PARAM_STR);
+                        break;
+                    case 'county':
+                        $stmt->bindValue($identifier, $this->county, PDO::PARAM_STR);
+                        break;
+                    case 'country':
+                        $stmt->bindValue($identifier, $this->country, PDO::PARAM_STR);
+                        break;
+                    case 'telephone_1':
+                        $stmt->bindValue($identifier, $this->telephone_1, PDO::PARAM_STR);
+                        break;
+                    case 'telephone_2':
+                        $stmt->bindValue($identifier, $this->telephone_2, PDO::PARAM_STR);
+                        break;
+                    case 'telephone_3':
+                        $stmt->bindValue($identifier, $this->telephone_3, PDO::PARAM_STR);
                         break;
                     case 'created_at':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -937,7 +1324,7 @@ abstract class Transaction implements ActiveRecordInterface
      */
     public function getByName($name, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = TransactionTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = AddressTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
         $field = $this->getByPosition($pos);
 
         return $field;
@@ -960,18 +1347,42 @@ abstract class Transaction implements ActiveRecordInterface
                 return $this->getClientId();
                 break;
             case 2:
-                return $this->getAccountId();
+                return $this->getNumber();
                 break;
             case 3:
-                return $this->getType();
+                return $this->getLine1();
                 break;
             case 4:
-                return $this->getAmount();
+                return $this->getLine2();
                 break;
             case 5:
-                return $this->getCreatedAt();
+                return $this->getLine3();
                 break;
             case 6:
+                return $this->getPostcode();
+                break;
+            case 7:
+                return $this->getTown();
+                break;
+            case 8:
+                return $this->getCounty();
+                break;
+            case 9:
+                return $this->getCountry();
+                break;
+            case 10:
+                return $this->getTelephone1();
+                break;
+            case 11:
+                return $this->getTelephone2();
+                break;
+            case 12:
+                return $this->getTelephone3();
+                break;
+            case 13:
+                return $this->getCreatedAt();
+                break;
+            case 14:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -991,38 +1402,47 @@ abstract class Transaction implements ActiveRecordInterface
      *                    Defaults to TableMap::TYPE_PHPNAME.
      * @param     boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns. Defaults to TRUE.
      * @param     array $alreadyDumpedObjects List of objects to skip to avoid recursion
+     * @param     boolean $includeForeignObjects (optional) Whether to include hydrated related objects. Default to FALSE.
      *
      * @return array an associative array containing the field names (as keys) and field values
      */
-    public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array())
+    public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
     {
 
-        if (isset($alreadyDumpedObjects['Transaction'][$this->hashCode()])) {
+        if (isset($alreadyDumpedObjects['Address'][$this->hashCode()])) {
             return '*RECURSION*';
         }
-        $alreadyDumpedObjects['Transaction'][$this->hashCode()] = true;
-        $keys = TransactionTableMap::getFieldNames($keyType);
+        $alreadyDumpedObjects['Address'][$this->hashCode()] = true;
+        $keys = AddressTableMap::getFieldNames($keyType);
         $result = array(
             $keys[0] => $this->getId(),
             $keys[1] => $this->getClientId(),
-            $keys[2] => $this->getAccountId(),
-            $keys[3] => $this->getType(),
-            $keys[4] => $this->getAmount(),
-            $keys[5] => $this->getCreatedAt(),
-            $keys[6] => $this->getUpdatedAt(),
+            $keys[2] => $this->getNumber(),
+            $keys[3] => $this->getLine1(),
+            $keys[4] => $this->getLine2(),
+            $keys[5] => $this->getLine3(),
+            $keys[6] => $this->getPostcode(),
+            $keys[7] => $this->getTown(),
+            $keys[8] => $this->getCounty(),
+            $keys[9] => $this->getCountry(),
+            $keys[10] => $this->getTelephone1(),
+            $keys[11] => $this->getTelephone2(),
+            $keys[12] => $this->getTelephone3(),
+            $keys[13] => $this->getCreatedAt(),
+            $keys[14] => $this->getUpdatedAt(),
         );
 
         $utc = new \DateTimeZone('utc');
-        if ($result[$keys[5]] instanceof \DateTime) {
+        if ($result[$keys[13]] instanceof \DateTime) {
             // When changing timezone we don't want to change existing instances
-            $dateTime = clone $result[$keys[5]];
-            $result[$keys[5]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+            $dateTime = clone $result[$keys[13]];
+            $result[$keys[13]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
         }
 
-        if ($result[$keys[6]] instanceof \DateTime) {
+        if ($result[$keys[14]] instanceof \DateTime) {
             // When changing timezone we don't want to change existing instances
-            $dateTime = clone $result[$keys[6]];
-            $result[$keys[6]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+            $dateTime = clone $result[$keys[14]];
+            $result[$keys[14]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -1030,6 +1450,23 @@ abstract class Transaction implements ActiveRecordInterface
             $result[$key] = $virtualColumn;
         }
 
+        if ($includeForeignObjects) {
+            if (null !== $this->aClient) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'client';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'client';
+                        break;
+                    default:
+                        $key = 'Client';
+                }
+
+                $result[$key] = $this->aClient->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+        }
 
         return $result;
     }
@@ -1043,11 +1480,11 @@ abstract class Transaction implements ActiveRecordInterface
      *                one of the class type constants TableMap::TYPE_PHPNAME, TableMap::TYPE_CAMELNAME
      *                TableMap::TYPE_COLNAME, TableMap::TYPE_FIELDNAME, TableMap::TYPE_NUM.
      *                Defaults to TableMap::TYPE_PHPNAME.
-     * @return $this|\Transaction
+     * @return $this|\AbcBank\Resources\Address
      */
     public function setByName($name, $value, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = TransactionTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = AddressTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
 
         return $this->setByPosition($pos, $value);
     }
@@ -1058,7 +1495,7 @@ abstract class Transaction implements ActiveRecordInterface
      *
      * @param  int $pos position in xml schema
      * @param  mixed $value field value
-     * @return $this|\Transaction
+     * @return $this|\AbcBank\Resources\Address
      */
     public function setByPosition($pos, $value)
     {
@@ -1070,18 +1507,42 @@ abstract class Transaction implements ActiveRecordInterface
                 $this->setClientId($value);
                 break;
             case 2:
-                $this->setAccountId($value);
+                $this->setNumber($value);
                 break;
             case 3:
-                $this->setType($value);
+                $this->setLine1($value);
                 break;
             case 4:
-                $this->setAmount($value);
+                $this->setLine2($value);
                 break;
             case 5:
-                $this->setCreatedAt($value);
+                $this->setLine3($value);
                 break;
             case 6:
+                $this->setPostcode($value);
+                break;
+            case 7:
+                $this->setTown($value);
+                break;
+            case 8:
+                $this->setCounty($value);
+                break;
+            case 9:
+                $this->setCountry($value);
+                break;
+            case 10:
+                $this->setTelephone1($value);
+                break;
+            case 11:
+                $this->setTelephone2($value);
+                break;
+            case 12:
+                $this->setTelephone3($value);
+                break;
+            case 13:
+                $this->setCreatedAt($value);
+                break;
+            case 14:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1108,7 +1569,7 @@ abstract class Transaction implements ActiveRecordInterface
      */
     public function fromArray($arr, $keyType = TableMap::TYPE_PHPNAME)
     {
-        $keys = TransactionTableMap::getFieldNames($keyType);
+        $keys = AddressTableMap::getFieldNames($keyType);
 
         if (array_key_exists($keys[0], $arr)) {
             $this->setId($arr[$keys[0]]);
@@ -1117,19 +1578,43 @@ abstract class Transaction implements ActiveRecordInterface
             $this->setClientId($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setAccountId($arr[$keys[2]]);
+            $this->setNumber($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setType($arr[$keys[3]]);
+            $this->setLine1($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setAmount($arr[$keys[4]]);
+            $this->setLine2($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setCreatedAt($arr[$keys[5]]);
+            $this->setLine3($arr[$keys[5]]);
         }
         if (array_key_exists($keys[6], $arr)) {
-            $this->setUpdatedAt($arr[$keys[6]]);
+            $this->setPostcode($arr[$keys[6]]);
+        }
+        if (array_key_exists($keys[7], $arr)) {
+            $this->setTown($arr[$keys[7]]);
+        }
+        if (array_key_exists($keys[8], $arr)) {
+            $this->setCounty($arr[$keys[8]]);
+        }
+        if (array_key_exists($keys[9], $arr)) {
+            $this->setCountry($arr[$keys[9]]);
+        }
+        if (array_key_exists($keys[10], $arr)) {
+            $this->setTelephone1($arr[$keys[10]]);
+        }
+        if (array_key_exists($keys[11], $arr)) {
+            $this->setTelephone2($arr[$keys[11]]);
+        }
+        if (array_key_exists($keys[12], $arr)) {
+            $this->setTelephone3($arr[$keys[12]]);
+        }
+        if (array_key_exists($keys[13], $arr)) {
+            $this->setCreatedAt($arr[$keys[13]]);
+        }
+        if (array_key_exists($keys[14], $arr)) {
+            $this->setUpdatedAt($arr[$keys[14]]);
         }
     }
 
@@ -1150,7 +1635,7 @@ abstract class Transaction implements ActiveRecordInterface
      * @param string $data The source data to import from
      * @param string $keyType The type of keys the array uses.
      *
-     * @return $this|\Transaction The current object, for fluid interface
+     * @return $this|\AbcBank\Resources\Address The current object, for fluid interface
      */
     public function importFrom($parser, $data, $keyType = TableMap::TYPE_PHPNAME)
     {
@@ -1170,28 +1655,52 @@ abstract class Transaction implements ActiveRecordInterface
      */
     public function buildCriteria()
     {
-        $criteria = new Criteria(TransactionTableMap::DATABASE_NAME);
+        $criteria = new Criteria(AddressTableMap::DATABASE_NAME);
 
-        if ($this->isColumnModified(TransactionTableMap::COL_ID)) {
-            $criteria->add(TransactionTableMap::COL_ID, $this->id);
+        if ($this->isColumnModified(AddressTableMap::COL_ID)) {
+            $criteria->add(AddressTableMap::COL_ID, $this->id);
         }
-        if ($this->isColumnModified(TransactionTableMap::COL_CLIENT_ID)) {
-            $criteria->add(TransactionTableMap::COL_CLIENT_ID, $this->client_id);
+        if ($this->isColumnModified(AddressTableMap::COL_CLIENT_ID)) {
+            $criteria->add(AddressTableMap::COL_CLIENT_ID, $this->client_id);
         }
-        if ($this->isColumnModified(TransactionTableMap::COL_ACCOUNT_ID)) {
-            $criteria->add(TransactionTableMap::COL_ACCOUNT_ID, $this->account_id);
+        if ($this->isColumnModified(AddressTableMap::COL_NUMBER)) {
+            $criteria->add(AddressTableMap::COL_NUMBER, $this->number);
         }
-        if ($this->isColumnModified(TransactionTableMap::COL_TYPE)) {
-            $criteria->add(TransactionTableMap::COL_TYPE, $this->type);
+        if ($this->isColumnModified(AddressTableMap::COL_LINE_1)) {
+            $criteria->add(AddressTableMap::COL_LINE_1, $this->line_1);
         }
-        if ($this->isColumnModified(TransactionTableMap::COL_AMOUNT)) {
-            $criteria->add(TransactionTableMap::COL_AMOUNT, $this->amount);
+        if ($this->isColumnModified(AddressTableMap::COL_LINE_2)) {
+            $criteria->add(AddressTableMap::COL_LINE_2, $this->line_2);
         }
-        if ($this->isColumnModified(TransactionTableMap::COL_CREATED_AT)) {
-            $criteria->add(TransactionTableMap::COL_CREATED_AT, $this->created_at);
+        if ($this->isColumnModified(AddressTableMap::COL_LINE_3)) {
+            $criteria->add(AddressTableMap::COL_LINE_3, $this->line_3);
         }
-        if ($this->isColumnModified(TransactionTableMap::COL_UPDATED_AT)) {
-            $criteria->add(TransactionTableMap::COL_UPDATED_AT, $this->updated_at);
+        if ($this->isColumnModified(AddressTableMap::COL_POSTCODE)) {
+            $criteria->add(AddressTableMap::COL_POSTCODE, $this->postcode);
+        }
+        if ($this->isColumnModified(AddressTableMap::COL_TOWN)) {
+            $criteria->add(AddressTableMap::COL_TOWN, $this->town);
+        }
+        if ($this->isColumnModified(AddressTableMap::COL_COUNTY)) {
+            $criteria->add(AddressTableMap::COL_COUNTY, $this->county);
+        }
+        if ($this->isColumnModified(AddressTableMap::COL_COUNTRY)) {
+            $criteria->add(AddressTableMap::COL_COUNTRY, $this->country);
+        }
+        if ($this->isColumnModified(AddressTableMap::COL_TELEPHONE_1)) {
+            $criteria->add(AddressTableMap::COL_TELEPHONE_1, $this->telephone_1);
+        }
+        if ($this->isColumnModified(AddressTableMap::COL_TELEPHONE_2)) {
+            $criteria->add(AddressTableMap::COL_TELEPHONE_2, $this->telephone_2);
+        }
+        if ($this->isColumnModified(AddressTableMap::COL_TELEPHONE_3)) {
+            $criteria->add(AddressTableMap::COL_TELEPHONE_3, $this->telephone_3);
+        }
+        if ($this->isColumnModified(AddressTableMap::COL_CREATED_AT)) {
+            $criteria->add(AddressTableMap::COL_CREATED_AT, $this->created_at);
+        }
+        if ($this->isColumnModified(AddressTableMap::COL_UPDATED_AT)) {
+            $criteria->add(AddressTableMap::COL_UPDATED_AT, $this->updated_at);
         }
 
         return $criteria;
@@ -1209,8 +1718,8 @@ abstract class Transaction implements ActiveRecordInterface
      */
     public function buildPkeyCriteria()
     {
-        $criteria = ChildTransactionQuery::create();
-        $criteria->add(TransactionTableMap::COL_ID, $this->id);
+        $criteria = ChildAddressQuery::create();
+        $criteria->add(AddressTableMap::COL_ID, $this->id);
 
         return $criteria;
     }
@@ -1272,7 +1781,7 @@ abstract class Transaction implements ActiveRecordInterface
      * If desired, this method can also make copies of all associated (fkey referrers)
      * objects.
      *
-     * @param      object $copyObj An object of \Transaction (or compatible) type.
+     * @param      object $copyObj An object of \AbcBank\Resources\Address (or compatible) type.
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
      * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
      * @throws PropelException
@@ -1280,9 +1789,17 @@ abstract class Transaction implements ActiveRecordInterface
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
         $copyObj->setClientId($this->getClientId());
-        $copyObj->setAccountId($this->getAccountId());
-        $copyObj->setType($this->getType());
-        $copyObj->setAmount($this->getAmount());
+        $copyObj->setNumber($this->getNumber());
+        $copyObj->setLine1($this->getLine1());
+        $copyObj->setLine2($this->getLine2());
+        $copyObj->setLine3($this->getLine3());
+        $copyObj->setPostcode($this->getPostcode());
+        $copyObj->setTown($this->getTown());
+        $copyObj->setCounty($this->getCounty());
+        $copyObj->setCountry($this->getCountry());
+        $copyObj->setTelephone1($this->getTelephone1());
+        $copyObj->setTelephone2($this->getTelephone2());
+        $copyObj->setTelephone3($this->getTelephone3());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
         if ($makeNew) {
@@ -1300,7 +1817,7 @@ abstract class Transaction implements ActiveRecordInterface
      * objects.
      *
      * @param  boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
-     * @return \Transaction Clone of current object.
+     * @return \AbcBank\Resources\Address Clone of current object.
      * @throws PropelException
      */
     public function copy($deepCopy = false)
@@ -1314,17 +1831,79 @@ abstract class Transaction implements ActiveRecordInterface
     }
 
     /**
+     * Declares an association between this object and a ChildClient object.
+     *
+     * @param  ChildClient $v
+     * @return $this|\AbcBank\Resources\Address The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setClient(ChildClient $v = null)
+    {
+        if ($v === null) {
+            $this->setClientId(NULL);
+        } else {
+            $this->setClientId($v->getId());
+        }
+
+        $this->aClient = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildClient object, it will not be re-added.
+        if ($v !== null) {
+            $v->addAddress($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildClient object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildClient The associated ChildClient object.
+     * @throws PropelException
+     */
+    public function getClient(ConnectionInterface $con = null)
+    {
+        if ($this->aClient === null && ($this->client_id !== null)) {
+            $this->aClient = ChildClientQuery::create()->findPk($this->client_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aClient->addAddresses($this);
+             */
+        }
+
+        return $this->aClient;
+    }
+
+    /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
      * change of those foreign objects when you call `save` there).
      */
     public function clear()
     {
+        if (null !== $this->aClient) {
+            $this->aClient->removeAddress($this);
+        }
         $this->id = null;
         $this->client_id = null;
-        $this->account_id = null;
-        $this->type = null;
-        $this->amount = null;
+        $this->number = null;
+        $this->line_1 = null;
+        $this->line_2 = null;
+        $this->line_3 = null;
+        $this->postcode = null;
+        $this->town = null;
+        $this->county = null;
+        $this->country = null;
+        $this->telephone_1 = null;
+        $this->telephone_2 = null;
+        $this->telephone_3 = null;
         $this->created_at = null;
         $this->updated_at = null;
         $this->alreadyInSave = false;
@@ -1347,6 +1926,7 @@ abstract class Transaction implements ActiveRecordInterface
         if ($deep) {
         } // if ($deep)
 
+        $this->aClient = null;
     }
 
     /**
@@ -1356,7 +1936,7 @@ abstract class Transaction implements ActiveRecordInterface
      */
     public function __toString()
     {
-        return (string) $this->exportTo(TransactionTableMap::DEFAULT_STRING_FORMAT);
+        return (string) $this->exportTo(AddressTableMap::DEFAULT_STRING_FORMAT);
     }
 
     // timestampable behavior
@@ -1364,11 +1944,11 @@ abstract class Transaction implements ActiveRecordInterface
     /**
      * Mark the current object so that the update date doesn't get updated during next save
      *
-     * @return     $this|ChildTransaction The current object (for fluent API support)
+     * @return     $this|ChildAddress The current object (for fluent API support)
      */
     public function keepUpdateDateUnchanged()
     {
-        $this->modifiedColumns[TransactionTableMap::COL_UPDATED_AT] = true;
+        $this->modifiedColumns[AddressTableMap::COL_UPDATED_AT] = true;
 
         return $this;
     }

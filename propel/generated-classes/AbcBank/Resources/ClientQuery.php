@@ -1,9 +1,11 @@
 <?php
 
-use Base\AccountQuery as BaseAccountQuery;
+namespace AbcBank\Resources;
+
+use AbcBank\Resources\Base\ClientQuery as BaseClientQuery;
 
 /**
- * Skeleton subclass for performing query and update operations on the 'account' table.
+ * Skeleton subclass for performing query and update operations on the 'client' table.
  *
  *
  *
@@ -12,7 +14,7 @@ use Base\AccountQuery as BaseAccountQuery;
  * long as it does not already exist in the output directory.
  *
  */
-class AccountQuery extends BaseAccountQuery
+class ClientQuery extends BaseClientQuery
 {
 
 }

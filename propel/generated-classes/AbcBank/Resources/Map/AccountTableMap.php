@@ -1,9 +1,9 @@
 <?php
 
-namespace Map;
+namespace AbcBank\Resources\Map;
 
-use \Transaction;
-use \TransactionQuery;
+use AbcBank\Resources\Account;
+use AbcBank\Resources\AccountQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -16,7 +16,7 @@ use Propel\Runtime\Map\TableMapTrait;
 
 
 /**
- * This class defines the structure of the 'transaction' table.
+ * This class defines the structure of the 'account' table.
  *
  *
  *
@@ -26,7 +26,7 @@ use Propel\Runtime\Map\TableMapTrait;
  * (i.e. if it's a text column type).
  *
  */
-class TransactionTableMap extends TableMap
+class AccountTableMap extends TableMap
 {
     use InstancePoolTrait;
     use TableMapTrait;
@@ -34,7 +34,7 @@ class TransactionTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = '.Map.TransactionTableMap';
+    const CLASS_NAME = 'AbcBank.Resources.Map.AccountTableMap';
 
     /**
      * The default database name for this class
@@ -44,22 +44,22 @@ class TransactionTableMap extends TableMap
     /**
      * The table name for this class
      */
-    const TABLE_NAME = 'transaction';
+    const TABLE_NAME = 'account';
 
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\Transaction';
+    const OM_CLASS = '\\AbcBank\\Resources\\Account';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'Transaction';
+    const CLASS_DEFAULT = 'AbcBank.Resources.Account';
 
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 7;
+    const NUM_COLUMNS = 6;
 
     /**
      * The number of lazy-loaded columns
@@ -69,42 +69,37 @@ class TransactionTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 7;
+    const NUM_HYDRATE_COLUMNS = 6;
 
     /**
      * the column name for the id field
      */
-    const COL_ID = 'transaction.id';
+    const COL_ID = 'account.id';
 
     /**
      * the column name for the client_id field
      */
-    const COL_CLIENT_ID = 'transaction.client_id';
-
-    /**
-     * the column name for the account_id field
-     */
-    const COL_ACCOUNT_ID = 'transaction.account_id';
+    const COL_CLIENT_ID = 'account.client_id';
 
     /**
      * the column name for the type field
      */
-    const COL_TYPE = 'transaction.type';
+    const COL_TYPE = 'account.type';
 
     /**
-     * the column name for the amount field
+     * the column name for the balance field
      */
-    const COL_AMOUNT = 'transaction.amount';
+    const COL_BALANCE = 'account.balance';
 
     /**
      * the column name for the created_at field
      */
-    const COL_CREATED_AT = 'transaction.created_at';
+    const COL_CREATED_AT = 'account.created_at';
 
     /**
      * the column name for the updated_at field
      */
-    const COL_UPDATED_AT = 'transaction.updated_at';
+    const COL_UPDATED_AT = 'account.updated_at';
 
     /**
      * The default string format for model objects of the related table
@@ -118,11 +113,11 @@ class TransactionTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'ClientId', 'AccountId', 'Type', 'Amount', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('id', 'clientId', 'accountId', 'type', 'amount', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(TransactionTableMap::COL_ID, TransactionTableMap::COL_CLIENT_ID, TransactionTableMap::COL_ACCOUNT_ID, TransactionTableMap::COL_TYPE, TransactionTableMap::COL_AMOUNT, TransactionTableMap::COL_CREATED_AT, TransactionTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('id', 'client_id', 'account_id', 'type', 'amount', 'created_at', 'updated_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
+        self::TYPE_PHPNAME       => array('Id', 'ClientId', 'Type', 'Balance', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('id', 'clientId', 'type', 'balance', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(AccountTableMap::COL_ID, AccountTableMap::COL_CLIENT_ID, AccountTableMap::COL_TYPE, AccountTableMap::COL_BALANCE, AccountTableMap::COL_CREATED_AT, AccountTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('id', 'client_id', 'type', 'balance', 'created_at', 'updated_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
 
     /**
@@ -132,11 +127,11 @@ class TransactionTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'ClientId' => 1, 'AccountId' => 2, 'Type' => 3, 'Amount' => 4, 'CreatedAt' => 5, 'UpdatedAt' => 6, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'clientId' => 1, 'accountId' => 2, 'type' => 3, 'amount' => 4, 'createdAt' => 5, 'updatedAt' => 6, ),
-        self::TYPE_COLNAME       => array(TransactionTableMap::COL_ID => 0, TransactionTableMap::COL_CLIENT_ID => 1, TransactionTableMap::COL_ACCOUNT_ID => 2, TransactionTableMap::COL_TYPE => 3, TransactionTableMap::COL_AMOUNT => 4, TransactionTableMap::COL_CREATED_AT => 5, TransactionTableMap::COL_UPDATED_AT => 6, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'client_id' => 1, 'account_id' => 2, 'type' => 3, 'amount' => 4, 'created_at' => 5, 'updated_at' => 6, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'ClientId' => 1, 'Type' => 2, 'Balance' => 3, 'CreatedAt' => 4, 'UpdatedAt' => 5, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'clientId' => 1, 'type' => 2, 'balance' => 3, 'createdAt' => 4, 'updatedAt' => 5, ),
+        self::TYPE_COLNAME       => array(AccountTableMap::COL_ID => 0, AccountTableMap::COL_CLIENT_ID => 1, AccountTableMap::COL_TYPE => 2, AccountTableMap::COL_BALANCE => 3, AccountTableMap::COL_CREATED_AT => 4, AccountTableMap::COL_UPDATED_AT => 5, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'client_id' => 1, 'type' => 2, 'balance' => 3, 'created_at' => 4, 'updated_at' => 5, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
 
     /**
@@ -149,18 +144,17 @@ class TransactionTableMap extends TableMap
     public function initialize()
     {
         // attributes
-        $this->setName('transaction');
-        $this->setPhpName('Transaction');
+        $this->setName('account');
+        $this->setPhpName('Account');
         $this->setIdentifierQuoting(false);
-        $this->setClassName('\\Transaction');
-        $this->setPackage('');
+        $this->setClassName('\\AbcBank\\Resources\\Account');
+        $this->setPackage('AbcBank.Resources');
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
-        $this->addColumn('client_id', 'ClientId', 'INTEGER', true, null, null);
-        $this->addColumn('account_id', 'AccountId', 'INTEGER', true, null, null);
+        $this->addForeignKey('client_id', 'ClientId', 'INTEGER', 'client', 'id', true, null, null);
         $this->addColumn('type', 'Type', 'VARCHAR', true, 255, null);
-        $this->addColumn('amount', 'Amount', 'FLOAT', true, null, null);
+        $this->addColumn('balance', 'Balance', 'FLOAT', true, null, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
@@ -170,6 +164,13 @@ class TransactionTableMap extends TableMap
      */
     public function buildRelations()
     {
+        $this->addRelation('Client', '\\AbcBank\\Resources\\Client', RelationMap::MANY_TO_ONE, array (
+  0 =>
+  array (
+    0 => ':client_id',
+    1 => ':id',
+  ),
+), null, null, null, false);
     } // buildRelations()
 
     /**
@@ -242,7 +243,7 @@ class TransactionTableMap extends TableMap
      */
     public static function getOMClass($withPrefix = true)
     {
-        return $withPrefix ? TransactionTableMap::CLASS_DEFAULT : TransactionTableMap::OM_CLASS;
+        return $withPrefix ? AccountTableMap::CLASS_DEFAULT : AccountTableMap::OM_CLASS;
     }
 
     /**
@@ -256,22 +257,22 @@ class TransactionTableMap extends TableMap
      *
      * @throws PropelException Any exceptions caught during processing will be
      *                         rethrown wrapped into a PropelException.
-     * @return array           (Transaction object, last column rank)
+     * @return array           (Account object, last column rank)
      */
     public static function populateObject($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        $key = TransactionTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
-        if (null !== ($obj = TransactionTableMap::getInstanceFromPool($key))) {
+        $key = AccountTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
+        if (null !== ($obj = AccountTableMap::getInstanceFromPool($key))) {
             // We no longer rehydrate the object, since this can cause data loss.
             // See http://www.propelorm.org/ticket/509
             // $obj->hydrate($row, $offset, true); // rehydrate
-            $col = $offset + TransactionTableMap::NUM_HYDRATE_COLUMNS;
+            $col = $offset + AccountTableMap::NUM_HYDRATE_COLUMNS;
         } else {
-            $cls = TransactionTableMap::OM_CLASS;
-            /** @var Transaction $obj */
+            $cls = AccountTableMap::OM_CLASS;
+            /** @var Account $obj */
             $obj = new $cls();
             $col = $obj->hydrate($row, $offset, false, $indexType);
-            TransactionTableMap::addInstanceToPool($obj, $key);
+            AccountTableMap::addInstanceToPool($obj, $key);
         }
 
         return array($obj, $col);
@@ -294,18 +295,18 @@ class TransactionTableMap extends TableMap
         $cls = static::getOMClass(false);
         // populate the object(s)
         while ($row = $dataFetcher->fetch()) {
-            $key = TransactionTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
-            if (null !== ($obj = TransactionTableMap::getInstanceFromPool($key))) {
+            $key = AccountTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
+            if (null !== ($obj = AccountTableMap::getInstanceFromPool($key))) {
                 // We no longer rehydrate the object, since this can cause data loss.
                 // See http://www.propelorm.org/ticket/509
                 // $obj->hydrate($row, 0, true); // rehydrate
                 $results[] = $obj;
             } else {
-                /** @var Transaction $obj */
+                /** @var Account $obj */
                 $obj = new $cls();
                 $obj->hydrate($row);
                 $results[] = $obj;
-                TransactionTableMap::addInstanceToPool($obj, $key);
+                AccountTableMap::addInstanceToPool($obj, $key);
             } // if key exists
         }
 
@@ -326,19 +327,17 @@ class TransactionTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(TransactionTableMap::COL_ID);
-            $criteria->addSelectColumn(TransactionTableMap::COL_CLIENT_ID);
-            $criteria->addSelectColumn(TransactionTableMap::COL_ACCOUNT_ID);
-            $criteria->addSelectColumn(TransactionTableMap::COL_TYPE);
-            $criteria->addSelectColumn(TransactionTableMap::COL_AMOUNT);
-            $criteria->addSelectColumn(TransactionTableMap::COL_CREATED_AT);
-            $criteria->addSelectColumn(TransactionTableMap::COL_UPDATED_AT);
+            $criteria->addSelectColumn(AccountTableMap::COL_ID);
+            $criteria->addSelectColumn(AccountTableMap::COL_CLIENT_ID);
+            $criteria->addSelectColumn(AccountTableMap::COL_TYPE);
+            $criteria->addSelectColumn(AccountTableMap::COL_BALANCE);
+            $criteria->addSelectColumn(AccountTableMap::COL_CREATED_AT);
+            $criteria->addSelectColumn(AccountTableMap::COL_UPDATED_AT);
         } else {
             $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.client_id');
-            $criteria->addSelectColumn($alias . '.account_id');
             $criteria->addSelectColumn($alias . '.type');
-            $criteria->addSelectColumn($alias . '.amount');
+            $criteria->addSelectColumn($alias . '.balance');
             $criteria->addSelectColumn($alias . '.created_at');
             $criteria->addSelectColumn($alias . '.updated_at');
         }
@@ -353,7 +352,7 @@ class TransactionTableMap extends TableMap
      */
     public static function getTableMap()
     {
-        return Propel::getServiceContainer()->getDatabaseMap(TransactionTableMap::DATABASE_NAME)->getTable(TransactionTableMap::TABLE_NAME);
+        return Propel::getServiceContainer()->getDatabaseMap(AccountTableMap::DATABASE_NAME)->getTable(AccountTableMap::TABLE_NAME);
     }
 
     /**
@@ -361,16 +360,16 @@ class TransactionTableMap extends TableMap
      */
     public static function buildTableMap()
     {
-        $dbMap = Propel::getServiceContainer()->getDatabaseMap(TransactionTableMap::DATABASE_NAME);
-        if (!$dbMap->hasTable(TransactionTableMap::TABLE_NAME)) {
-            $dbMap->addTableObject(new TransactionTableMap());
+        $dbMap = Propel::getServiceContainer()->getDatabaseMap(AccountTableMap::DATABASE_NAME);
+        if (!$dbMap->hasTable(AccountTableMap::TABLE_NAME)) {
+            $dbMap->addTableObject(new AccountTableMap());
         }
     }
 
     /**
-     * Performs a DELETE on the database, given a Transaction or Criteria object OR a primary key value.
+     * Performs a DELETE on the database, given a Account or Criteria object OR a primary key value.
      *
-     * @param mixed               $values Criteria or Transaction object or primary key or array of primary keys
+     * @param mixed               $values Criteria or Account object or primary key or array of primary keys
      *              which is used to create the DELETE statement
      * @param  ConnectionInterface $con the connection to use
      * @return int             The number of affected rows (if supported by underlying database driver).  This includes CASCADE-related rows
@@ -381,27 +380,27 @@ class TransactionTableMap extends TableMap
      public static function doDelete($values, ConnectionInterface $con = null)
      {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(TransactionTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(AccountTableMap::DATABASE_NAME);
         }
 
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \Transaction) { // it's a model object
+        } elseif ($values instanceof \AbcBank\Resources\Account) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
-            $criteria = new Criteria(TransactionTableMap::DATABASE_NAME);
-            $criteria->add(TransactionTableMap::COL_ID, (array) $values, Criteria::IN);
+            $criteria = new Criteria(AccountTableMap::DATABASE_NAME);
+            $criteria->add(AccountTableMap::COL_ID, (array) $values, Criteria::IN);
         }
 
-        $query = TransactionQuery::create()->mergeWith($criteria);
+        $query = AccountQuery::create()->mergeWith($criteria);
 
         if ($values instanceof Criteria) {
-            TransactionTableMap::clearInstancePool();
+            AccountTableMap::clearInstancePool();
         } elseif (!is_object($values)) { // it's a primary key, or an array of pks
             foreach ((array) $values as $singleval) {
-                TransactionTableMap::removeInstanceFromPool($singleval);
+                AccountTableMap::removeInstanceFromPool($singleval);
             }
         }
 
@@ -409,20 +408,20 @@ class TransactionTableMap extends TableMap
     }
 
     /**
-     * Deletes all rows from the transaction table.
+     * Deletes all rows from the account table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).
      */
     public static function doDeleteAll(ConnectionInterface $con = null)
     {
-        return TransactionQuery::create()->doDeleteAll($con);
+        return AccountQuery::create()->doDeleteAll($con);
     }
 
     /**
-     * Performs an INSERT on the database, given a Transaction or Criteria object.
+     * Performs an INSERT on the database, given a Account or Criteria object.
      *
-     * @param mixed               $criteria Criteria or Transaction object containing data that is used to create the INSERT statement.
+     * @param mixed               $criteria Criteria or Account object containing data that is used to create the INSERT statement.
      * @param ConnectionInterface $con the ConnectionInterface connection to use
      * @return mixed           The new primary key.
      * @throws PropelException Any exceptions caught during processing will be
@@ -431,22 +430,22 @@ class TransactionTableMap extends TableMap
     public static function doInsert($criteria, ConnectionInterface $con = null)
     {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(TransactionTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(AccountTableMap::DATABASE_NAME);
         }
 
         if ($criteria instanceof Criteria) {
             $criteria = clone $criteria; // rename for clarity
         } else {
-            $criteria = $criteria->buildCriteria(); // build Criteria from Transaction object
+            $criteria = $criteria->buildCriteria(); // build Criteria from Account object
         }
 
-        if ($criteria->containsKey(TransactionTableMap::COL_ID) && $criteria->keyContainsValue(TransactionTableMap::COL_ID) ) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key ('.TransactionTableMap::COL_ID.')');
+        if ($criteria->containsKey(AccountTableMap::COL_ID) && $criteria->keyContainsValue(AccountTableMap::COL_ID) ) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key ('.AccountTableMap::COL_ID.')');
         }
 
 
         // Set the correct dbName
-        $query = TransactionQuery::create()->mergeWith($criteria);
+        $query = AccountQuery::create()->mergeWith($criteria);
 
         // use transaction because $criteria could contain info
         // for more than one table (I guess, conceivably)
@@ -455,7 +454,7 @@ class TransactionTableMap extends TableMap
         });
     }
 
-} // TransactionTableMap
+} // AccountTableMap
 // This is the static code needed to register the TableMap for this table with the main Propel class.
 //
-TransactionTableMap::buildTableMap();
+AccountTableMap::buildTableMap();

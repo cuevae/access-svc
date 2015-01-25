@@ -5,7 +5,18 @@ require_once 'vendor/autoload.php';
 use Auth\ApiKeyAuthenticationServiceProvider,
     Auth\ApiKeyUserServiceProvider;
 use Silex\Application;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Request,
+    Symfony\Component\Config\FileLocator,
+    Symfony\Component\DependencyInjection\ContainerBuilder,
+    Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+
+$container = new ContainerBuilder();
+$configurationDirectories = new FileLocator(array(__DIR__ . '/config/resources'));
+
+$loader = new XmlFileLoader($container, $configurationDirectories);
+$loader->load('di-config.xml');
+
+$application = $container->get('account_model');
 
 $app = new Application();
 $app['debug'] = true;

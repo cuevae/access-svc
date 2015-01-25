@@ -1,6 +1,8 @@
 <?php
 
-use Base\TransactionQuery as BaseTransactionQuery;
+namespace AbcBank\Resources;
+
+use AbcBank\Resources\Base\TransactionQuery as BaseTransactionQuery;
 
 /**
  * Skeleton subclass for performing query and update operations on the 'transaction' table.

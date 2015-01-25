@@ -1,23 +1,20 @@
 <?php
 
-namespace Base;
+namespace AbcBank\Resources\Base;
 
-use \Account as ChildAccount;
-use \AccountQuery as ChildAccountQuery;
-use \Address as ChildAddress;
-use \AddressQuery as ChildAddressQuery;
-use \Client as ChildClient;
-use \ClientQuery as ChildClientQuery;
 use \DateTime;
 use \Exception;
 use \PDO;
-use Map\ClientTableMap;
+use AbcBank\Resources\Account as ChildAccount;
+use AbcBank\Resources\AccountQuery as ChildAccountQuery;
+use AbcBank\Resources\Client as ChildClient;
+use AbcBank\Resources\ClientQuery as ChildClientQuery;
+use AbcBank\Resources\Map\AccountTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
 use Propel\Runtime\ActiveRecord\ActiveRecordInterface;
 use Propel\Runtime\Collection\Collection;
-use Propel\Runtime\Collection\ObjectCollection;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\BadMethodCallException;
 use Propel\Runtime\Exception\LogicException;
@@ -27,18 +24,18 @@ use Propel\Runtime\Parser\AbstractParser;
 use Propel\Runtime\Util\PropelDateTime;
 
 /**
- * Base class that represents a row from the 'client' table.
+ * Base class that represents a row from the 'account' table.
  *
  *
  *
-* @package    propel.generator..Base
+* @package    propel.generator.AbcBank.Resources.Base
 */
-abstract class Client implements ActiveRecordInterface
+abstract class Account implements ActiveRecordInterface
 {
     /**
      * TableMap class name
      */
-    const TABLE_MAP = '\\Map\\ClientTableMap';
+    const TABLE_MAP = '\\AbcBank\\Resources\\Map\\AccountTableMap';
 
 
     /**
@@ -74,34 +71,22 @@ abstract class Client implements ActiveRecordInterface
     protected $id;
 
     /**
-     * The value for the title field.
-     * @var        string
+     * The value for the client_id field.
+     * @var        int
      */
-    protected $title;
+    protected $client_id;
 
     /**
-     * The value for the first name field.
+     * The value for the type field.
      * @var        string
      */
-    protected $first name;
+    protected $type;
 
     /**
-     * The value for the second name field.
-     * @var        string
+     * The value for the balance field.
+     * @var        double
      */
-    protected $second name;
-
-    /**
-     * The value for the first surname field.
-     * @var        string
-     */
-    protected $first surname;
-
-    /**
-     * The value for the second surname field.
-     * @var        string
-     */
-    protected $second surname;
+    protected $balance;
 
     /**
      * The value for the created_at field.
@@ -116,16 +101,9 @@ abstract class Client implements ActiveRecordInterface
     protected $updated_at;
 
     /**
-     * @var        ObjectCollection|ChildAddress[] Collection to store aggregation of ChildAddress objects.
+     * @var        ChildClient
      */
-    protected $collAddresses;
-    protected $collAddressesPartial;
-
-    /**
-     * @var        ObjectCollection|ChildAccount[] Collection to store aggregation of ChildAccount objects.
-     */
-    protected $collAccounts;
-    protected $collAccountsPartial;
+    protected $aClient;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -136,19 +114,7 @@ abstract class Client implements ActiveRecordInterface
     protected $alreadyInSave = false;
 
     /**
-     * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildAddress[]
-     */
-    protected $addressesScheduledForDeletion = null;
-
-    /**
-     * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildAccount[]
-     */
-    protected $accountsScheduledForDeletion = null;
-
-    /**
-     * Initializes internal state of Base\Client object.
+     * Initializes internal state of AbcBank\Resources\Base\Account object.
      */
     public function __construct()
     {
@@ -243,9 +209,9 @@ abstract class Client implements ActiveRecordInterface
     }
 
     /**
-     * Compares this with another <code>Client</code> instance.  If
-     * <code>obj</code> is an instance of <code>Client</code>, delegates to
-     * <code>equals(Client)</code>.  Otherwise, returns <code>false</code>.
+     * Compares this with another <code>Account</code> instance.  If
+     * <code>obj</code> is an instance of <code>Account</code>, delegates to
+     * <code>equals(Account)</code>.  Otherwise, returns <code>false</code>.
      *
      * @param  mixed   $obj The object to compare to.
      * @return boolean Whether equal to the object specified.
@@ -311,7 +277,7 @@ abstract class Client implements ActiveRecordInterface
      * @param string $name  The virtual column name
      * @param mixed  $value The value to give to the virtual column
      *
-     * @return $this|Client The current object, for fluid interface
+     * @return $this|Account The current object, for fluid interface
      */
     public function setVirtualColumn($name, $value)
     {
@@ -375,53 +341,33 @@ abstract class Client implements ActiveRecordInterface
     }
 
     /**
-     * Get the [title] column value.
+     * Get the [client_id] column value.
      *
-     * @return string
+     * @return int
      */
-    public function getTitle()
+    public function getClientId()
     {
-        return $this->title;
+        return $this->client_id;
     }
 
     /**
-     * Get the [first name] column value.
+     * Get the [type] column value.
      *
      * @return string
      */
-    public function getFirst name()
+    public function getType()
     {
-        return $this->first name;
+        return $this->type;
     }
 
     /**
-     * Get the [second name] column value.
+     * Get the [balance] column value.
      *
-     * @return string
+     * @return double
      */
-    public function getSecond name()
+    public function getBalance()
     {
-        return $this->second name;
-    }
-
-    /**
-     * Get the [first surname] column value.
-     *
-     * @return string
-     */
-    public function getFirst surname()
-    {
-        return $this->first surname;
-    }
-
-    /**
-     * Get the [second surname] column value.
-     *
-     * @return string
-     */
-    public function getSecond surname()
-    {
-        return $this->second surname;
+        return $this->balance;
     }
 
     /**
@@ -468,7 +414,7 @@ abstract class Client implements ActiveRecordInterface
      * Set the value of [id] column.
      *
      * @param  int $v new value
-     * @return $this|\Client The current object (for fluent API support)
+     * @return $this|\AbcBank\Resources\Account The current object (for fluent API support)
      */
     public function setId($v)
     {
@@ -478,118 +424,82 @@ abstract class Client implements ActiveRecordInterface
 
         if ($this->id !== $v) {
             $this->id = $v;
-            $this->modifiedColumns[ClientTableMap::COL_ID] = true;
+            $this->modifiedColumns[AccountTableMap::COL_ID] = true;
         }
 
         return $this;
     } // setId()
 
     /**
-     * Set the value of [title] column.
+     * Set the value of [client_id] column.
      *
-     * @param  string $v new value
-     * @return $this|\Client The current object (for fluent API support)
+     * @param  int $v new value
+     * @return $this|\AbcBank\Resources\Account The current object (for fluent API support)
      */
-    public function setTitle($v)
+    public function setClientId($v)
     {
         if ($v !== null) {
-            $v = (string) $v;
+            $v = (int) $v;
         }
 
-        if ($this->title !== $v) {
-            $this->title = $v;
-            $this->modifiedColumns[ClientTableMap::COL_TITLE] = true;
+        if ($this->client_id !== $v) {
+            $this->client_id = $v;
+            $this->modifiedColumns[AccountTableMap::COL_CLIENT_ID] = true;
+        }
+
+        if ($this->aClient !== null && $this->aClient->getId() !== $v) {
+            $this->aClient = null;
         }
 
         return $this;
-    } // setTitle()
+    } // setClientId()
 
     /**
-     * Set the value of [first name] column.
+     * Set the value of [type] column.
      *
      * @param  string $v new value
-     * @return $this|\Client The current object (for fluent API support)
+     * @return $this|\AbcBank\Resources\Account The current object (for fluent API support)
      */
-    public function setFirst name($v)
+    public function setType($v)
     {
         if ($v !== null) {
             $v = (string) $v;
         }
 
-        if ($this->first name !== $v) {
-            $this->first name = $v;
-            $this->modifiedColumns[ClientTableMap::COL_FIRST NAME] = true;
+        if ($this->type !== $v) {
+            $this->type = $v;
+            $this->modifiedColumns[AccountTableMap::COL_TYPE] = true;
         }
 
         return $this;
-    } // setFirst name()
+    } // setType()
 
     /**
-     * Set the value of [second name] column.
+     * Set the value of [balance] column.
      *
-     * @param  string $v new value
-     * @return $this|\Client The current object (for fluent API support)
+     * @param  double $v new value
+     * @return $this|\AbcBank\Resources\Account The current object (for fluent API support)
      */
-    public function setSecond name($v)
+    public function setBalance($v)
     {
         if ($v !== null) {
-            $v = (string) $v;
+            $v = (double) $v;
         }
 
-        if ($this->second name !== $v) {
-            $this->second name = $v;
-            $this->modifiedColumns[ClientTableMap::COL_SECOND NAME] = true;
+        if ($this->balance !== $v) {
+            $this->balance = $v;
+            $this->modifiedColumns[AccountTableMap::COL_BALANCE] = true;
         }
 
         return $this;
-    } // setSecond name()
-
-    /**
-     * Set the value of [first surname] column.
-     *
-     * @param  string $v new value
-     * @return $this|\Client The current object (for fluent API support)
-     */
-    public function setFirst surname($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->first surname !== $v) {
-            $this->first surname = $v;
-            $this->modifiedColumns[ClientTableMap::COL_FIRST SURNAME] = true;
-        }
-
-        return $this;
-    } // setFirst surname()
-
-    /**
-     * Set the value of [second surname] column.
-     *
-     * @param  string $v new value
-     * @return $this|\Client The current object (for fluent API support)
-     */
-    public function setSecond surname($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->second surname !== $v) {
-            $this->second surname = $v;
-            $this->modifiedColumns[ClientTableMap::COL_SECOND SURNAME] = true;
-        }
-
-        return $this;
-    } // setSecond surname()
+    } // setBalance()
 
     /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
      *
      * @param  mixed $v string, integer (timestamp), or \DateTime value.
      *               Empty strings are treated as NULL.
-     * @return $this|\Client The current object (for fluent API support)
+     * @return $this|\AbcBank\Resources\Account The current object (for fluent API support)
      */
     public function setCreatedAt($v)
     {
@@ -597,7 +507,7 @@ abstract class Client implements ActiveRecordInterface
         if ($this->created_at !== null || $dt !== null) {
             if ($dt !== $this->created_at) {
                 $this->created_at = $dt;
-                $this->modifiedColumns[ClientTableMap::COL_CREATED_AT] = true;
+                $this->modifiedColumns[AccountTableMap::COL_CREATED_AT] = true;
             }
         } // if either are not null
 
@@ -609,7 +519,7 @@ abstract class Client implements ActiveRecordInterface
      *
      * @param  mixed $v string, integer (timestamp), or \DateTime value.
      *               Empty strings are treated as NULL.
-     * @return $this|\Client The current object (for fluent API support)
+     * @return $this|\AbcBank\Resources\Account The current object (for fluent API support)
      */
     public function setUpdatedAt($v)
     {
@@ -617,7 +527,7 @@ abstract class Client implements ActiveRecordInterface
         if ($this->updated_at !== null || $dt !== null) {
             if ($dt !== $this->updated_at) {
                 $this->updated_at = $dt;
-                $this->modifiedColumns[ClientTableMap::COL_UPDATED_AT] = true;
+                $this->modifiedColumns[AccountTableMap::COL_UPDATED_AT] = true;
             }
         } // if either are not null
 
@@ -660,31 +570,25 @@ abstract class Client implements ActiveRecordInterface
     {
         try {
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : ClientTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : AccountTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
             $this->id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : ClientTableMap::translateFieldName('Title', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->title = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : AccountTableMap::translateFieldName('ClientId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->client_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : ClientTableMap::translateFieldName('First name', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->first name = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : AccountTableMap::translateFieldName('Type', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->type = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : ClientTableMap::translateFieldName('Second name', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->second name = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : AccountTableMap::translateFieldName('Balance', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->balance = (null !== $col) ? (double) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : ClientTableMap::translateFieldName('First surname', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->first surname = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : ClientTableMap::translateFieldName('Second surname', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->second surname = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : ClientTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : AccountTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : ClientTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : AccountTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -697,10 +601,10 @@ abstract class Client implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 8; // 8 = ClientTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 6; // 6 = AccountTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
-            throw new PropelException(sprintf('Error populating %s object', '\\Client'), 0, $e);
+            throw new PropelException(sprintf('Error populating %s object', '\\AbcBank\\Resources\\Account'), 0, $e);
         }
     }
 
@@ -719,6 +623,9 @@ abstract class Client implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
+        if ($this->aClient !== null && $this->client_id !== $this->aClient->getId()) {
+            $this->aClient = null;
+        }
     } // ensureConsistency
 
     /**
@@ -742,13 +649,13 @@ abstract class Client implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getReadConnection(ClientTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getReadConnection(AccountTableMap::DATABASE_NAME);
         }
 
         // We don't need to alter the object instance pool; we're just modifying this instance
         // already in the pool.
 
-        $dataFetcher = ChildClientQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
+        $dataFetcher = ChildAccountQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
         $row = $dataFetcher->fetch();
         $dataFetcher->close();
         if (!$row) {
@@ -758,10 +665,7 @@ abstract class Client implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->collAddresses = null;
-
-            $this->collAccounts = null;
-
+            $this->aClient = null;
         } // if (deep)
     }
 
@@ -771,8 +675,8 @@ abstract class Client implements ActiveRecordInterface
      * @param      ConnectionInterface $con
      * @return void
      * @throws PropelException
-     * @see Client::setDeleted()
-     * @see Client::isDeleted()
+     * @see Account::setDeleted()
+     * @see Account::isDeleted()
      */
     public function delete(ConnectionInterface $con = null)
     {
@@ -781,11 +685,11 @@ abstract class Client implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(ClientTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(AccountTableMap::DATABASE_NAME);
         }
 
         $con->transaction(function () use ($con) {
-            $deleteQuery = ChildClientQuery::create()
+            $deleteQuery = ChildAccountQuery::create()
                 ->filterByPrimaryKey($this->getPrimaryKey());
             $ret = $this->preDelete($con);
             if ($ret) {
@@ -816,7 +720,7 @@ abstract class Client implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(ClientTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(AccountTableMap::DATABASE_NAME);
         }
 
         return $con->transaction(function () use ($con) {
@@ -826,16 +730,16 @@ abstract class Client implements ActiveRecordInterface
                 $ret = $ret && $this->preInsert($con);
                 // timestampable behavior
 
-                if (!$this->isColumnModified(ClientTableMap::COL_CREATED_AT)) {
+                if (!$this->isColumnModified(AccountTableMap::COL_CREATED_AT)) {
                     $this->setCreatedAt(time());
                 }
-                if (!$this->isColumnModified(ClientTableMap::COL_UPDATED_AT)) {
+                if (!$this->isColumnModified(AccountTableMap::COL_UPDATED_AT)) {
                     $this->setUpdatedAt(time());
                 }
             } else {
                 $ret = $ret && $this->preUpdate($con);
                 // timestampable behavior
-                if ($this->isModified() && !$this->isColumnModified(ClientTableMap::COL_UPDATED_AT)) {
+                if ($this->isModified() && !$this->isColumnModified(AccountTableMap::COL_UPDATED_AT)) {
                     $this->setUpdatedAt(time());
                 }
             }
@@ -847,7 +751,7 @@ abstract class Client implements ActiveRecordInterface
                     $this->postUpdate($con);
                 }
                 $this->postSave($con);
-                ClientTableMap::addInstanceToPool($this);
+                AccountTableMap::addInstanceToPool($this);
             } else {
                 $affectedRows = 0;
             }
@@ -873,6 +777,18 @@ abstract class Client implements ActiveRecordInterface
         if (!$this->alreadyInSave) {
             $this->alreadyInSave = true;
 
+            // We call the save method on the following object(s) if they
+            // were passed to this object by their corresponding set
+            // method.  This object relates to these object(s) by a
+            // foreign key reference.
+
+            if ($this->aClient !== null) {
+                if ($this->aClient->isModified() || $this->aClient->isNew()) {
+                    $affectedRows += $this->aClient->save($con);
+                }
+                $this->setClient($this->aClient);
+            }
+
             if ($this->isNew() || $this->isModified()) {
                 // persist changes
                 if ($this->isNew()) {
@@ -882,40 +798,6 @@ abstract class Client implements ActiveRecordInterface
                     $affectedRows += $this->doUpdate($con);
                 }
                 $this->resetModified();
-            }
-
-            if ($this->addressesScheduledForDeletion !== null) {
-                if (!$this->addressesScheduledForDeletion->isEmpty()) {
-                    \AddressQuery::create()
-                        ->filterByPrimaryKeys($this->addressesScheduledForDeletion->getPrimaryKeys(false))
-                        ->delete($con);
-                    $this->addressesScheduledForDeletion = null;
-                }
-            }
-
-            if ($this->collAddresses !== null) {
-                foreach ($this->collAddresses as $referrerFK) {
-                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
-                        $affectedRows += $referrerFK->save($con);
-                    }
-                }
-            }
-
-            if ($this->accountsScheduledForDeletion !== null) {
-                if (!$this->accountsScheduledForDeletion->isEmpty()) {
-                    \AccountQuery::create()
-                        ->filterByPrimaryKeys($this->accountsScheduledForDeletion->getPrimaryKeys(false))
-                        ->delete($con);
-                    $this->accountsScheduledForDeletion = null;
-                }
-            }
-
-            if ($this->collAccounts !== null) {
-                foreach ($this->collAccounts as $referrerFK) {
-                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
-                        $affectedRows += $referrerFK->save($con);
-                    }
-                }
             }
 
             $this->alreadyInSave = false;
@@ -938,39 +820,33 @@ abstract class Client implements ActiveRecordInterface
         $modifiedColumns = array();
         $index = 0;
 
-        $this->modifiedColumns[ClientTableMap::COL_ID] = true;
+        $this->modifiedColumns[AccountTableMap::COL_ID] = true;
         if (null !== $this->id) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key (' . ClientTableMap::COL_ID . ')');
+            throw new PropelException('Cannot insert a value for auto-increment primary key (' . AccountTableMap::COL_ID . ')');
         }
 
          // check the columns in natural order for more readable SQL queries
-        if ($this->isColumnModified(ClientTableMap::COL_ID)) {
+        if ($this->isColumnModified(AccountTableMap::COL_ID)) {
             $modifiedColumns[':p' . $index++]  = 'id';
         }
-        if ($this->isColumnModified(ClientTableMap::COL_TITLE)) {
-            $modifiedColumns[':p' . $index++]  = 'title';
+        if ($this->isColumnModified(AccountTableMap::COL_CLIENT_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'client_id';
         }
-        if ($this->isColumnModified(ClientTableMap::COL_FIRST NAME)) {
-            $modifiedColumns[':p' . $index++]  = 'first name';
+        if ($this->isColumnModified(AccountTableMap::COL_TYPE)) {
+            $modifiedColumns[':p' . $index++]  = 'type';
         }
-        if ($this->isColumnModified(ClientTableMap::COL_SECOND NAME)) {
-            $modifiedColumns[':p' . $index++]  = 'second name';
+        if ($this->isColumnModified(AccountTableMap::COL_BALANCE)) {
+            $modifiedColumns[':p' . $index++]  = 'balance';
         }
-        if ($this->isColumnModified(ClientTableMap::COL_FIRST SURNAME)) {
-            $modifiedColumns[':p' . $index++]  = 'first surname';
-        }
-        if ($this->isColumnModified(ClientTableMap::COL_SECOND SURNAME)) {
-            $modifiedColumns[':p' . $index++]  = 'second surname';
-        }
-        if ($this->isColumnModified(ClientTableMap::COL_CREATED_AT)) {
+        if ($this->isColumnModified(AccountTableMap::COL_CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'created_at';
         }
-        if ($this->isColumnModified(ClientTableMap::COL_UPDATED_AT)) {
+        if ($this->isColumnModified(AccountTableMap::COL_UPDATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'updated_at';
         }
 
         $sql = sprintf(
-            'INSERT INTO client (%s) VALUES (%s)',
+            'INSERT INTO account (%s) VALUES (%s)',
             implode(', ', $modifiedColumns),
             implode(', ', array_keys($modifiedColumns))
         );
@@ -982,20 +858,14 @@ abstract class Client implements ActiveRecordInterface
                     case 'id':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case 'title':
-                        $stmt->bindValue($identifier, $this->title, PDO::PARAM_STR);
+                    case 'client_id':
+                        $stmt->bindValue($identifier, $this->client_id, PDO::PARAM_INT);
                         break;
-                    case 'first name':
-                        $stmt->bindValue($identifier, $this->first name, PDO::PARAM_STR);
+                    case 'type':
+                        $stmt->bindValue($identifier, $this->type, PDO::PARAM_STR);
                         break;
-                    case 'second name':
-                        $stmt->bindValue($identifier, $this->second name, PDO::PARAM_STR);
-                        break;
-                    case 'first surname':
-                        $stmt->bindValue($identifier, $this->first surname, PDO::PARAM_STR);
-                        break;
-                    case 'second surname':
-                        $stmt->bindValue($identifier, $this->second surname, PDO::PARAM_STR);
+                    case 'balance':
+                        $stmt->bindValue($identifier, $this->balance, PDO::PARAM_STR);
                         break;
                     case 'created_at':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -1049,7 +919,7 @@ abstract class Client implements ActiveRecordInterface
      */
     public function getByName($name, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = ClientTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = AccountTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
         $field = $this->getByPosition($pos);
 
         return $field;
@@ -1069,24 +939,18 @@ abstract class Client implements ActiveRecordInterface
                 return $this->getId();
                 break;
             case 1:
-                return $this->getTitle();
+                return $this->getClientId();
                 break;
             case 2:
-                return $this->getFirst name();
+                return $this->getType();
                 break;
             case 3:
-                return $this->getSecond name();
+                return $this->getBalance();
                 break;
             case 4:
-                return $this->getFirst surname();
-                break;
-            case 5:
-                return $this->getSecond surname();
-                break;
-            case 6:
                 return $this->getCreatedAt();
                 break;
-            case 7:
+            case 5:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -1113,33 +977,31 @@ abstract class Client implements ActiveRecordInterface
     public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
     {
 
-        if (isset($alreadyDumpedObjects['Client'][$this->hashCode()])) {
+        if (isset($alreadyDumpedObjects['Account'][$this->hashCode()])) {
             return '*RECURSION*';
         }
-        $alreadyDumpedObjects['Client'][$this->hashCode()] = true;
-        $keys = ClientTableMap::getFieldNames($keyType);
+        $alreadyDumpedObjects['Account'][$this->hashCode()] = true;
+        $keys = AccountTableMap::getFieldNames($keyType);
         $result = array(
             $keys[0] => $this->getId(),
-            $keys[1] => $this->getTitle(),
-            $keys[2] => $this->getFirst name(),
-            $keys[3] => $this->getSecond name(),
-            $keys[4] => $this->getFirst surname(),
-            $keys[5] => $this->getSecond surname(),
-            $keys[6] => $this->getCreatedAt(),
-            $keys[7] => $this->getUpdatedAt(),
+            $keys[1] => $this->getClientId(),
+            $keys[2] => $this->getType(),
+            $keys[3] => $this->getBalance(),
+            $keys[4] => $this->getCreatedAt(),
+            $keys[5] => $this->getUpdatedAt(),
         );
 
         $utc = new \DateTimeZone('utc');
-        if ($result[$keys[6]] instanceof \DateTime) {
+        if ($result[$keys[4]] instanceof \DateTime) {
             // When changing timezone we don't want to change existing instances
-            $dateTime = clone $result[$keys[6]];
-            $result[$keys[6]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+            $dateTime = clone $result[$keys[4]];
+            $result[$keys[4]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
         }
 
-        if ($result[$keys[7]] instanceof \DateTime) {
+        if ($result[$keys[5]] instanceof \DateTime) {
             // When changing timezone we don't want to change existing instances
-            $dateTime = clone $result[$keys[7]];
-            $result[$keys[7]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+            $dateTime = clone $result[$keys[5]];
+            $result[$keys[5]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -1148,35 +1010,20 @@ abstract class Client implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
-            if (null !== $this->collAddresses) {
+            if (null !== $this->aClient) {
 
                 switch ($keyType) {
                     case TableMap::TYPE_CAMELNAME:
-                        $key = 'addresses';
+                        $key = 'client';
                         break;
                     case TableMap::TYPE_FIELDNAME:
-                        $key = 'addresses';
+                        $key = 'client';
                         break;
                     default:
-                        $key = 'Addresses';
+                        $key = 'Client';
                 }
 
-                $result[$key] = $this->collAddresses->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
-            }
-            if (null !== $this->collAccounts) {
-
-                switch ($keyType) {
-                    case TableMap::TYPE_CAMELNAME:
-                        $key = 'accounts';
-                        break;
-                    case TableMap::TYPE_FIELDNAME:
-                        $key = 'accounts';
-                        break;
-                    default:
-                        $key = 'Accounts';
-                }
-
-                $result[$key] = $this->collAccounts->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+                $result[$key] = $this->aClient->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
         }
 
@@ -1192,11 +1039,11 @@ abstract class Client implements ActiveRecordInterface
      *                one of the class type constants TableMap::TYPE_PHPNAME, TableMap::TYPE_CAMELNAME
      *                TableMap::TYPE_COLNAME, TableMap::TYPE_FIELDNAME, TableMap::TYPE_NUM.
      *                Defaults to TableMap::TYPE_PHPNAME.
-     * @return $this|\Client
+     * @return $this|\AbcBank\Resources\Account
      */
     public function setByName($name, $value, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = ClientTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = AccountTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
 
         return $this->setByPosition($pos, $value);
     }
@@ -1207,7 +1054,7 @@ abstract class Client implements ActiveRecordInterface
      *
      * @param  int $pos position in xml schema
      * @param  mixed $value field value
-     * @return $this|\Client
+     * @return $this|\AbcBank\Resources\Account
      */
     public function setByPosition($pos, $value)
     {
@@ -1216,24 +1063,18 @@ abstract class Client implements ActiveRecordInterface
                 $this->setId($value);
                 break;
             case 1:
-                $this->setTitle($value);
+                $this->setClientId($value);
                 break;
             case 2:
-                $this->setFirst name($value);
+                $this->setType($value);
                 break;
             case 3:
-                $this->setSecond name($value);
+                $this->setBalance($value);
                 break;
             case 4:
-                $this->setFirst surname($value);
-                break;
-            case 5:
-                $this->setSecond surname($value);
-                break;
-            case 6:
                 $this->setCreatedAt($value);
                 break;
-            case 7:
+            case 5:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1260,31 +1101,25 @@ abstract class Client implements ActiveRecordInterface
      */
     public function fromArray($arr, $keyType = TableMap::TYPE_PHPNAME)
     {
-        $keys = ClientTableMap::getFieldNames($keyType);
+        $keys = AccountTableMap::getFieldNames($keyType);
 
         if (array_key_exists($keys[0], $arr)) {
             $this->setId($arr[$keys[0]]);
         }
         if (array_key_exists($keys[1], $arr)) {
-            $this->setTitle($arr[$keys[1]]);
+            $this->setClientId($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setFirst name($arr[$keys[2]]);
+            $this->setType($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setSecond name($arr[$keys[3]]);
+            $this->setBalance($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setFirst surname($arr[$keys[4]]);
+            $this->setCreatedAt($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setSecond surname($arr[$keys[5]]);
-        }
-        if (array_key_exists($keys[6], $arr)) {
-            $this->setCreatedAt($arr[$keys[6]]);
-        }
-        if (array_key_exists($keys[7], $arr)) {
-            $this->setUpdatedAt($arr[$keys[7]]);
+            $this->setUpdatedAt($arr[$keys[5]]);
         }
     }
 
@@ -1305,7 +1140,7 @@ abstract class Client implements ActiveRecordInterface
      * @param string $data The source data to import from
      * @param string $keyType The type of keys the array uses.
      *
-     * @return $this|\Client The current object, for fluid interface
+     * @return $this|\AbcBank\Resources\Account The current object, for fluid interface
      */
     public function importFrom($parser, $data, $keyType = TableMap::TYPE_PHPNAME)
     {
@@ -1325,31 +1160,25 @@ abstract class Client implements ActiveRecordInterface
      */
     public function buildCriteria()
     {
-        $criteria = new Criteria(ClientTableMap::DATABASE_NAME);
+        $criteria = new Criteria(AccountTableMap::DATABASE_NAME);
 
-        if ($this->isColumnModified(ClientTableMap::COL_ID)) {
-            $criteria->add(ClientTableMap::COL_ID, $this->id);
+        if ($this->isColumnModified(AccountTableMap::COL_ID)) {
+            $criteria->add(AccountTableMap::COL_ID, $this->id);
         }
-        if ($this->isColumnModified(ClientTableMap::COL_TITLE)) {
-            $criteria->add(ClientTableMap::COL_TITLE, $this->title);
+        if ($this->isColumnModified(AccountTableMap::COL_CLIENT_ID)) {
+            $criteria->add(AccountTableMap::COL_CLIENT_ID, $this->client_id);
         }
-        if ($this->isColumnModified(ClientTableMap::COL_FIRST NAME)) {
-            $criteria->add(ClientTableMap::COL_FIRST NAME, $this->first name);
+        if ($this->isColumnModified(AccountTableMap::COL_TYPE)) {
+            $criteria->add(AccountTableMap::COL_TYPE, $this->type);
         }
-        if ($this->isColumnModified(ClientTableMap::COL_SECOND NAME)) {
-            $criteria->add(ClientTableMap::COL_SECOND NAME, $this->second name);
+        if ($this->isColumnModified(AccountTableMap::COL_BALANCE)) {
+            $criteria->add(AccountTableMap::COL_BALANCE, $this->balance);
         }
-        if ($this->isColumnModified(ClientTableMap::COL_FIRST SURNAME)) {
-            $criteria->add(ClientTableMap::COL_FIRST SURNAME, $this->first surname);
+        if ($this->isColumnModified(AccountTableMap::COL_CREATED_AT)) {
+            $criteria->add(AccountTableMap::COL_CREATED_AT, $this->created_at);
         }
-        if ($this->isColumnModified(ClientTableMap::COL_SECOND SURNAME)) {
-            $criteria->add(ClientTableMap::COL_SECOND SURNAME, $this->second surname);
-        }
-        if ($this->isColumnModified(ClientTableMap::COL_CREATED_AT)) {
-            $criteria->add(ClientTableMap::COL_CREATED_AT, $this->created_at);
-        }
-        if ($this->isColumnModified(ClientTableMap::COL_UPDATED_AT)) {
-            $criteria->add(ClientTableMap::COL_UPDATED_AT, $this->updated_at);
+        if ($this->isColumnModified(AccountTableMap::COL_UPDATED_AT)) {
+            $criteria->add(AccountTableMap::COL_UPDATED_AT, $this->updated_at);
         }
 
         return $criteria;
@@ -1367,8 +1196,8 @@ abstract class Client implements ActiveRecordInterface
      */
     public function buildPkeyCriteria()
     {
-        $criteria = ChildClientQuery::create();
-        $criteria->add(ClientTableMap::COL_ID, $this->id);
+        $criteria = ChildAccountQuery::create();
+        $criteria->add(AccountTableMap::COL_ID, $this->id);
 
         return $criteria;
     }
@@ -1430,40 +1259,18 @@ abstract class Client implements ActiveRecordInterface
      * If desired, this method can also make copies of all associated (fkey referrers)
      * objects.
      *
-     * @param      object $copyObj An object of \Client (or compatible) type.
+     * @param      object $copyObj An object of \AbcBank\Resources\Account (or compatible) type.
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
      * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
      * @throws PropelException
      */
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
-        $copyObj->setTitle($this->getTitle());
-        $copyObj->setFirst name($this->getFirst name());
-        $copyObj->setSecond name($this->getSecond name());
-        $copyObj->setFirst surname($this->getFirst surname());
-        $copyObj->setSecond surname($this->getSecond surname());
+        $copyObj->setClientId($this->getClientId());
+        $copyObj->setType($this->getType());
+        $copyObj->setBalance($this->getBalance());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
-
-        if ($deepCopy) {
-            // important: temporarily setNew(false) because this affects the behavior of
-            // the getter/setter methods for fkey referrer objects.
-            $copyObj->setNew(false);
-
-            foreach ($this->getAddresses() as $relObj) {
-                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addAddress($relObj->copy($deepCopy));
-                }
-            }
-
-            foreach ($this->getAccounts() as $relObj) {
-                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addAccount($relObj->copy($deepCopy));
-                }
-            }
-
-        } // if ($deepCopy)
-
         if ($makeNew) {
             $copyObj->setNew(true);
             $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
@@ -1479,7 +1286,7 @@ abstract class Client implements ActiveRecordInterface
      * objects.
      *
      * @param  boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
-     * @return \Client Clone of current object.
+     * @return \AbcBank\Resources\Account Clone of current object.
      * @throws PropelException
      */
     public function copy($deepCopy = false)
@@ -1492,459 +1299,55 @@ abstract class Client implements ActiveRecordInterface
         return $copyObj;
     }
 
-
     /**
-     * Initializes a collection based on the name of a relation.
-     * Avoids crafting an 'init[$relationName]s' method name
-     * that wouldn't work when StandardEnglishPluralizer is used.
+     * Declares an association between this object and a ChildClient object.
      *
-     * @param      string $relationName The name of the relation to initialize
-     * @return void
-     */
-    public function initRelation($relationName)
-    {
-        if ('Address' == $relationName) {
-            return $this->initAddresses();
-        }
-        if ('Account' == $relationName) {
-            return $this->initAccounts();
-        }
-    }
-
-    /**
-     * Clears out the collAddresses collection
-     *
-     * This does not modify the database; however, it will remove any associated objects, causing
-     * them to be refetched by subsequent calls to accessor method.
-     *
-     * @return void
-     * @see        addAddresses()
-     */
-    public function clearAddresses()
-    {
-        $this->collAddresses = null; // important to set this to NULL since that means it is uninitialized
-    }
-
-    /**
-     * Reset is the collAddresses collection loaded partially.
-     */
-    public function resetPartialAddresses($v = true)
-    {
-        $this->collAddressesPartial = $v;
-    }
-
-    /**
-     * Initializes the collAddresses collection.
-     *
-     * By default this just sets the collAddresses collection to an empty array (like clearcollAddresses());
-     * however, you may wish to override this method in your stub class to provide setting appropriate
-     * to your application -- for example, setting the initial array to the values stored in database.
-     *
-     * @param      boolean $overrideExisting If set to true, the method call initializes
-     *                                        the collection even if it is not empty
-     *
-     * @return void
-     */
-    public function initAddresses($overrideExisting = true)
-    {
-        if (null !== $this->collAddresses && !$overrideExisting) {
-            return;
-        }
-        $this->collAddresses = new ObjectCollection();
-        $this->collAddresses->setModel('\Address');
-    }
-
-    /**
-     * Gets an array of ChildAddress objects which contain a foreign key that references this object.
-     *
-     * If the $criteria is not null, it is used to always fetch the results from the database.
-     * Otherwise the results are fetched from the database the first time, then cached.
-     * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildClient is new, it will return
-     * an empty collection or the current collection; the criteria is ignored on a new object.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @return ObjectCollection|ChildAddress[] List of ChildAddress objects
+     * @param  ChildClient $v
+     * @return $this|\AbcBank\Resources\Account The current object (for fluent API support)
      * @throws PropelException
      */
-    public function getAddresses(Criteria $criteria = null, ConnectionInterface $con = null)
+    public function setClient(ChildClient $v = null)
     {
-        $partial = $this->collAddressesPartial && !$this->isNew();
-        if (null === $this->collAddresses || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collAddresses) {
-                // return empty collection
-                $this->initAddresses();
-            } else {
-                $collAddresses = ChildAddressQuery::create(null, $criteria)
-                    ->filterByClient($this)
-                    ->find($con);
-
-                if (null !== $criteria) {
-                    if (false !== $this->collAddressesPartial && count($collAddresses)) {
-                        $this->initAddresses(false);
-
-                        foreach ($collAddresses as $obj) {
-                            if (false == $this->collAddresses->contains($obj)) {
-                                $this->collAddresses->append($obj);
-                            }
-                        }
-
-                        $this->collAddressesPartial = true;
-                    }
-
-                    return $collAddresses;
-                }
-
-                if ($partial && $this->collAddresses) {
-                    foreach ($this->collAddresses as $obj) {
-                        if ($obj->isNew()) {
-                            $collAddresses[] = $obj;
-                        }
-                    }
-                }
-
-                $this->collAddresses = $collAddresses;
-                $this->collAddressesPartial = false;
-            }
+        if ($v === null) {
+            $this->setClientId(NULL);
+        } else {
+            $this->setClientId($v->getId());
         }
 
-        return $this->collAddresses;
-    }
+        $this->aClient = $v;
 
-    /**
-     * Sets a collection of ChildAddress objects related by a one-to-many relationship
-     * to the current object.
-     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-     * and new objects from the given Propel collection.
-     *
-     * @param      Collection $addresses A Propel collection.
-     * @param      ConnectionInterface $con Optional connection object
-     * @return $this|ChildClient The current object (for fluent API support)
-     */
-    public function setAddresses(Collection $addresses, ConnectionInterface $con = null)
-    {
-        /** @var ChildAddress[] $addressesToDelete */
-        $addressesToDelete = $this->getAddresses(new Criteria(), $con)->diff($addresses);
-
-
-        $this->addressesScheduledForDeletion = $addressesToDelete;
-
-        foreach ($addressesToDelete as $addressRemoved) {
-            $addressRemoved->setClient(null);
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildClient object, it will not be re-added.
+        if ($v !== null) {
+            $v->addAccount($this);
         }
 
-        $this->collAddresses = null;
-        foreach ($addresses as $address) {
-            $this->addAddress($address);
-        }
-
-        $this->collAddresses = $addresses;
-        $this->collAddressesPartial = false;
 
         return $this;
     }
 
+
     /**
-     * Returns the number of related Address objects.
+     * Get the associated ChildClient object
      *
-     * @param      Criteria $criteria
-     * @param      boolean $distinct
-     * @param      ConnectionInterface $con
-     * @return int             Count of related Address objects.
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildClient The associated ChildClient object.
      * @throws PropelException
      */
-    public function countAddresses(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    public function getClient(ConnectionInterface $con = null)
     {
-        $partial = $this->collAddressesPartial && !$this->isNew();
-        if (null === $this->collAddresses || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collAddresses) {
-                return 0;
-            }
-
-            if ($partial && !$criteria) {
-                return count($this->getAddresses());
-            }
-
-            $query = ChildAddressQuery::create(null, $criteria);
-            if ($distinct) {
-                $query->distinct();
-            }
-
-            return $query
-                ->filterByClient($this)
-                ->count($con);
+        if ($this->aClient === null && ($this->client_id !== null)) {
+            $this->aClient = ChildClientQuery::create()->findPk($this->client_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aClient->addAccounts($this);
+             */
         }
 
-        return count($this->collAddresses);
-    }
-
-    /**
-     * Method called to associate a ChildAddress object to this object
-     * through the ChildAddress foreign key attribute.
-     *
-     * @param  ChildAddress $l ChildAddress
-     * @return $this|\Client The current object (for fluent API support)
-     */
-    public function addAddress(ChildAddress $l)
-    {
-        if ($this->collAddresses === null) {
-            $this->initAddresses();
-            $this->collAddressesPartial = true;
-        }
-
-        if (!$this->collAddresses->contains($l)) {
-            $this->doAddAddress($l);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param ChildAddress $address The ChildAddress object to add.
-     */
-    protected function doAddAddress(ChildAddress $address)
-    {
-        $this->collAddresses[]= $address;
-        $address->setClient($this);
-    }
-
-    /**
-     * @param  ChildAddress $address The ChildAddress object to remove.
-     * @return $this|ChildClient The current object (for fluent API support)
-     */
-    public function removeAddress(ChildAddress $address)
-    {
-        if ($this->getAddresses()->contains($address)) {
-            $pos = $this->collAddresses->search($address);
-            $this->collAddresses->remove($pos);
-            if (null === $this->addressesScheduledForDeletion) {
-                $this->addressesScheduledForDeletion = clone $this->collAddresses;
-                $this->addressesScheduledForDeletion->clear();
-            }
-            $this->addressesScheduledForDeletion[]= clone $address;
-            $address->setClient(null);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Clears out the collAccounts collection
-     *
-     * This does not modify the database; however, it will remove any associated objects, causing
-     * them to be refetched by subsequent calls to accessor method.
-     *
-     * @return void
-     * @see        addAccounts()
-     */
-    public function clearAccounts()
-    {
-        $this->collAccounts = null; // important to set this to NULL since that means it is uninitialized
-    }
-
-    /**
-     * Reset is the collAccounts collection loaded partially.
-     */
-    public function resetPartialAccounts($v = true)
-    {
-        $this->collAccountsPartial = $v;
-    }
-
-    /**
-     * Initializes the collAccounts collection.
-     *
-     * By default this just sets the collAccounts collection to an empty array (like clearcollAccounts());
-     * however, you may wish to override this method in your stub class to provide setting appropriate
-     * to your application -- for example, setting the initial array to the values stored in database.
-     *
-     * @param      boolean $overrideExisting If set to true, the method call initializes
-     *                                        the collection even if it is not empty
-     *
-     * @return void
-     */
-    public function initAccounts($overrideExisting = true)
-    {
-        if (null !== $this->collAccounts && !$overrideExisting) {
-            return;
-        }
-        $this->collAccounts = new ObjectCollection();
-        $this->collAccounts->setModel('\Account');
-    }
-
-    /**
-     * Gets an array of ChildAccount objects which contain a foreign key that references this object.
-     *
-     * If the $criteria is not null, it is used to always fetch the results from the database.
-     * Otherwise the results are fetched from the database the first time, then cached.
-     * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildClient is new, it will return
-     * an empty collection or the current collection; the criteria is ignored on a new object.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @return ObjectCollection|ChildAccount[] List of ChildAccount objects
-     * @throws PropelException
-     */
-    public function getAccounts(Criteria $criteria = null, ConnectionInterface $con = null)
-    {
-        $partial = $this->collAccountsPartial && !$this->isNew();
-        if (null === $this->collAccounts || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collAccounts) {
-                // return empty collection
-                $this->initAccounts();
-            } else {
-                $collAccounts = ChildAccountQuery::create(null, $criteria)
-                    ->filterByClient($this)
-                    ->find($con);
-
-                if (null !== $criteria) {
-                    if (false !== $this->collAccountsPartial && count($collAccounts)) {
-                        $this->initAccounts(false);
-
-                        foreach ($collAccounts as $obj) {
-                            if (false == $this->collAccounts->contains($obj)) {
-                                $this->collAccounts->append($obj);
-                            }
-                        }
-
-                        $this->collAccountsPartial = true;
-                    }
-
-                    return $collAccounts;
-                }
-
-                if ($partial && $this->collAccounts) {
-                    foreach ($this->collAccounts as $obj) {
-                        if ($obj->isNew()) {
-                            $collAccounts[] = $obj;
-                        }
-                    }
-                }
-
-                $this->collAccounts = $collAccounts;
-                $this->collAccountsPartial = false;
-            }
-        }
-
-        return $this->collAccounts;
-    }
-
-    /**
-     * Sets a collection of ChildAccount objects related by a one-to-many relationship
-     * to the current object.
-     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-     * and new objects from the given Propel collection.
-     *
-     * @param      Collection $accounts A Propel collection.
-     * @param      ConnectionInterface $con Optional connection object
-     * @return $this|ChildClient The current object (for fluent API support)
-     */
-    public function setAccounts(Collection $accounts, ConnectionInterface $con = null)
-    {
-        /** @var ChildAccount[] $accountsToDelete */
-        $accountsToDelete = $this->getAccounts(new Criteria(), $con)->diff($accounts);
-
-
-        $this->accountsScheduledForDeletion = $accountsToDelete;
-
-        foreach ($accountsToDelete as $accountRemoved) {
-            $accountRemoved->setClient(null);
-        }
-
-        $this->collAccounts = null;
-        foreach ($accounts as $account) {
-            $this->addAccount($account);
-        }
-
-        $this->collAccounts = $accounts;
-        $this->collAccountsPartial = false;
-
-        return $this;
-    }
-
-    /**
-     * Returns the number of related Account objects.
-     *
-     * @param      Criteria $criteria
-     * @param      boolean $distinct
-     * @param      ConnectionInterface $con
-     * @return int             Count of related Account objects.
-     * @throws PropelException
-     */
-    public function countAccounts(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
-    {
-        $partial = $this->collAccountsPartial && !$this->isNew();
-        if (null === $this->collAccounts || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collAccounts) {
-                return 0;
-            }
-
-            if ($partial && !$criteria) {
-                return count($this->getAccounts());
-            }
-
-            $query = ChildAccountQuery::create(null, $criteria);
-            if ($distinct) {
-                $query->distinct();
-            }
-
-            return $query
-                ->filterByClient($this)
-                ->count($con);
-        }
-
-        return count($this->collAccounts);
-    }
-
-    /**
-     * Method called to associate a ChildAccount object to this object
-     * through the ChildAccount foreign key attribute.
-     *
-     * @param  ChildAccount $l ChildAccount
-     * @return $this|\Client The current object (for fluent API support)
-     */
-    public function addAccount(ChildAccount $l)
-    {
-        if ($this->collAccounts === null) {
-            $this->initAccounts();
-            $this->collAccountsPartial = true;
-        }
-
-        if (!$this->collAccounts->contains($l)) {
-            $this->doAddAccount($l);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param ChildAccount $account The ChildAccount object to add.
-     */
-    protected function doAddAccount(ChildAccount $account)
-    {
-        $this->collAccounts[]= $account;
-        $account->setClient($this);
-    }
-
-    /**
-     * @param  ChildAccount $account The ChildAccount object to remove.
-     * @return $this|ChildClient The current object (for fluent API support)
-     */
-    public function removeAccount(ChildAccount $account)
-    {
-        if ($this->getAccounts()->contains($account)) {
-            $pos = $this->collAccounts->search($account);
-            $this->collAccounts->remove($pos);
-            if (null === $this->accountsScheduledForDeletion) {
-                $this->accountsScheduledForDeletion = clone $this->collAccounts;
-                $this->accountsScheduledForDeletion->clear();
-            }
-            $this->accountsScheduledForDeletion[]= clone $account;
-            $account->setClient(null);
-        }
-
-        return $this;
+        return $this->aClient;
     }
 
     /**
@@ -1954,12 +1357,13 @@ abstract class Client implements ActiveRecordInterface
      */
     public function clear()
     {
+        if (null !== $this->aClient) {
+            $this->aClient->removeAccount($this);
+        }
         $this->id = null;
-        $this->title = null;
-        $this->first name = null;
-        $this->second name = null;
-        $this->first surname = null;
-        $this->second surname = null;
+        $this->client_id = null;
+        $this->type = null;
+        $this->balance = null;
         $this->created_at = null;
         $this->updated_at = null;
         $this->alreadyInSave = false;
@@ -1980,20 +1384,9 @@ abstract class Client implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
-            if ($this->collAddresses) {
-                foreach ($this->collAddresses as $o) {
-                    $o->clearAllReferences($deep);
-                }
-            }
-            if ($this->collAccounts) {
-                foreach ($this->collAccounts as $o) {
-                    $o->clearAllReferences($deep);
-                }
-            }
         } // if ($deep)
 
-        $this->collAddresses = null;
-        $this->collAccounts = null;
+        $this->aClient = null;
     }
 
     /**
@@ -2003,7 +1396,7 @@ abstract class Client implements ActiveRecordInterface
      */
     public function __toString()
     {
-        return (string) $this->exportTo(ClientTableMap::DEFAULT_STRING_FORMAT);
+        return (string) $this->exportTo(AccountTableMap::DEFAULT_STRING_FORMAT);
     }
 
     // timestampable behavior
@@ -2011,11 +1404,11 @@ abstract class Client implements ActiveRecordInterface
     /**
      * Mark the current object so that the update date doesn't get updated during next save
      *
-     * @return     $this|ChildClient The current object (for fluent API support)
+     * @return     $this|ChildAccount The current object (for fluent API support)
      */
     public function keepUpdateDateUnchanged()
     {
-        $this->modifiedColumns[ClientTableMap::COL_UPDATED_AT] = true;
+        $this->modifiedColumns[AccountTableMap::COL_UPDATED_AT] = true;
 
         return $this;
     }

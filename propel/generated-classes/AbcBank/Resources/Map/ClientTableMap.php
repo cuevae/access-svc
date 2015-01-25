@@ -1,9 +1,9 @@
 <?php
 
-namespace Map;
+namespace AbcBank\Resources\Map;
 
-use \Client;
-use \ClientQuery;
+use AbcBank\Resources\Client;
+use AbcBank\Resources\ClientQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -34,7 +34,7 @@ class ClientTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = '.Map.ClientTableMap';
+    const CLASS_NAME = 'AbcBank.Resources.Map.ClientTableMap';
 
     /**
      * The default database name for this class
@@ -49,12 +49,12 @@ class ClientTableMap extends TableMap
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\Client';
+    const OM_CLASS = '\\AbcBank\\Resources\\Client';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'Client';
+    const CLASS_DEFAULT = 'AbcBank.Resources.Client';
 
     /**
      * The total number of columns
@@ -157,8 +157,8 @@ class ClientTableMap extends TableMap
         $this->setName('client');
         $this->setPhpName('Client');
         $this->setIdentifierQuoting(false);
-        $this->setClassName('\\Client');
-        $this->setPackage('');
+        $this->setClassName('\\AbcBank\\Resources\\Client');
+        $this->setPackage('AbcBank.Resources');
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
@@ -176,14 +176,14 @@ class ClientTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('Address', '\\Address', RelationMap::ONE_TO_MANY, array (
+        $this->addRelation('Address', '\\AbcBank\\Resources\\Address', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (
     0 => ':client_id',
     1 => ':id',
   ),
 ), null, null, 'Addresses', false);
-        $this->addRelation('Account', '\\Account', RelationMap::ONE_TO_MANY, array (
+        $this->addRelation('Account', '\\AbcBank\\Resources\\Account', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (
     0 => ':client_id',
@@ -409,7 +409,7 @@ class ClientTableMap extends TableMap
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \Client) { // it's a model object
+        } elseif ($values instanceof \AbcBank\Resources\Client) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks

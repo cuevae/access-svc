@@ -1,6 +1,8 @@
 <?php
 
-use Base\Account as BaseAccount;
+namespace AbcBank\Resources;
+
+use AbcBank\Resources\Base\Account as BaseAccount;
 
 /**
  * Skeleton subclass for representing a row from the 'account' table.

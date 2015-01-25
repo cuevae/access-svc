@@ -1,12 +1,12 @@
 <?php
 
-namespace Base;
+namespace AbcBank\Resources\Base;
 
-use \Address as ChildAddress;
-use \AddressQuery as ChildAddressQuery;
 use \Exception;
 use \PDO;
-use Map\AddressTableMap;
+use AbcBank\Resources\Address as ChildAddress;
+use AbcBank\Resources\AddressQuery as ChildAddressQuery;
+use AbcBank\Resources\Map\AddressTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
@@ -60,7 +60,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildAddressQuery rightJoinClient($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Client relation
  * @method     ChildAddressQuery innerJoinClient($relationAlias = null) Adds a INNER JOIN clause to the query using the Client relation
  *
- * @method     \ClientQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \AbcBank\Resources\ClientQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildAddress findOne(ConnectionInterface $con = null) Return the first ChildAddress matching the query
  * @method     ChildAddress findOneOrCreate(ConnectionInterface $con = null) Return the first ChildAddress matching the query, or a new ChildAddress object populated from the query conditions when no match is found
@@ -124,13 +124,13 @@ abstract class AddressQuery extends ModelCriteria
     protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityNotFoundException';
 
     /**
-     * Initializes internal state of \Base\AddressQuery object.
+     * Initializes internal state of \AbcBank\Resources\Base\AddressQuery object.
      *
      * @param     string $dbName The database name
      * @param     string $modelName The phpName of a model, e.g. 'Book'
      * @param     string $modelAlias The alias for the model in this query, e.g. 'b'
      */
-    public function __construct($dbName = 'abcbank', $modelName = '\\Address', $modelAlias = null)
+    public function __construct($dbName = 'abcbank', $modelName = '\\AbcBank\\Resources\\Address', $modelAlias = null)
     {
         parent::__construct($dbName, $modelName, $modelAlias);
     }
@@ -788,9 +788,9 @@ abstract class AddressQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query by a related \Client object
+     * Filter the query by a related \AbcBank\Resources\Client object
      *
-     * @param \Client|ObjectCollection $client The related object(s) to use as filter
+     * @param \AbcBank\Resources\Client|ObjectCollection $client The related object(s) to use as filter
      * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @throws \Propel\Runtime\Exception\PropelException
@@ -799,7 +799,7 @@ abstract class AddressQuery extends ModelCriteria
      */
     public function filterByClient($client, $comparison = null)
     {
-        if ($client instanceof \Client) {
+        if ($client instanceof \AbcBank\Resources\Client) {
             return $this
                 ->addUsingAlias(AddressTableMap::COL_CLIENT_ID, $client->getId(), $comparison);
         } elseif ($client instanceof ObjectCollection) {
@@ -810,7 +810,7 @@ abstract class AddressQuery extends ModelCriteria
             return $this
                 ->addUsingAlias(AddressTableMap::COL_CLIENT_ID, $client->toKeyValue('PrimaryKey', 'Id'), $comparison);
         } else {
-            throw new PropelException('filterByClient() only accepts arguments of type \Client or Collection');
+            throw new PropelException('filterByClient() only accepts arguments of type \AbcBank\Resources\Client or Collection');
         }
     }
 
@@ -855,13 +855,13 @@ abstract class AddressQuery extends ModelCriteria
      *                                   to be used as main alias in the secondary query
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
-     * @return \ClientQuery A secondary query class using the current class as primary query
+     * @return \AbcBank\Resources\ClientQuery A secondary query class using the current class as primary query
      */
     public function useClientQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         return $this
             ->joinClient($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'Client', '\ClientQuery');
+            ->useQuery($relationAlias ? $relationAlias : 'Client', '\AbcBank\Resources\ClientQuery');
     }
 
     /**

@@ -3,13 +3,13 @@
 
 namespace AbcBank\Models;
 
-use Resources\AccountInterface as Resource;
+use AbcBank\Resources\Account as Resource;
 
 class Account {
 
     protected $resource;
 
-    public function __construct( Resource $resource )
+    public function __construct(Resource $resource)
     {
         $this->resource = $resource;
     }

@@ -1,9 +1,11 @@
 <?php
 
-use Base\Address as BaseAddress;
+namespace AbcBank\Resources;
+
+use AbcBank\Resources\Base\AccountQuery as BaseAccountQuery;
 
 /**
- * Skeleton subclass for representing a row from the 'address' table.
+ * Skeleton subclass for performing query and update operations on the 'account' table.
  *
  *
  *
@@ -12,7 +14,7 @@ use Base\Address as BaseAddress;
  * long as it does not already exist in the output directory.
  *
  */
-class Address extends BaseAddress
+class AccountQuery extends BaseAccountQuery
 {
 
 }
