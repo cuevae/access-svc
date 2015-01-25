@@ -3,19 +3,28 @@
 
 namespace Auth;
 
-use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
-use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
-use Symfony\Component\Security\Core\User\User;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Auth\Resources\Base\ApiKeyQuery;
+use Auth\Resources\Base\ConsumerQuery;
+use Symfony\Component\Security\Core\Exception\UnsupportedUserException,
+    Symfony\Component\Security\Core\Exception\UsernameNotFoundException,
+    Symfony\Component\Security\Core\User\User,
+    Symfony\Component\Security\Core\User\UserInterface,
+    Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class ApiKeyUserProvider implements UserProviderInterface {
 
     public function getUsernameForApiKey($apiKey)
     {
-        $username = 'test';
+        //Find if the given apikey exists
+        $keys = ApiKeyQuery::create()->filterByValue($apiKey)->find();
+        if(!$keys || $keys->count() != 1)
+        {
+            return null;
+        }
 
-        return $username;
+        $key = $keys->getFirst();
+
+        return $key->getConsumer()->getUsername();
     }
 
     /**
@@ -34,10 +43,17 @@ class ApiKeyUserProvider implements UserProviderInterface {
      */
     public function loadUserByUsername( $username )
     {
+        $users = ConsumerQuery::create()->findBy('username', $username);
+        if(!$users || $users->count() != 1){
+            throw new UsernameNotFoundException();
+        }
+
+        $user = $users->getFirst();
+
         return new User(
             $username,
             null,
-            array('ROLE_ADMIN')
+            array($user->getRole())
         );
     }
 

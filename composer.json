@@ -15,6 +15,7 @@
   "autoload": {
     "psr-4": {
       "Auth\\": "auth/",
+      "Auth\\Resources\\": "auth/generated-classes/Auth/Resources",
       "AbcBank\\Resources\\": "propel/generated-classes/AbcBank/Resources",
       "AbcBank\\Models\\": "src/models"
     }

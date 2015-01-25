@@ -44,8 +44,22 @@ $serviceContainer->setConnectionManager('abcbank', $manager);
  */
 $serviceContainer = Propel::getServiceContainer();
 $defaultLogger = new Logger('defaultLogger');
-$defaultLogger->pushHandler(new StreamHandler(__DIR__.'log/database/propel.log', Logger::DEBUG));
+$defaultLogger->pushHandler(new StreamHandler(__DIR__.'/log/database/propel.log', Logger::DEBUG));
 $serviceContainer->setLogger('defaultLogger', $defaultLogger);
+
+
+/*
+ * API database
+ */
+$serviceContainer = Propel::getServiceContainer();
+$serviceContainer->setAdapterClass('abcbank_api', 'mysql');
+$manager = new ConnectionManagerSingle();
+$manager->setConfiguration(array (
+    'dsn'      => 'mysql:host=localhost;dbname=abcbank_api',
+    'user'     => 'root',
+    'password' => '',
+));
+$serviceContainer->setConnectionManager('abcbank_api', $manager);
 
 /**********************
  * Router configuration
@@ -78,79 +92,8 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), array(
  * Router endpoints
  */
 
-/*
- * Clients
- */
-
-$clients = $app['controllers_factory'];
-
-$clients->get('/', function(Router $app, Request $req) use($container){
-    $model = $container->get('account_model');
-    $accounts = $model->getAccounts();
-    $result = print_r($accounts, true);
-    return $result;
+$app->get('/clients/{clientId}', function($clientId){
+    return "Viewing profile for client " . $clientId;
 });
-
-$clients->get('/savings', function(Router $app, Request $req){
-    return 'List of savings account for the current client';
-});
-
-$clients->get('/savings/{accId}', function( Router $app, Request $req, $accId){
-    return $req->getUri();
-});
-
-$clients->post('/savings/{accId}/deposit', function(Router $app, Request $req, $accId){
-    return $req->getUri();
-});
-
-$clients->post('/savings/{accId}/withdraw', function(Router $app, Request $req, $accId){
-    return $req->getUri();
-});
-
-$clients->get('/current', function(Router $app, Request $req){
-    return 'List of current accounts for the current client';
-});
-
-$clients->get('/current/{accId}', function(Router $app, Request $req, $accId){
-    return $req->getUri();
-});
-
-$clients->post('/current/{accId}/deposit', function(Router $app, Request $req, $accId){
-    return $req->getUri();
-});
-
-$clients->post('/current/{accId}/withdraw', function(Router $app, Request $req, $accId){
-    return $req->getUri();
-});
-
-$clients->get('/profile', function(Router $app, Request $req){
-    return 'Profile for the current client';
-});
-
-$clients->put('/profile', function(Router $app, Request $req){
-    return 'Edit current client\'s profile';
-});
-
-$app->mount('/clients', $clients);
-
-
-/*
- * Admin
- */
-
-$admin = $app['controllers_factory'];
-$admin->get('/clients', function(){
-   return 'Admin';
-});
-
-$admin->get('/clients/{clientId}', function($clientId){
-    return 'View client ' . $clientId;
-});
-
-$admin->post('/clients', function(){
-    return "Adding new client!";
-});
-
-$app->mount('/admin', $admin);
 
 $app->run();

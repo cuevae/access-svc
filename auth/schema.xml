@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database name="abcbank_api" defaultIdMethod="native" namespace="Auth\Resources" >
+    <table name="apikey" phpName="ApiKey">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="consumer_id" type="integer" required="true" primaryKey="true"/>
+        <column name="value" type="varchar" size="255" required="true" primaryKey="true"/>
+        <column name="secret" type="varchar" size="255" required="true" primaryKey="true"/>
+        <foreign-key foreignTable="consumer">
+            <reference local="consumer_id" foreign="id"/>
+        </foreign-key>
+        <behavior name="timestampable" />
+    </table>
+    <table name="consumer" phpName="Consumer">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="username" type="varchar" size="255" required="true" primaryKey="true"/>
+        <column name="role" type="varchar" size="255" required="true"/>
+        <behavior name="timestampable" />
+    </table>
+</database>

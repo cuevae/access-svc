@@ -3,6 +3,7 @@
 
 namespace Auth;
 
+use Auth\Resources\Base\ApiKeyQuery;
 use Psr\Log\LoggerInterface;
 use Silex\Application;
 use Symfony\Component\Security\Core\Authentication\SimplePreAuthenticatorInterface;
@@ -29,7 +30,7 @@ class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface, Authentica
 
     public function authenticateToken( TokenInterface $token, UserProviderInterface $userProvider, $providerKey )
     {
-        $apiKey = $token->getCredentials();
+        list($apiKey, $signature, $headers) = $token->getCredentials();
         $username = $this->userProvider->getUsernameForApiKey($apiKey);
 
         if (!$username) {
@@ -40,7 +41,15 @@ class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface, Authentica
 
         $user = $this->userProvider->loadUserByUsername($username);
 
-        //TODO: Authenticate with user secret and params sent
+        //Generate local signature and compare with the one sent
+        $key = ApiKeyQuery::create()->findByValue($apiKey)->getFirst();
+        $localSignature = md5(serialize($headers) . $key->getSecret());
+
+        var_dump($signature);
+
+        if(strcmp($localSignature,$signature)!==0){
+            throw new AuthenticationException('API signature is not valid');
+        }
 
         return new PreAuthenticatedToken(
             $user,
@@ -58,8 +67,9 @@ class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface, Authentica
     public function createToken( Request $request, $providerKey )
     {
         $apiKey = $request->query->get($this->paramName);
-
-        //TODO: add also params
+        $headers = $request->headers->all();
+        $signature = isset($headers['x-signature'])?$headers['x-signature'][0]:"";
+        unset($headers['x-signature']);
 
         if(!$apiKey){
             throw new BadCredentialsException('No API key provided.');
@@ -67,7 +77,7 @@ class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface, Authentica
 
         return new PreAuthenticatedToken(
             'annon.',
-            $apiKey,
+            array($apiKey, $signature, $headers),
             $providerKey
         );
     }
