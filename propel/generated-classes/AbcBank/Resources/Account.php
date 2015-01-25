@@ -17,4 +17,11 @@ use AbcBank\Resources\Base\Account as BaseAccount;
 class Account extends BaseAccount
 {
 
+    public function load()
+    {
+        $accounts = AccountQuery::create()->find();
+
+        return $accounts;
+    }
+
 }

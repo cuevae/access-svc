@@ -1,4 +1,0 @@
-origin : "*"
-maxAge : 1728000
-allowCredentials : true
-allowMethods : [POST, GET, PUT, DELETE, OPTIONS]
