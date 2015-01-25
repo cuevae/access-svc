@@ -87,6 +87,18 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), array(
     )
 ));
 
+/**
+ * Security access rules
+ */
+$app['security.access_rules'] = array(
+    array('^/admin', 'ROLE_ADMIN', 'https'),
+    array('^.*$', 'ROLE_USER'),
+);
+
+$app['security.role_hierarchy'] = array(
+    'ROLE_ADMIN' => array('ROLE_USER', 'ROLE_ALLOWED_TO_SWITCH'),
+);
+
 
 /**
  * Router endpoints

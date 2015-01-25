@@ -44,9 +44,6 @@ class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface, Authentica
         //Generate local signature and compare with the one sent
         $key = ApiKeyQuery::create()->findByValue($apiKey)->getFirst();
         $localSignature = md5(serialize($headers) . $key->getSecret());
-
-        var_dump($signature);
-
         if(strcmp($localSignature,$signature)!==0){
             throw new AuthenticationException('API signature is not valid');
         }
