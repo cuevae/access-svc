@@ -2,11 +2,12 @@
 <database name="abcbank" defaultIdMethod="native" namespace="AbcBank\Resources" >
     <table name="client" phpName="Client">
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="username" type="varchar" size="255" required="true" primaryKey="true"/>
         <column name="title" type="varchar" size="255" required="true" />
-        <column name="first name" type="varchar" size="255" required="true" />
-        <column name="second name" type="varchar" size="255" required="false" />
-        <column name="first surname" type="varchar" size="255" required="true" />
-        <column name="second surname" type="varchar" size="255" required="true" />
+        <column name="first_name" type="varchar" size="255" required="true" />
+        <column name="second_name" type="varchar" size="255" required="false" />
+        <column name="first_surname" type="varchar" size="255" required="true" />
+        <column name="second_surname" type="varchar" size="255" required="true" />
         <behavior name="timestampable" />
     </table>
     <table name="address" phpName="Address">

@@ -514,7 +514,7 @@ abstract class AccountQuery extends ModelCriteria
             }
 
             return $this
-                ->addUsingAlias(AccountTableMap::COL_CLIENT_ID, $client->toKeyValue('PrimaryKey', 'Id'), $comparison);
+                ->addUsingAlias(AccountTableMap::COL_CLIENT_ID, $client->toKeyValue('Id', 'Id'), $comparison);
         } else {
             throw new PropelException('filterByClient() only accepts arguments of type \AbcBank\Resources\Client or Collection');
         }

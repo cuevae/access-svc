@@ -74,34 +74,40 @@ abstract class Client implements ActiveRecordInterface
     protected $id;
 
     /**
+     * The value for the username field.
+     * @var        string
+     */
+    protected $username;
+
+    /**
      * The value for the title field.
      * @var        string
      */
     protected $title;
 
     /**
-     * The value for the first name field.
+     * The value for the first_name field.
      * @var        string
      */
-    protected $first name;
+    protected $first_name;
 
     /**
-     * The value for the second name field.
+     * The value for the second_name field.
      * @var        string
      */
-    protected $second name;
+    protected $second_name;
 
     /**
-     * The value for the first surname field.
+     * The value for the first_surname field.
      * @var        string
      */
-    protected $first surname;
+    protected $first_surname;
 
     /**
-     * The value for the second surname field.
+     * The value for the second_surname field.
      * @var        string
      */
-    protected $second surname;
+    protected $second_surname;
 
     /**
      * The value for the created_at field.
@@ -375,6 +381,16 @@ abstract class Client implements ActiveRecordInterface
     }
 
     /**
+     * Get the [username] column value.
+     *
+     * @return string
+     */
+    public function getUsername()
+    {
+        return $this->username;
+    }
+
+    /**
      * Get the [title] column value.
      *
      * @return string
@@ -385,43 +401,43 @@ abstract class Client implements ActiveRecordInterface
     }
 
     /**
-     * Get the [first name] column value.
+     * Get the [first_name] column value.
      *
      * @return string
      */
-    public function getFirst name()
+    public function getFirstName()
     {
-        return $this->first name;
+        return $this->first_name;
     }
 
     /**
-     * Get the [second name] column value.
+     * Get the [second_name] column value.
      *
      * @return string
      */
-    public function getSecond name()
+    public function getSecondName()
     {
-        return $this->second name;
+        return $this->second_name;
     }
 
     /**
-     * Get the [first surname] column value.
+     * Get the [first_surname] column value.
      *
      * @return string
      */
-    public function getFirst surname()
+    public function getFirstSurname()
     {
-        return $this->first surname;
+        return $this->first_surname;
     }
 
     /**
-     * Get the [second surname] column value.
+     * Get the [second_surname] column value.
      *
      * @return string
      */
-    public function getSecond surname()
+    public function getSecondSurname()
     {
-        return $this->second surname;
+        return $this->second_surname;
     }
 
     /**
@@ -485,6 +501,26 @@ abstract class Client implements ActiveRecordInterface
     } // setId()
 
     /**
+     * Set the value of [username] column.
+     *
+     * @param  string $v new value
+     * @return $this|\AbcBank\Resources\Client The current object (for fluent API support)
+     */
+    public function setUsername($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->username !== $v) {
+            $this->username = $v;
+            $this->modifiedColumns[ClientTableMap::COL_USERNAME] = true;
+        }
+
+        return $this;
+    } // setUsername()
+
+    /**
      * Set the value of [title] column.
      *
      * @param  string $v new value
@@ -505,84 +541,84 @@ abstract class Client implements ActiveRecordInterface
     } // setTitle()
 
     /**
-     * Set the value of [first name] column.
+     * Set the value of [first_name] column.
      *
      * @param  string $v new value
      * @return $this|\AbcBank\Resources\Client The current object (for fluent API support)
      */
-    public function setFirst name($v)
+    public function setFirstName($v)
     {
         if ($v !== null) {
             $v = (string) $v;
         }
 
-        if ($this->first name !== $v) {
-            $this->first name = $v;
-            $this->modifiedColumns[ClientTableMap::COL_FIRST NAME] = true;
+        if ($this->first_name !== $v) {
+            $this->first_name = $v;
+            $this->modifiedColumns[ClientTableMap::COL_FIRST_NAME] = true;
         }
 
         return $this;
-    } // setFirst name()
+    } // setFirstName()
 
     /**
-     * Set the value of [second name] column.
+     * Set the value of [second_name] column.
      *
      * @param  string $v new value
      * @return $this|\AbcBank\Resources\Client The current object (for fluent API support)
      */
-    public function setSecond name($v)
+    public function setSecondName($v)
     {
         if ($v !== null) {
             $v = (string) $v;
         }
 
-        if ($this->second name !== $v) {
-            $this->second name = $v;
-            $this->modifiedColumns[ClientTableMap::COL_SECOND NAME] = true;
+        if ($this->second_name !== $v) {
+            $this->second_name = $v;
+            $this->modifiedColumns[ClientTableMap::COL_SECOND_NAME] = true;
         }
 
         return $this;
-    } // setSecond name()
+    } // setSecondName()
 
     /**
-     * Set the value of [first surname] column.
+     * Set the value of [first_surname] column.
      *
      * @param  string $v new value
      * @return $this|\AbcBank\Resources\Client The current object (for fluent API support)
      */
-    public function setFirst surname($v)
+    public function setFirstSurname($v)
     {
         if ($v !== null) {
             $v = (string) $v;
         }
 
-        if ($this->first surname !== $v) {
-            $this->first surname = $v;
-            $this->modifiedColumns[ClientTableMap::COL_FIRST SURNAME] = true;
+        if ($this->first_surname !== $v) {
+            $this->first_surname = $v;
+            $this->modifiedColumns[ClientTableMap::COL_FIRST_SURNAME] = true;
         }
 
         return $this;
-    } // setFirst surname()
+    } // setFirstSurname()
 
     /**
-     * Set the value of [second surname] column.
+     * Set the value of [second_surname] column.
      *
      * @param  string $v new value
      * @return $this|\AbcBank\Resources\Client The current object (for fluent API support)
      */
-    public function setSecond surname($v)
+    public function setSecondSurname($v)
     {
         if ($v !== null) {
             $v = (string) $v;
         }
 
-        if ($this->second surname !== $v) {
-            $this->second surname = $v;
-            $this->modifiedColumns[ClientTableMap::COL_SECOND SURNAME] = true;
+        if ($this->second_surname !== $v) {
+            $this->second_surname = $v;
+            $this->modifiedColumns[ClientTableMap::COL_SECOND_SURNAME] = true;
         }
 
         return $this;
-    } // setSecond surname()
+    } // setSecondSurname()
 
     /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
@@ -663,28 +699,31 @@ abstract class Client implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : ClientTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
             $this->id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : ClientTableMap::translateFieldName('Title', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : ClientTableMap::translateFieldName('Username', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->username = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : ClientTableMap::translateFieldName('Title', TableMap::TYPE_PHPNAME, $indexType)];
             $this->title = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : ClientTableMap::translateFieldName('First name', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->first name = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : ClientTableMap::translateFieldName('FirstName', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->first_name = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : ClientTableMap::translateFieldName('Second name', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->second name = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : ClientTableMap::translateFieldName('SecondName', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->second_name = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : ClientTableMap::translateFieldName('First surname', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->first surname = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : ClientTableMap::translateFieldName('FirstSurname', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->first_surname = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : ClientTableMap::translateFieldName('Second surname', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->second surname = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : ClientTableMap::translateFieldName('SecondSurname', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->second_surname = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : ClientTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : ClientTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : ClientTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : ClientTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -697,7 +736,7 @@ abstract class Client implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 8; // 8 = ClientTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 9; // 9 = ClientTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\AbcBank\\Resources\\Client'), 0, $e);
@@ -947,20 +986,23 @@ abstract class Client implements ActiveRecordInterface
         if ($this->isColumnModified(ClientTableMap::COL_ID)) {
             $modifiedColumns[':p' . $index++]  = 'id';
         }
+        if ($this->isColumnModified(ClientTableMap::COL_USERNAME)) {
+            $modifiedColumns[':p' . $index++]  = 'username';
+        }
         if ($this->isColumnModified(ClientTableMap::COL_TITLE)) {
             $modifiedColumns[':p' . $index++]  = 'title';
         }
-        if ($this->isColumnModified(ClientTableMap::COL_FIRST NAME)) {
-            $modifiedColumns[':p' . $index++]  = 'first name';
+        if ($this->isColumnModified(ClientTableMap::COL_FIRST_NAME)) {
+            $modifiedColumns[':p' . $index++]  = 'first_name';
         }
-        if ($this->isColumnModified(ClientTableMap::COL_SECOND NAME)) {
-            $modifiedColumns[':p' . $index++]  = 'second name';
+        if ($this->isColumnModified(ClientTableMap::COL_SECOND_NAME)) {
+            $modifiedColumns[':p' . $index++]  = 'second_name';
         }
-        if ($this->isColumnModified(ClientTableMap::COL_FIRST SURNAME)) {
-            $modifiedColumns[':p' . $index++]  = 'first surname';
+        if ($this->isColumnModified(ClientTableMap::COL_FIRST_SURNAME)) {
+            $modifiedColumns[':p' . $index++]  = 'first_surname';
         }
-        if ($this->isColumnModified(ClientTableMap::COL_SECOND SURNAME)) {
-            $modifiedColumns[':p' . $index++]  = 'second surname';
+        if ($this->isColumnModified(ClientTableMap::COL_SECOND_SURNAME)) {
+            $modifiedColumns[':p' . $index++]  = 'second_surname';
         }
         if ($this->isColumnModified(ClientTableMap::COL_CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'created_at';
@@ -982,20 +1024,23 @@ abstract class Client implements ActiveRecordInterface
                     case 'id':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
+                    case 'username':
+                        $stmt->bindValue($identifier, $this->username, PDO::PARAM_STR);
+                        break;
                     case 'title':
                         $stmt->bindValue($identifier, $this->title, PDO::PARAM_STR);
                         break;
-                    case 'first name':
-                        $stmt->bindValue($identifier, $this->first name, PDO::PARAM_STR);
+                    case 'first_name':
+                        $stmt->bindValue($identifier, $this->first_name, PDO::PARAM_STR);
                         break;
-                    case 'second name':
-                        $stmt->bindValue($identifier, $this->second name, PDO::PARAM_STR);
+                    case 'second_name':
+                        $stmt->bindValue($identifier, $this->second_name, PDO::PARAM_STR);
                         break;
-                    case 'first surname':
-                        $stmt->bindValue($identifier, $this->first surname, PDO::PARAM_STR);
+                    case 'first_surname':
+                        $stmt->bindValue($identifier, $this->first_surname, PDO::PARAM_STR);
                         break;
-                    case 'second surname':
-                        $stmt->bindValue($identifier, $this->second surname, PDO::PARAM_STR);
+                    case 'second_surname':
+                        $stmt->bindValue($identifier, $this->second_surname, PDO::PARAM_STR);
                         break;
                     case 'created_at':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -1069,24 +1114,27 @@ abstract class Client implements ActiveRecordInterface
                 return $this->getId();
                 break;
             case 1:
-                return $this->getTitle();
+                return $this->getUsername();
                 break;
             case 2:
-                return $this->getFirst name();
+                return $this->getTitle();
                 break;
             case 3:
-                return $this->getSecond name();
+                return $this->getFirstName();
                 break;
             case 4:
-                return $this->getFirst surname();
+                return $this->getSecondName();
                 break;
             case 5:
-                return $this->getSecond surname();
+                return $this->getFirstSurname();
                 break;
             case 6:
-                return $this->getCreatedAt();
+                return $this->getSecondSurname();
                 break;
             case 7:
+                return $this->getCreatedAt();
+                break;
+            case 8:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -1120,26 +1168,27 @@ abstract class Client implements ActiveRecordInterface
         $keys = ClientTableMap::getFieldNames($keyType);
         $result = array(
             $keys[0] => $this->getId(),
-            $keys[1] => $this->getTitle(),
-            $keys[2] => $this->getFirst name(),
-            $keys[3] => $this->getSecond name(),
-            $keys[4] => $this->getFirst surname(),
-            $keys[5] => $this->getSecond surname(),
-            $keys[6] => $this->getCreatedAt(),
-            $keys[7] => $this->getUpdatedAt(),
+            $keys[1] => $this->getUsername(),
+            $keys[2] => $this->getTitle(),
+            $keys[3] => $this->getFirstName(),
+            $keys[4] => $this->getSecondName(),
+            $keys[5] => $this->getFirstSurname(),
+            $keys[6] => $this->getSecondSurname(),
+            $keys[7] => $this->getCreatedAt(),
+            $keys[8] => $this->getUpdatedAt(),
         );
 
         $utc = new \DateTimeZone('utc');
-        if ($result[$keys[6]] instanceof \DateTime) {
-            // When changing timezone we don't want to change existing instances
-            $dateTime = clone $result[$keys[6]];
-            $result[$keys[6]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
-        }
-
         if ($result[$keys[7]] instanceof \DateTime) {
             // When changing timezone we don't want to change existing instances
             $dateTime = clone $result[$keys[7]];
             $result[$keys[7]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+        }
+
+        if ($result[$keys[8]] instanceof \DateTime) {
+            // When changing timezone we don't want to change existing instances
+            $dateTime = clone $result[$keys[8]];
+            $result[$keys[8]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -1216,24 +1265,27 @@ abstract class Client implements ActiveRecordInterface
                 $this->setId($value);
                 break;
             case 1:
-                $this->setTitle($value);
+                $this->setUsername($value);
                 break;
             case 2:
-                $this->setFirst name($value);
+                $this->setTitle($value);
                 break;
             case 3:
-                $this->setSecond name($value);
+                $this->setFirstName($value);
                 break;
             case 4:
-                $this->setFirst surname($value);
+                $this->setSecondName($value);
                 break;
             case 5:
-                $this->setSecond surname($value);
+                $this->setFirstSurname($value);
                 break;
             case 6:
-                $this->setCreatedAt($value);
+                $this->setSecondSurname($value);
                 break;
             case 7:
+                $this->setCreatedAt($value);
+                break;
+            case 8:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1266,25 +1318,28 @@ abstract class Client implements ActiveRecordInterface
             $this->setId($arr[$keys[0]]);
         }
         if (array_key_exists($keys[1], $arr)) {
-            $this->setTitle($arr[$keys[1]]);
+            $this->setUsername($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setFirst name($arr[$keys[2]]);
+            $this->setTitle($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setSecond name($arr[$keys[3]]);
+            $this->setFirstName($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setFirst surname($arr[$keys[4]]);
+            $this->setSecondName($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setSecond surname($arr[$keys[5]]);
+            $this->setFirstSurname($arr[$keys[5]]);
         }
         if (array_key_exists($keys[6], $arr)) {
-            $this->setCreatedAt($arr[$keys[6]]);
+            $this->setSecondSurname($arr[$keys[6]]);
         }
         if (array_key_exists($keys[7], $arr)) {
-            $this->setUpdatedAt($arr[$keys[7]]);
+            $this->setCreatedAt($arr[$keys[7]]);
+        }
+        if (array_key_exists($keys[8], $arr)) {
+            $this->setUpdatedAt($arr[$keys[8]]);
         }
     }
 
@@ -1330,20 +1385,23 @@ abstract class Client implements ActiveRecordInterface
         if ($this->isColumnModified(ClientTableMap::COL_ID)) {
             $criteria->add(ClientTableMap::COL_ID, $this->id);
         }
+        if ($this->isColumnModified(ClientTableMap::COL_USERNAME)) {
+            $criteria->add(ClientTableMap::COL_USERNAME, $this->username);
+        }
         if ($this->isColumnModified(ClientTableMap::COL_TITLE)) {
             $criteria->add(ClientTableMap::COL_TITLE, $this->title);
         }
-        if ($this->isColumnModified(ClientTableMap::COL_FIRST NAME)) {
-            $criteria->add(ClientTableMap::COL_FIRST NAME, $this->first name);
+        if ($this->isColumnModified(ClientTableMap::COL_FIRST_NAME)) {
+            $criteria->add(ClientTableMap::COL_FIRST_NAME, $this->first_name);
         }
-        if ($this->isColumnModified(ClientTableMap::COL_SECOND NAME)) {
-            $criteria->add(ClientTableMap::COL_SECOND NAME, $this->second name);
+        if ($this->isColumnModified(ClientTableMap::COL_SECOND_NAME)) {
+            $criteria->add(ClientTableMap::COL_SECOND_NAME, $this->second_name);
         }
-        if ($this->isColumnModified(ClientTableMap::COL_FIRST SURNAME)) {
-            $criteria->add(ClientTableMap::COL_FIRST SURNAME, $this->first surname);
+        if ($this->isColumnModified(ClientTableMap::COL_FIRST_SURNAME)) {
+            $criteria->add(ClientTableMap::COL_FIRST_SURNAME, $this->first_surname);
         }
-        if ($this->isColumnModified(ClientTableMap::COL_SECOND SURNAME)) {
-            $criteria->add(ClientTableMap::COL_SECOND SURNAME, $this->second surname);
+        if ($this->isColumnModified(ClientTableMap::COL_SECOND_SURNAME)) {
+            $criteria->add(ClientTableMap::COL_SECOND_SURNAME, $this->second_surname);
         }
         if ($this->isColumnModified(ClientTableMap::COL_CREATED_AT)) {
             $criteria->add(ClientTableMap::COL_CREATED_AT, $this->created_at);
@@ -1369,6 +1427,7 @@ abstract class Client implements ActiveRecordInterface
     {
         $criteria = ChildClientQuery::create();
         $criteria->add(ClientTableMap::COL_ID, $this->id);
+        $criteria->add(ClientTableMap::COL_USERNAME, $this->username);
 
         return $criteria;
     }
@@ -1381,7 +1440,8 @@ abstract class Client implements ActiveRecordInterface
      */
     public function hashCode()
     {
-        $validPk = null !== $this->getId();
+        $validPk = null !== $this->getId() &&
+            null !== $this->getUsername();
 
         $validPrimaryKeyFKs = 0;
         $primaryKeyFKs = [];
@@ -1396,23 +1456,29 @@ abstract class Client implements ActiveRecordInterface
     }
 
     /**
-     * Returns the primary key for this object (row).
-     * @return int
+     * Returns the composite primary key for this object.
+     * The array elements will be in same order as specified in XML.
+     * @return array
      */
     public function getPrimaryKey()
     {
-        return $this->getId();
+        $pks = array();
+        $pks[0] = $this->getId();
+        $pks[1] = $this->getUsername();
+
+        return $pks;
     }
 
     /**
-     * Generic method to set the primary key (id column).
+     * Set the [composite] primary key.
      *
-     * @param       int $key Primary key.
+     * @param      array $keys The elements of the composite key (order must match the order in XML file).
      * @return void
      */
-    public function setPrimaryKey($key)
+    public function setPrimaryKey($keys)
     {
-        $this->setId($key);
+        $this->setId($keys[0]);
+        $this->setUsername($keys[1]);
     }
 
     /**
@@ -1421,7 +1487,7 @@ abstract class Client implements ActiveRecordInterface
      */
     public function isPrimaryKeyNull()
     {
-        return null === $this->getId();
+        return (null === $this->getId()) && (null === $this->getUsername());
     }
 
     /**
@@ -1437,11 +1503,12 @@ abstract class Client implements ActiveRecordInterface
      */
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
+        $copyObj->setUsername($this->getUsername());
         $copyObj->setTitle($this->getTitle());
-        $copyObj->setFirst name($this->getFirst name());
-        $copyObj->setSecond name($this->getSecond name());
-        $copyObj->setFirst surname($this->getFirst surname());
-        $copyObj->setSecond surname($this->getSecond surname());
+        $copyObj->setFirstName($this->getFirstName());
+        $copyObj->setSecondName($this->getSecondName());
+        $copyObj->setFirstSurname($this->getFirstSurname());
+        $copyObj->setSecondSurname($this->getSecondSurname());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
 
@@ -1955,11 +2022,12 @@ abstract class Client implements ActiveRecordInterface
     public function clear()
     {
         $this->id = null;
+        $this->username = null;
         $this->title = null;
-        $this->first name = null;
-        $this->second name = null;
-        $this->first surname = null;
-        $this->second surname = null;
+        $this->first_name = null;
+        $this->second_name = null;
+        $this->first_surname = null;
+        $this->second_surname = null;
         $this->created_at = null;
         $this->updated_at = null;
         $this->alreadyInSave = false;

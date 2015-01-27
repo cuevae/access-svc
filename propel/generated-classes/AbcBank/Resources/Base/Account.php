@@ -1337,7 +1337,9 @@ abstract class Account implements ActiveRecordInterface
     public function getClient(ConnectionInterface $con = null)
     {
         if ($this->aClient === null && ($this->client_id !== null)) {
-            $this->aClient = ChildClientQuery::create()->findPk($this->client_id, $con);
+            $this->aClient = ChildClientQuery::create()
+                ->filterByAccount($this) // here
+                ->findOne($con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference
                 to this object.  This level of coupling may, however, be

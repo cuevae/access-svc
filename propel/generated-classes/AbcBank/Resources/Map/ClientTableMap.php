@@ -59,7 +59,7 @@ class ClientTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 8;
+    const NUM_COLUMNS = 9;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class ClientTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 8;
+    const NUM_HYDRATE_COLUMNS = 9;
 
     /**
      * the column name for the id field
@@ -77,29 +77,34 @@ class ClientTableMap extends TableMap
     const COL_ID = 'client.id';
 
     /**
+     * the column name for the username field
+     */
+    const COL_USERNAME = 'client.username';
+
+    /**
      * the column name for the title field
      */
     const COL_TITLE = 'client.title';
 
     /**
-     * the column name for the first name field
+     * the column name for the first_name field
      */
-    const COL_FIRST NAME = 'client.first name';
+    const COL_FIRST_NAME = 'client.first_name';
 
     /**
-     * the column name for the second name field
+     * the column name for the second_name field
      */
-    const COL_SECOND NAME = 'client.second name';
+    const COL_SECOND_NAME = 'client.second_name';
 
     /**
-     * the column name for the first surname field
+     * the column name for the first_surname field
      */
-    const COL_FIRST SURNAME = 'client.first surname';
+    const COL_FIRST_SURNAME = 'client.first_surname';
 
     /**
-     * the column name for the second surname field
+     * the column name for the second_surname field
      */
-    const COL_SECOND SURNAME = 'client.second surname';
+    const COL_SECOND_SURNAME = 'client.second_surname';
 
     /**
      * the column name for the created_at field
@@ -123,11 +128,11 @@ class ClientTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Title', 'First name', 'Second name', 'First surname', 'Second surname', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('id', 'title', 'first name', 'second name', 'first surname', 'second surname', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(ClientTableMap::COL_ID, ClientTableMap::COL_TITLE, ClientTableMap::COL_FIRST NAME, ClientTableMap::COL_SECOND NAME, ClientTableMap::COL_FIRST SURNAME, ClientTableMap::COL_SECOND SURNAME, ClientTableMap::COL_CREATED_AT, ClientTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('id', 'title', 'first name', 'second name', 'first surname', 'second surname', 'created_at', 'updated_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, )
+        self::TYPE_PHPNAME       => array('Id', 'Username', 'Title', 'FirstName', 'SecondName', 'FirstSurname', 'SecondSurname', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('id', 'username', 'title', 'firstName', 'secondName', 'firstSurname', 'secondSurname', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(ClientTableMap::COL_ID, ClientTableMap::COL_USERNAME, ClientTableMap::COL_TITLE, ClientTableMap::COL_FIRST_NAME, ClientTableMap::COL_SECOND_NAME, ClientTableMap::COL_FIRST_SURNAME, ClientTableMap::COL_SECOND_SURNAME, ClientTableMap::COL_CREATED_AT, ClientTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('id', 'username', 'title', 'first_name', 'second_name', 'first_surname', 'second_surname', 'created_at', 'updated_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
     );
 
     /**
@@ -137,11 +142,11 @@ class ClientTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Title' => 1, 'First name' => 2, 'Second name' => 3, 'First surname' => 4, 'Second surname' => 5, 'CreatedAt' => 6, 'UpdatedAt' => 7, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'title' => 1, 'first name' => 2, 'second name' => 3, 'first surname' => 4, 'second surname' => 5, 'createdAt' => 6, 'updatedAt' => 7, ),
-        self::TYPE_COLNAME       => array(ClientTableMap::COL_ID => 0, ClientTableMap::COL_TITLE => 1, ClientTableMap::COL_FIRST NAME => 2, ClientTableMap::COL_SECOND NAME => 3, ClientTableMap::COL_FIRST SURNAME => 4, ClientTableMap::COL_SECOND SURNAME => 5, ClientTableMap::COL_CREATED_AT => 6, ClientTableMap::COL_UPDATED_AT => 7, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'title' => 1, 'first name' => 2, 'second name' => 3, 'first surname' => 4, 'second surname' => 5, 'created_at' => 6, 'updated_at' => 7, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Username' => 1, 'Title' => 2, 'FirstName' => 3, 'SecondName' => 4, 'FirstSurname' => 5, 'SecondSurname' => 6, 'CreatedAt' => 7, 'UpdatedAt' => 8, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'username' => 1, 'title' => 2, 'firstName' => 3, 'secondName' => 4, 'firstSurname' => 5, 'secondSurname' => 6, 'createdAt' => 7, 'updatedAt' => 8, ),
+        self::TYPE_COLNAME       => array(ClientTableMap::COL_ID => 0, ClientTableMap::COL_USERNAME => 1, ClientTableMap::COL_TITLE => 2, ClientTableMap::COL_FIRST_NAME => 3, ClientTableMap::COL_SECOND_NAME => 4, ClientTableMap::COL_FIRST_SURNAME => 5, ClientTableMap::COL_SECOND_SURNAME => 6, ClientTableMap::COL_CREATED_AT => 7, ClientTableMap::COL_UPDATED_AT => 8, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'username' => 1, 'title' => 2, 'first_name' => 3, 'second_name' => 4, 'first_surname' => 5, 'second_surname' => 6, 'created_at' => 7, 'updated_at' => 8, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
     );
 
     /**
@@ -162,11 +167,12 @@ class ClientTableMap extends TableMap
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
+        $this->addPrimaryKey('username', 'Username', 'VARCHAR', true, 255, null);
         $this->addColumn('title', 'Title', 'VARCHAR', true, 255, null);
-        $this->addColumn('first name', 'First name', 'VARCHAR', true, 255, null);
-        $this->addColumn('second name', 'Second name', 'VARCHAR', false, 255, null);
-        $this->addColumn('first surname', 'First surname', 'VARCHAR', true, 255, null);
-        $this->addColumn('second surname', 'Second surname', 'VARCHAR', true, 255, null);
+        $this->addColumn('first_name', 'FirstName', 'VARCHAR', true, 255, null);
+        $this->addColumn('second_name', 'SecondName', 'VARCHAR', false, 255, null);
+        $this->addColumn('first_surname', 'FirstSurname', 'VARCHAR', true, 255, null);
+        $this->addColumn('second_surname', 'SecondSurname', 'VARCHAR', true, 255, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
@@ -206,6 +212,59 @@ class ClientTableMap extends TableMap
     } // getBehaviors()
 
     /**
+     * Adds an object to the instance pool.
+     *
+     * Propel keeps cached copies of objects in an instance pool when they are retrieved
+     * from the database. In some cases you may need to explicitly add objects
+     * to the cache in order to ensure that the same objects are always returned by find*()
+     * and findPk*() calls.
+     *
+     * @param \AbcBank\Resources\Client $obj A \AbcBank\Resources\Client object.
+     * @param string $key             (optional) key to use for instance map (for performance boost if key was already calculated externally).
+     */
+    public static function addInstanceToPool($obj, $key = null)
+    {
+        if (Propel::isInstancePoolingEnabled()) {
+            if (null === $key) {
+                $key = serialize(array((string) $obj->getId(), (string) $obj->getUsername()));
+            } // if key === null
+            self::$instances[$key] = $obj;
+        }
+    }
+
+    /**
+     * Removes an object from the instance pool.
+     *
+     * Propel keeps cached copies of objects in an instance pool when they are retrieved
+     * from the database.  In some cases -- especially when you override doDelete
+     * methods in your stub classes -- you may need to explicitly remove objects
+     * from the cache in order to prevent returning objects that no longer exist.
+     *
+     * @param mixed $value A \AbcBank\Resources\Client object or a primary key value.
+     */
+    public static function removeInstanceFromPool($value)
+    {
+        if (Propel::isInstancePoolingEnabled() && null !== $value) {
+            if (is_object($value) && $value instanceof \AbcBank\Resources\Client) {
+                $key = serialize(array((string) $value->getId(), (string) $value->getUsername()));
+
+            } elseif (is_array($value) && count($value) === 2) {
+                // assume we've been passed a primary key";
+                $key = serialize(array((string) $value[0], (string) $value[1]));
+            } elseif ($value instanceof Criteria) {
+                self::$instances = [];
+
+                return;
+            } else {
+                $e = new PropelException("Invalid value passed to removeInstanceFromPool().  Expected primary key or \AbcBank\Resources\Client object; got " . (is_object($value) ? get_class($value) . ' object.' : var_export($value, true)));
+                throw $e;
+            }
+
+            unset(self::$instances[$key]);
+        }
+    }
+
+    /**
      * Retrieves a string version of the primary key from the DB resultset row that can be used to uniquely identify a row in this table.
      *
      * For tables with a single-column primary key, that simple pkey value will be returned.  For tables with
@@ -221,11 +280,11 @@ class ClientTableMap extends TableMap
     public static function getPrimaryKeyHashFromRow($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
         // If the PK cannot be derived from the row, return NULL.
-        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)] === null) {
+        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('Username', TableMap::TYPE_PHPNAME, $indexType)] === null) {
             return null;
         }
 
-        return (string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
+        return serialize(array((string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('Username', TableMap::TYPE_PHPNAME, $indexType)]));
     }
 
     /**
@@ -242,11 +301,20 @@ class ClientTableMap extends TableMap
      */
     public static function getPrimaryKeyFromRow($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        return (int) $row[
+            $pks = [];
+
+        $pks[] = (int) $row[
             $indexType == TableMap::TYPE_NUM
                 ? 0 + $offset
                 : self::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)
         ];
+        $pks[] = (string) $row[
+            $indexType == TableMap::TYPE_NUM
+                ? 1 + $offset
+                : self::translateFieldName('Username', TableMap::TYPE_PHPNAME, $indexType)
+        ];
+
+        return $pks;
     }
 
     /**
@@ -347,20 +415,22 @@ class ClientTableMap extends TableMap
     {
         if (null === $alias) {
             $criteria->addSelectColumn(ClientTableMap::COL_ID);
+            $criteria->addSelectColumn(ClientTableMap::COL_USERNAME);
             $criteria->addSelectColumn(ClientTableMap::COL_TITLE);
-            $criteria->addSelectColumn(ClientTableMap::COL_FIRST NAME);
-            $criteria->addSelectColumn(ClientTableMap::COL_SECOND NAME);
-            $criteria->addSelectColumn(ClientTableMap::COL_FIRST SURNAME);
-            $criteria->addSelectColumn(ClientTableMap::COL_SECOND SURNAME);
+            $criteria->addSelectColumn(ClientTableMap::COL_FIRST_NAME);
+            $criteria->addSelectColumn(ClientTableMap::COL_SECOND_NAME);
+            $criteria->addSelectColumn(ClientTableMap::COL_FIRST_SURNAME);
+            $criteria->addSelectColumn(ClientTableMap::COL_SECOND_SURNAME);
             $criteria->addSelectColumn(ClientTableMap::COL_CREATED_AT);
             $criteria->addSelectColumn(ClientTableMap::COL_UPDATED_AT);
         } else {
             $criteria->addSelectColumn($alias . '.id');
+            $criteria->addSelectColumn($alias . '.username');
             $criteria->addSelectColumn($alias . '.title');
-            $criteria->addSelectColumn($alias . '.first name');
-            $criteria->addSelectColumn($alias . '.second name');
-            $criteria->addSelectColumn($alias . '.first surname');
-            $criteria->addSelectColumn($alias . '.second surname');
+            $criteria->addSelectColumn($alias . '.first_name');
+            $criteria->addSelectColumn($alias . '.second_name');
+            $criteria->addSelectColumn($alias . '.first_surname');
+            $criteria->addSelectColumn($alias . '.second_surname');
             $criteria->addSelectColumn($alias . '.created_at');
             $criteria->addSelectColumn($alias . '.updated_at');
         }
@@ -414,7 +484,17 @@ class ClientTableMap extends TableMap
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
             $criteria = new Criteria(ClientTableMap::DATABASE_NAME);
-            $criteria->add(ClientTableMap::COL_ID, (array) $values, Criteria::IN);
+            // primary key is composite; we therefore, expect
+            // the primary key passed to be an array of pkey values
+            if (count($values) == count($values, COUNT_RECURSIVE)) {
+                // array is not multi-dimensional
+                $values = array($values);
+            }
+            foreach ($values as $value) {
+                $criterion = $criteria->getNewCriterion(ClientTableMap::COL_ID, $value[0]);
+                $criterion->addAnd($criteria->getNewCriterion(ClientTableMap::COL_USERNAME, $value[1]));
+                $criteria->addOr($criterion);
+            }
         }
 
         $query = ClientQuery::create()->mergeWith($criteria);

@@ -21,20 +21,22 @@ use Propel\Runtime\Exception\PropelException;
  *
  *
  * @method     ChildClientQuery orderById($order = Criteria::ASC) Order by the id column
+ * @method     ChildClientQuery orderByUsername($order = Criteria::ASC) Order by the username column
  * @method     ChildClientQuery orderByTitle($order = Criteria::ASC) Order by the title column
- * @method     ChildClientQuery orderByFirst name($order = Criteria::ASC) Order by the first name column
- * @method     ChildClientQuery orderBySecond name($order = Criteria::ASC) Order by the second name column
- * @method     ChildClientQuery orderByFirst surname($order = Criteria::ASC) Order by the first surname column
- * @method     ChildClientQuery orderBySecond surname($order = Criteria::ASC) Order by the second surname column
+ * @method     ChildClientQuery orderByFirstName($order = Criteria::ASC) Order by the first_name column
+ * @method     ChildClientQuery orderBySecondName($order = Criteria::ASC) Order by the second_name column
+ * @method     ChildClientQuery orderByFirstSurname($order = Criteria::ASC) Order by the first_surname column
+ * @method     ChildClientQuery orderBySecondSurname($order = Criteria::ASC) Order by the second_surname column
  * @method     ChildClientQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     ChildClientQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
  * @method     ChildClientQuery groupById() Group by the id column
+ * @method     ChildClientQuery groupByUsername() Group by the username column
  * @method     ChildClientQuery groupByTitle() Group by the title column
- * @method     ChildClientQuery groupByFirst name() Group by the first name column
- * @method     ChildClientQuery groupBySecond name() Group by the second name column
- * @method     ChildClientQuery groupByFirst surname() Group by the first surname column
- * @method     ChildClientQuery groupBySecond surname() Group by the second surname column
+ * @method     ChildClientQuery groupByFirstName() Group by the first_name column
+ * @method     ChildClientQuery groupBySecondName() Group by the second_name column
+ * @method     ChildClientQuery groupByFirstSurname() Group by the first_surname column
+ * @method     ChildClientQuery groupBySecondSurname() Group by the second_surname column
  * @method     ChildClientQuery groupByCreatedAt() Group by the created_at column
  * @method     ChildClientQuery groupByUpdatedAt() Group by the updated_at column
  *
@@ -56,11 +58,12 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildClient findOneOrCreate(ConnectionInterface $con = null) Return the first ChildClient matching the query, or a new ChildClient object populated from the query conditions when no match is found
  *
  * @method     ChildClient findOneById(int $id) Return the first ChildClient filtered by the id column
+ * @method     ChildClient findOneByUsername(string $username) Return the first ChildClient filtered by the username column
  * @method     ChildClient findOneByTitle(string $title) Return the first ChildClient filtered by the title column
- * @method     ChildClient findOneByFirst name(string $first name) Return the first ChildClient filtered by the first name column
- * @method     ChildClient findOneBySecond name(string $second name) Return the first ChildClient filtered by the second name column
- * @method     ChildClient findOneByFirst surname(string $first surname) Return the first ChildClient filtered by the first surname column
- * @method     ChildClient findOneBySecond surname(string $second surname) Return the first ChildClient filtered by the second surname column
+ * @method     ChildClient findOneByFirstName(string $first_name) Return the first ChildClient filtered by the first_name column
+ * @method     ChildClient findOneBySecondName(string $second_name) Return the first ChildClient filtered by the second_name column
+ * @method     ChildClient findOneByFirstSurname(string $first_surname) Return the first ChildClient filtered by the first_surname column
+ * @method     ChildClient findOneBySecondSurname(string $second_surname) Return the first ChildClient filtered by the second_surname column
  * @method     ChildClient findOneByCreatedAt(string $created_at) Return the first ChildClient filtered by the created_at column
  * @method     ChildClient findOneByUpdatedAt(string $updated_at) Return the first ChildClient filtered by the updated_at column *
 
@@ -68,21 +71,23 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildClient requireOne(ConnectionInterface $con = null) Return the first ChildClient matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildClient requireOneById(int $id) Return the first ChildClient filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildClient requireOneByUsername(string $username) Return the first ChildClient filtered by the username column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildClient requireOneByTitle(string $title) Return the first ChildClient filtered by the title column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildClient requireOneByFirst name(string $first name) Return the first ChildClient filtered by the first name column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildClient requireOneBySecond name(string $second name) Return the first ChildClient filtered by the second name column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildClient requireOneByFirst surname(string $first surname) Return the first ChildClient filtered by the first surname column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildClient requireOneBySecond surname(string $second surname) Return the first ChildClient filtered by the second surname column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildClient requireOneByFirstName(string $first_name) Return the first ChildClient filtered by the first_name column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildClient requireOneBySecondName(string $second_name) Return the first ChildClient filtered by the second_name column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildClient requireOneByFirstSurname(string $first_surname) Return the first ChildClient filtered by the first_surname column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildClient requireOneBySecondSurname(string $second_surname) Return the first ChildClient filtered by the second_surname column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildClient requireOneByCreatedAt(string $created_at) Return the first ChildClient filtered by the created_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildClient requireOneByUpdatedAt(string $updated_at) Return the first ChildClient filtered by the updated_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildClient[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildClient objects based on current ModelCriteria
  * @method     ChildClient[]|ObjectCollection findById(int $id) Return ChildClient objects filtered by the id column
+ * @method     ChildClient[]|ObjectCollection findByUsername(string $username) Return ChildClient objects filtered by the username column
  * @method     ChildClient[]|ObjectCollection findByTitle(string $title) Return ChildClient objects filtered by the title column
- * @method     ChildClient[]|ObjectCollection findByFirst name(string $first name) Return ChildClient objects filtered by the first name column
- * @method     ChildClient[]|ObjectCollection findBySecond name(string $second name) Return ChildClient objects filtered by the second name column
- * @method     ChildClient[]|ObjectCollection findByFirst surname(string $first surname) Return ChildClient objects filtered by the first surname column
- * @method     ChildClient[]|ObjectCollection findBySecond surname(string $second surname) Return ChildClient objects filtered by the second surname column
+ * @method     ChildClient[]|ObjectCollection findByFirstName(string $first_name) Return ChildClient objects filtered by the first_name column
+ * @method     ChildClient[]|ObjectCollection findBySecondName(string $second_name) Return ChildClient objects filtered by the second_name column
+ * @method     ChildClient[]|ObjectCollection findByFirstSurname(string $first_surname) Return ChildClient objects filtered by the first_surname column
+ * @method     ChildClient[]|ObjectCollection findBySecondSurname(string $second_surname) Return ChildClient objects filtered by the second_surname column
  * @method     ChildClient[]|ObjectCollection findByCreatedAt(string $created_at) Return ChildClient objects filtered by the created_at column
  * @method     ChildClient[]|ObjectCollection findByUpdatedAt(string $updated_at) Return ChildClient objects filtered by the updated_at column
  * @method     ChildClient[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
@@ -134,10 +139,10 @@ abstract class ClientQuery extends ModelCriteria
      * Go fast if the query is untouched.
      *
      * <code>
-     * $obj  = $c->findPk(12, $con);
+     * $obj = $c->findPk(array(12, 34), $con);
      * </code>
      *
-     * @param mixed $key Primary key to use for the query
+     * @param array[$id, $username] $key Primary key to use for the query
      * @param ConnectionInterface $con an optional connection object
      *
      * @return ChildClient|array|mixed the result, formatted by the current formatter
@@ -147,7 +152,7 @@ abstract class ClientQuery extends ModelCriteria
         if ($key === null) {
             return null;
         }
-        if ((null !== ($obj = ClientTableMap::getInstanceFromPool((string) $key))) && !$this->formatter) {
+        if ((null !== ($obj = ClientTableMap::getInstanceFromPool(serialize(array((string) $key[0], (string) $key[1]))))) && !$this->formatter) {
             // the object is already in the instance pool
             return $obj;
         }
@@ -177,10 +182,11 @@ abstract class ClientQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, title, first name, second name, first surname, second surname, created_at, updated_at FROM client WHERE id = :p0';
+        $sql = 'SELECT id, username, title, first_name, second_name, first_surname, second_surname, created_at, updated_at FROM client WHERE id = :p0 AND username = :p1';
         try {
             $stmt = $con->prepare($sql);
-            $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
+            $stmt->bindValue(':p0', $key[0], PDO::PARAM_INT);
+            $stmt->bindValue(':p1', $key[1], PDO::PARAM_STR);
             $stmt->execute();
         } catch (Exception $e) {
             Propel::log($e->getMessage(), Propel::LOG_ERR);
@@ -191,7 +197,7 @@ abstract class ClientQuery extends ModelCriteria
             /** @var ChildClient $obj */
             $obj = new ChildClient();
             $obj->hydrate($row);
-            ClientTableMap::addInstanceToPool($obj, (string) $key);
+            ClientTableMap::addInstanceToPool($obj, serialize(array((string) $key[0], (string) $key[1])));
         }
         $stmt->closeCursor();
 
@@ -220,7 +226,7 @@ abstract class ClientQuery extends ModelCriteria
     /**
      * Find objects by primary key
      * <code>
-     * $objs = $c->findPks(array(12, 56, 832), $con);
+     * $objs = $c->findPks(array(array(12, 56), array(832, 123), array(123, 456)), $con);
      * </code>
      * @param     array $keys Primary keys to use for the query
      * @param     ConnectionInterface $con an optional connection object
@@ -250,8 +256,10 @@ abstract class ClientQuery extends ModelCriteria
      */
     public function filterByPrimaryKey($key)
     {
+        $this->addUsingAlias(ClientTableMap::COL_ID, $key[0], Criteria::EQUAL);
+        $this->addUsingAlias(ClientTableMap::COL_USERNAME, $key[1], Criteria::EQUAL);
 
-        return $this->addUsingAlias(ClientTableMap::COL_ID, $key, Criteria::EQUAL);
+        return $this;
     }
 
     /**
@@ -263,8 +271,17 @@ abstract class ClientQuery extends ModelCriteria
      */
     public function filterByPrimaryKeys($keys)
     {
+        if (empty($keys)) {
+            return $this->add(null, '1<>1', Criteria::CUSTOM);
+        }
+        foreach ($keys as $key) {
+            $cton0 = $this->getNewCriterion(ClientTableMap::COL_ID, $key[0], Criteria::EQUAL);
+            $cton1 = $this->getNewCriterion(ClientTableMap::COL_USERNAME, $key[1], Criteria::EQUAL);
+            $cton0->addAnd($cton1);
+            $this->addOr($cton0);
+        }
 
-        return $this->addUsingAlias(ClientTableMap::COL_ID, $keys, Criteria::IN);
+        return $this;
     }
 
     /**
@@ -309,6 +326,35 @@ abstract class ClientQuery extends ModelCriteria
     }
 
     /**
+     * Filter the query on the username column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByUsername('fooValue');   // WHERE username = 'fooValue'
+     * $query->filterByUsername('%fooValue%'); // WHERE username LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $username The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildClientQuery The current query, for fluid interface
+     */
+    public function filterByUsername($username = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($username)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $username)) {
+                $username = str_replace('*', '%', $username);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(ClientTableMap::COL_USERNAME, $username, $comparison);
+    }
+
+    /**
      * Filter the query on the title column
      *
      * Example usage:
@@ -338,119 +384,119 @@ abstract class ClientQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query on the first name column
+     * Filter the query on the first_name column
      *
      * Example usage:
      * <code>
-     * $query->filterByFirst name('fooValue');   // WHERE first name = 'fooValue'
-     * $query->filterByFirst name('%fooValue%'); // WHERE first name LIKE '%fooValue%'
+     * $query->filterByFirstName('fooValue');   // WHERE first_name = 'fooValue'
+     * $query->filterByFirstName('%fooValue%'); // WHERE first_name LIKE '%fooValue%'
      * </code>
      *
-     * @param     string $first name The value to use as filter.
+     * @param     string $firstName The value to use as filter.
      *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildClientQuery The current query, for fluid interface
      */
-    public function filterByFirst name($first name = null, $comparison = null)
+    public function filterByFirstName($firstName = null, $comparison = null)
     {
         if (null === $comparison) {
-            if (is_array($first name)) {
+            if (is_array($firstName)) {
                 $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $first name)) {
-                $first name = str_replace('*', '%', $first name);
+            } elseif (preg_match('/[\%\*]/', $firstName)) {
+                $firstName = str_replace('*', '%', $firstName);
                 $comparison = Criteria::LIKE;
             }
         }
 
-        return $this->addUsingAlias(ClientTableMap::COL_FIRST NAME, $first name, $comparison);
+        return $this->addUsingAlias(ClientTableMap::COL_FIRST_NAME, $firstName, $comparison);
     }
 
     /**
-     * Filter the query on the second name column
+     * Filter the query on the second_name column
      *
      * Example usage:
      * <code>
-     * $query->filterBySecond name('fooValue');   // WHERE second name = 'fooValue'
-     * $query->filterBySecond name('%fooValue%'); // WHERE second name LIKE '%fooValue%'
+     * $query->filterBySecondName('fooValue');   // WHERE second_name = 'fooValue'
+     * $query->filterBySecondName('%fooValue%'); // WHERE second_name LIKE '%fooValue%'
      * </code>
      *
-     * @param     string $second name The value to use as filter.
+     * @param     string $secondName The value to use as filter.
      *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildClientQuery The current query, for fluid interface
      */
-    public function filterBySecond name($second name = null, $comparison = null)
+    public function filterBySecondName($secondName = null, $comparison = null)
     {
         if (null === $comparison) {
-            if (is_array($second name)) {
+            if (is_array($secondName)) {
                 $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $second name)) {
-                $second name = str_replace('*', '%', $second name);
+            } elseif (preg_match('/[\%\*]/', $secondName)) {
+                $secondName = str_replace('*', '%', $secondName);
                 $comparison = Criteria::LIKE;
             }
         }
 
-        return $this->addUsingAlias(ClientTableMap::COL_SECOND NAME, $second name, $comparison);
+        return $this->addUsingAlias(ClientTableMap::COL_SECOND_NAME, $secondName, $comparison);
     }
 
     /**
-     * Filter the query on the first surname column
+     * Filter the query on the first_surname column
      *
      * Example usage:
      * <code>
-     * $query->filterByFirst surname('fooValue');   // WHERE first surname = 'fooValue'
-     * $query->filterByFirst surname('%fooValue%'); // WHERE first surname LIKE '%fooValue%'
+     * $query->filterByFirstSurname('fooValue');   // WHERE first_surname = 'fooValue'
+     * $query->filterByFirstSurname('%fooValue%'); // WHERE first_surname LIKE '%fooValue%'
      * </code>
      *
-     * @param     string $first surname The value to use as filter.
+     * @param     string $firstSurname The value to use as filter.
      *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildClientQuery The current query, for fluid interface
      */
-    public function filterByFirst surname($first surname = null, $comparison = null)
+    public function filterByFirstSurname($firstSurname = null, $comparison = null)
     {
         if (null === $comparison) {
-            if (is_array($first surname)) {
+            if (is_array($firstSurname)) {
                 $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $first surname)) {
-                $first surname = str_replace('*', '%', $first surname);
+            } elseif (preg_match('/[\%\*]/', $firstSurname)) {
+                $firstSurname = str_replace('*', '%', $firstSurname);
                 $comparison = Criteria::LIKE;
             }
         }
 
-        return $this->addUsingAlias(ClientTableMap::COL_FIRST SURNAME, $first surname, $comparison);
+        return $this->addUsingAlias(ClientTableMap::COL_FIRST_SURNAME, $firstSurname, $comparison);
     }
 
     /**
-     * Filter the query on the second surname column
+     * Filter the query on the second_surname column
      *
      * Example usage:
      * <code>
-     * $query->filterBySecond surname('fooValue');   // WHERE second surname = 'fooValue'
-     * $query->filterBySecond surname('%fooValue%'); // WHERE second surname LIKE '%fooValue%'
+     * $query->filterBySecondSurname('fooValue');   // WHERE second_surname = 'fooValue'
+     * $query->filterBySecondSurname('%fooValue%'); // WHERE second_surname LIKE '%fooValue%'
      * </code>
      *
-     * @param     string $second surname The value to use as filter.
+     * @param     string $secondSurname The value to use as filter.
      *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildClientQuery The current query, for fluid interface
      */
-    public function filterBySecond surname($second surname = null, $comparison = null)
+    public function filterBySecondSurname($secondSurname = null, $comparison = null)
     {
         if (null === $comparison) {
-            if (is_array($second surname)) {
+            if (is_array($secondSurname)) {
                 $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $second surname)) {
-                $second surname = str_replace('*', '%', $second surname);
+            } elseif (preg_match('/[\%\*]/', $secondSurname)) {
+                $secondSurname = str_replace('*', '%', $secondSurname);
                 $comparison = Criteria::LIKE;
             }
         }
 
-        return $this->addUsingAlias(ClientTableMap::COL_SECOND SURNAME, $second surname, $comparison);
+        return $this->addUsingAlias(ClientTableMap::COL_SECOND_SURNAME, $secondSurname, $comparison);
     }
 
     /**
@@ -695,7 +741,9 @@ abstract class ClientQuery extends ModelCriteria
     public function prune($client = null)
     {
         if ($client) {
-            $this->addUsingAlias(ClientTableMap::COL_ID, $client->getId(), Criteria::NOT_EQUAL);
+            $this->addCond('pruneCond0', $this->getAliasedColName(ClientTableMap::COL_ID), $client->getId(), Criteria::NOT_EQUAL);
+            $this->addCond('pruneCond1', $this->getAliasedColName(ClientTableMap::COL_USERNAME), $client->getUsername(), Criteria::NOT_EQUAL);
+            $this->combine(array('pruneCond0', 'pruneCond1'), Criteria::LOGICAL_OR);
         }
 
         return $this;

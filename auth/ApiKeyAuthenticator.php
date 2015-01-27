@@ -41,12 +41,12 @@ class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface, Authentica
 
         $user = $this->userProvider->loadUserByUsername($username);
 
-        //Generate local signature and compare with the one sent
+        /*//Generate local signature and compare with the one sent
         $key = ApiKeyQuery::create()->findByValue($apiKey)->getFirst();
         $localSignature = md5(serialize($headers) . $key->getSecret());
         if(strcmp($localSignature,$signature)!==0){
-            throw new AuthenticationException('API signature is not valid');
-        }
+            throw new AuthenticationException('API signature is not valid.');
+        }*/
 
         return new PreAuthenticatedToken(
             $user,
