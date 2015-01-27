@@ -133,6 +133,31 @@ $mustBeClientOrAdmin = function ( $clientId ) use ( $app ){
     return $client;
 };
 
+$app->before(function (Request $request) {
+    if (0 === strpos($request->headers->get('Content-Type'), 'application/json')) {
+        $data = json_decode(preg_replace('/(\n|\t)/','',$request->getContent()), true);
+        $request->request->replace(is_array($data) ? $data : array());
+    }
+});
+
+$clients->post('/', function(Request $req)use($app){
+    $client = new \AbcBank\Resources\Client();
+    try{
+        $client->fromArray($req->request->all());
+        $client->save();
+    } catch( Exception $e ){
+        $app['monolog']->addError($e->getMessage());
+        $app->abort(400, "Client cannot be saved.");
+    }
+
+    return new \Symfony\Component\HttpFoundation\Response(
+        $client->toJson(),
+        201,
+        array( 'Content-type' => 'application/json' )
+    );
+
+});
+
 $clients->get(
     '/{clientId}',
     function ( $clientId ) use ( $app, $mustBeClientOrAdmin ){
