@@ -104,8 +104,7 @@ $app->register(
 /**
  * Security access rules
  */
-$app['security.access_rules'] = array(
-);
+$app['security.access_rules'] = array();
 
 $app['security.role_hierarchy'] = array(
     'ROLE_ADMIN' => array( 'ROLE_CLIENT', 'ROLE_ALLOWED_TO_SWITCH' ),
@@ -149,11 +148,12 @@ $app->get(
 
         $dbFetch = \AbcBank\Resources\ClientQuery::create();
         if($query){
-            $dbFetch->filterByFirstName( "%$query%" )
-                    ->filterByFirstSurname( "%$query%" )
-                    ->filterBySecondName( "%$query%" )
-                    ->filterBySecondSurname( "%$query%" )
-                    ->filterByUsername( "%$query%" );
+            $dbFetch->condition( 'c1', 'Client.FirstName LIKE ?', "%$query%" )
+                    ->condition( 'c2', 'Client.SecondName LIKE ?', "%$query%" )
+                    ->condition( 'c3', 'Client.FirstSurname LIKE ?', "%$query%" )
+                    ->condition( 'c4', 'Client.SecondSurname LIKE ?', "%$query%" )
+                    ->condition( 'c5', 'Client.Username LIKE ?', "%$query%" )
+                    ->where( array( 'c1', 'c2', 'c3', 'c4', 'c5' ), 'or' );
         }
         $clients = $dbFetch->find();
 
@@ -178,14 +178,15 @@ $app->post(
             $client->fromArray( $req->request->all() );
             if($client->validate()){
                 $client->save();
-            } else{
+            }else{
                 $errors = new \StdClass();
                 $count = 1;
-                foreach ($client->getValidationFailures() as $failure) {
-                    $errors->{"error".$count++} = "Property ".$failure->getPropertyPath().": ".$failure->getMessage();
+                foreach($client->getValidationFailures() as $failure){
+                    $errors->{"error" . $count++} = "Property " . $failure->getPropertyPath(
+                        ) . ": " . $failure->getMessage();
                 }
                 return new Response(
-                    json_encode($errors),
+                    json_encode( $errors ),
                     400,
                     array( 'Content-type' => 'application/json' )
                 );
