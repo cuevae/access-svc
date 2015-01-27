@@ -208,6 +208,7 @@ class ClientTableMap extends TableMap
     {
         return array(
             'timestampable' => array('create_column' => 'created_at', 'update_column' => 'updated_at', 'disable_created_at' => 'false', 'disable_updated_at' => 'false', ),
+            'validate' => array('rule1' => array ('column' => 'first_name','validator' => 'NotNull',), 'rule2' => array ('column' => 'first_surname','validator' => 'NotNull',), 'rule3' => array ('column' => 'username','validator' => 'Length','options' => array ('min' => 3,),), ),
         );
     } // getBehaviors()
 

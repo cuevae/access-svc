@@ -9,6 +9,12 @@
         <column name="first_surname" type="varchar" size="255" required="true" />
         <column name="second_surname" type="varchar" size="255" required="true" />
         <behavior name="timestampable" />
+        <behavior name="validate">
+            <parameter name="rule1" value="{column: first_name, validator: NotNull}" />
+            <parameter name="rule2" value="{column: first_surname, validator: NotNull}" />
+            <parameter name="rule3" value="{column: username, validator: NotNull}" />
+            <parameter name="rule3" value="{column: username, validator: Length, options: {min:3}}" />
+        </behavior>
     </table>
     <table name="address" phpName="Address">
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
@@ -30,9 +36,9 @@
         <behavior name="timestampable" />
     </table>
     <table name="account" phpName="Account">
-        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
-        <column name="client_id" type="integer" required="true" />
-        <column name="type" type="varchar" size="255" required="true" />
+        <column name="account_number" type="varchar" size="255" primaryKey="true" />
+        <column name="client_id" type="integer" primaryKey="true" required="true" />
+        <column name="type" type="enum" valueSet="savings, current, credit" primaryKey="true" required="true" />
         <column name="balance" type="float" required="true" />
         <foreign-key foreignTable="client">
             <reference local="client_id" foreign="id"/>

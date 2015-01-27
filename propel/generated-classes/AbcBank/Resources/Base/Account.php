@@ -65,10 +65,10 @@ abstract class Account implements ActiveRecordInterface
     protected $virtualColumns = array();
 
     /**
-     * The value for the id field.
-     * @var        int
+     * The value for the account_number field.
+     * @var        string
      */
-    protected $id;
+    protected $account_number;
 
     /**
      * The value for the client_id field.
@@ -78,7 +78,7 @@ abstract class Account implements ActiveRecordInterface
 
     /**
      * The value for the type field.
-     * @var        string
+     * @var        int
      */
     protected $type;
 
@@ -331,13 +331,13 @@ abstract class Account implements ActiveRecordInterface
     }
 
     /**
-     * Get the [id] column value.
+     * Get the [account_number] column value.
      *
-     * @return int
+     * @return string
      */
-    public function getId()
+    public function getAccountNumber()
     {
-        return $this->id;
+        return $this->account_number;
     }
 
     /**
@@ -354,10 +354,19 @@ abstract class Account implements ActiveRecordInterface
      * Get the [type] column value.
      *
      * @return string
+     * @throws \Propel\Runtime\Exception\PropelException
      */
     public function getType()
     {
-        return $this->type;
+        if (null === $this->type) {
+            return null;
+        }
+        $valueSet = AccountTableMap::getValueSet(AccountTableMap::COL_TYPE);
+        if (!isset($valueSet[$this->type])) {
+            throw new PropelException('Unknown stored enum key: ' . $this->type);
+        }
+
+        return $valueSet[$this->type];
     }
 
     /**
@@ -411,24 +420,24 @@ abstract class Account implements ActiveRecordInterface
     }
 
     /**
-     * Set the value of [id] column.
+     * Set the value of [account_number] column.
      *
-     * @param  int $v new value
+     * @param  string $v new value
      * @return $this|\AbcBank\Resources\Account The current object (for fluent API support)
      */
-    public function setId($v)
+    public function setAccountNumber($v)
     {
         if ($v !== null) {
-            $v = (int) $v;
+            $v = (string) $v;
         }
 
-        if ($this->id !== $v) {
-            $this->id = $v;
-            $this->modifiedColumns[AccountTableMap::COL_ID] = true;
+        if ($this->account_number !== $v) {
+            $this->account_number = $v;
+            $this->modifiedColumns[AccountTableMap::COL_ACCOUNT_NUMBER] = true;
         }
 
         return $this;
-    } // setId()
+    } // setAccountNumber()
 
     /**
      * Set the value of [client_id] column.
@@ -459,11 +468,16 @@ abstract class Account implements ActiveRecordInterface
      *
      * @param  string $v new value
      * @return $this|\AbcBank\Resources\Account The current object (for fluent API support)
+     * @throws \Propel\Runtime\Exception\PropelException
      */
     public function setType($v)
     {
         if ($v !== null) {
-            $v = (string) $v;
+            $valueSet = AccountTableMap::getValueSet(AccountTableMap::COL_TYPE);
+            if (!in_array($v, $valueSet)) {
+                throw new PropelException(sprintf('Value "%s" is not accepted in this enumerated column', $v));
+            }
+            $v = array_search($v, $valueSet);
         }
 
         if ($this->type !== $v) {
@@ -570,14 +584,14 @@ abstract class Account implements ActiveRecordInterface
     {
         try {
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : AccountTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->id = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : AccountTableMap::translateFieldName('AccountNumber', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->account_number = (null !== $col) ? (string) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : AccountTableMap::translateFieldName('ClientId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->client_id = (null !== $col) ? (int) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : AccountTableMap::translateFieldName('Type', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->type = (null !== $col) ? (string) $col : null;
+            $this->type = (null !== $col) ? (int) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : AccountTableMap::translateFieldName('Balance', TableMap::TYPE_PHPNAME, $indexType)];
             $this->balance = (null !== $col) ? (double) $col : null;
@@ -820,14 +834,10 @@ abstract class Account implements ActiveRecordInterface
         $modifiedColumns = array();
         $index = 0;
 
-        $this->modifiedColumns[AccountTableMap::COL_ID] = true;
-        if (null !== $this->id) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key (' . AccountTableMap::COL_ID . ')');
-        }
 
          // check the columns in natural order for more readable SQL queries
-        if ($this->isColumnModified(AccountTableMap::COL_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'id';
+        if ($this->isColumnModified(AccountTableMap::COL_ACCOUNT_NUMBER)) {
+            $modifiedColumns[':p' . $index++]  = 'account_number';
         }
         if ($this->isColumnModified(AccountTableMap::COL_CLIENT_ID)) {
             $modifiedColumns[':p' . $index++]  = 'client_id';
@@ -855,14 +865,14 @@ abstract class Account implements ActiveRecordInterface
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case 'id':
-                        $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
+                    case 'account_number':
+                        $stmt->bindValue($identifier, $this->account_number, PDO::PARAM_STR);
                         break;
                     case 'client_id':
                         $stmt->bindValue($identifier, $this->client_id, PDO::PARAM_INT);
                         break;
                     case 'type':
-                        $stmt->bindValue($identifier, $this->type, PDO::PARAM_STR);
+                        $stmt->bindValue($identifier, $this->type, PDO::PARAM_INT);
                         break;
                     case 'balance':
                         $stmt->bindValue($identifier, $this->balance, PDO::PARAM_STR);
@@ -880,13 +890,6 @@ abstract class Account implements ActiveRecordInterface
             Propel::log($e->getMessage(), Propel::LOG_ERR);
             throw new PropelException(sprintf('Unable to execute INSERT statement [%s]', $sql), 0, $e);
         }
-
-        try {
-            $pk = $con->lastInsertId();
-        } catch (Exception $e) {
-            throw new PropelException('Unable to get autoincrement id.', 0, $e);
-        }
-        $this->setId($pk);
 
         $this->setNew(false);
     }
@@ -936,7 +939,7 @@ abstract class Account implements ActiveRecordInterface
     {
         switch ($pos) {
             case 0:
-                return $this->getId();
+                return $this->getAccountNumber();
                 break;
             case 1:
                 return $this->getClientId();
@@ -983,7 +986,7 @@ abstract class Account implements ActiveRecordInterface
         $alreadyDumpedObjects['Account'][$this->hashCode()] = true;
         $keys = AccountTableMap::getFieldNames($keyType);
         $result = array(
-            $keys[0] => $this->getId(),
+            $keys[0] => $this->getAccountNumber(),
             $keys[1] => $this->getClientId(),
             $keys[2] => $this->getType(),
             $keys[3] => $this->getBalance(),
@@ -1060,12 +1063,16 @@ abstract class Account implements ActiveRecordInterface
     {
         switch ($pos) {
             case 0:
-                $this->setId($value);
+                $this->setAccountNumber($value);
                 break;
             case 1:
                 $this->setClientId($value);
                 break;
             case 2:
+                $valueSet = AccountTableMap::getValueSet(AccountTableMap::COL_TYPE);
+                if (isset($valueSet[$value])) {
+                    $value = $valueSet[$value];
+                }
                 $this->setType($value);
                 break;
             case 3:
@@ -1104,7 +1111,7 @@ abstract class Account implements ActiveRecordInterface
         $keys = AccountTableMap::getFieldNames($keyType);
 
         if (array_key_exists($keys[0], $arr)) {
-            $this->setId($arr[$keys[0]]);
+            $this->setAccountNumber($arr[$keys[0]]);
         }
         if (array_key_exists($keys[1], $arr)) {
             $this->setClientId($arr[$keys[1]]);
@@ -1162,8 +1169,8 @@ abstract class Account implements ActiveRecordInterface
     {
         $criteria = new Criteria(AccountTableMap::DATABASE_NAME);
 
-        if ($this->isColumnModified(AccountTableMap::COL_ID)) {
-            $criteria->add(AccountTableMap::COL_ID, $this->id);
+        if ($this->isColumnModified(AccountTableMap::COL_ACCOUNT_NUMBER)) {
+            $criteria->add(AccountTableMap::COL_ACCOUNT_NUMBER, $this->account_number);
         }
         if ($this->isColumnModified(AccountTableMap::COL_CLIENT_ID)) {
             $criteria->add(AccountTableMap::COL_CLIENT_ID, $this->client_id);
@@ -1197,7 +1204,9 @@ abstract class Account implements ActiveRecordInterface
     public function buildPkeyCriteria()
     {
         $criteria = ChildAccountQuery::create();
-        $criteria->add(AccountTableMap::COL_ID, $this->id);
+        $criteria->add(AccountTableMap::COL_ACCOUNT_NUMBER, $this->account_number);
+        $criteria->add(AccountTableMap::COL_CLIENT_ID, $this->client_id);
+        $criteria->add(AccountTableMap::COL_TYPE, $this->type);
 
         return $criteria;
     }
@@ -1210,10 +1219,19 @@ abstract class Account implements ActiveRecordInterface
      */
     public function hashCode()
     {
-        $validPk = null !== $this->getId();
+        $validPk = null !== $this->getAccountNumber() &&
+            null !== $this->getClientId() &&
+            null !== $this->getType();
 
-        $validPrimaryKeyFKs = 0;
+        $validPrimaryKeyFKs = 1;
         $primaryKeyFKs = [];
+
+        //relation account_fk_90166c to table client
+        if ($this->aClient && $hash = spl_object_hash($this->aClient)) {
+            $primaryKeyFKs[] = $hash;
+        } else {
+            $validPrimaryKeyFKs = false;
+        }
 
         if ($validPk) {
             return crc32(json_encode($this->getPrimaryKey(), JSON_UNESCAPED_UNICODE));
@@ -1225,23 +1243,31 @@ abstract class Account implements ActiveRecordInterface
     }
 
     /**
-     * Returns the primary key for this object (row).
-     * @return int
+     * Returns the composite primary key for this object.
+     * The array elements will be in same order as specified in XML.
+     * @return array
      */
     public function getPrimaryKey()
     {
-        return $this->getId();
+        $pks = array();
+        $pks[0] = $this->getAccountNumber();
+        $pks[1] = $this->getClientId();
+        $pks[2] = $this->getType();
+
+        return $pks;
     }
 
     /**
-     * Generic method to set the primary key (id column).
+     * Set the [composite] primary key.
      *
-     * @param       int $key Primary key.
+     * @param      array $keys The elements of the composite key (order must match the order in XML file).
      * @return void
      */
-    public function setPrimaryKey($key)
+    public function setPrimaryKey($keys)
     {
-        $this->setId($key);
+        $this->setAccountNumber($keys[0]);
+        $this->setClientId($keys[1]);
+        $this->setType($keys[2]);
     }
 
     /**
@@ -1250,7 +1276,7 @@ abstract class Account implements ActiveRecordInterface
      */
     public function isPrimaryKeyNull()
     {
-        return null === $this->getId();
+        return (null === $this->getAccountNumber()) && (null === $this->getClientId()) && (null === $this->getType());
     }
 
     /**
@@ -1266,6 +1292,7 @@ abstract class Account implements ActiveRecordInterface
      */
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
+        $copyObj->setAccountNumber($this->getAccountNumber());
         $copyObj->setClientId($this->getClientId());
         $copyObj->setType($this->getType());
         $copyObj->setBalance($this->getBalance());
@@ -1273,7 +1300,6 @@ abstract class Account implements ActiveRecordInterface
         $copyObj->setUpdatedAt($this->getUpdatedAt());
         if ($makeNew) {
             $copyObj->setNew(true);
-            $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
         }
     }
 
@@ -1362,7 +1388,7 @@ abstract class Account implements ActiveRecordInterface
         if (null !== $this->aClient) {
             $this->aClient->removeAccount($this);
         }
-        $this->id = null;
+        $this->account_number = null;
         $this->client_id = null;
         $this->type = null;
         $this->balance = null;

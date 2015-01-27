@@ -6,6 +6,7 @@ use Auth\ApiKeyAuthenticationServiceProvider,
     Auth\ApiKeyUserServiceProvider;
 use Silex\Application as Router;
 use Symfony\Component\HttpFoundation\Request,
+    Symfony\Component\HttpFoundation\Response,
     Symfony\Component\Config\FileLocator,
     Symfony\Component\DependencyInjection\ContainerBuilder,
     Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
@@ -104,12 +105,10 @@ $app->register(
  * Security access rules
  */
 $app['security.access_rules'] = array(
-    array( '^/admin', 'ROLE_ADMIN' ),
-    array( '^.*$', 'ROLE_CLIENT' ),
 );
 
 $app['security.role_hierarchy'] = array(
-    'ROLE_ADMIN' => array( 'ROLE_USER', 'ROLE_ALLOWED_TO_SWITCH' ),
+    'ROLE_ADMIN' => array( 'ROLE_CLIENT', 'ROLE_ALLOWED_TO_SWITCH' ),
 );
 
 
@@ -123,7 +122,7 @@ $mustBeClientOrAdmin = function ( $clientId ) use ( $app ){
     $token = $app['security']->getToken();
 
     if($app['security']->isGranted( 'ROLE_ADMIN' )){
-        $client = \AbcBank\Resources\ClientQuery::create()->findById( $clientId );
+        $client = \AbcBank\Resources\ClientQuery::create()->findById( $clientId )->getFirst();
     }else{
         $client = \AbcBank\Resources\ClientQuery::create()->findPk(
             array( $clientId, $token->getuser()->getUsername() )
@@ -133,42 +132,86 @@ $mustBeClientOrAdmin = function ( $clientId ) use ( $app ){
     return $client;
 };
 
-$app->before(function (Request $request) {
-    if (0 === strpos($request->headers->get('Content-Type'), 'application/json')) {
-        $data = json_decode(preg_replace('/(\n|\t)/','',$request->getContent()), true);
-        $request->request->replace(is_array($data) ? $data : array());
+$app->before(
+    function ( Request $request ){
+        if(0 === strpos( $request->headers->get( 'Content-Type' ), 'application/json' )){
+            $data = json_decode( preg_replace( '/(\n|\t)/', '', $request->getContent() ), true );
+            $request->request->replace( is_array( $data ) ? $data : array() );
+        }
     }
-});
+);
 
-$clients->post('/', function(Request $req)use($app){
-    $client = new \AbcBank\Resources\Client();
-    try{
-        $client->fromArray($req->request->all());
-        $client->save();
-    } catch( Exception $e ){
-        $app['monolog']->addError($e->getMessage());
-        $app->abort(400, "Client cannot be saved.");
+$app->get(
+    '/clients',
+    function ( Request $req ) use ( $app ){
+
+        $query = $req->get( 'query', false );
+
+        $dbFetch = \AbcBank\Resources\ClientQuery::create();
+        if($query){
+            $dbFetch->filterByFirstName( "%$query%" )
+                    ->filterByFirstSurname( "%$query%" )
+                    ->filterBySecondName( "%$query%" )
+                    ->filterBySecondSurname( "%$query%" )
+                    ->filterByUsername( "%$query%" );
+        }
+        $clients = $dbFetch->find();
+
+        return new Response(
+            $clients->toJson(),
+            200,
+            array( 'Content-type' => 'application/json' )
+        );
     }
+);
 
-    return new \Symfony\Component\HttpFoundation\Response(
-        $client->toJson(),
-        201,
-        array( 'Content-type' => 'application/json' )
-    );
+$app->post(
+    '/clients',
+    function ( Request $req ) use ( $app ){
 
-});
-
-$clients->get(
-    '/{clientId}',
-    function ( $clientId ) use ( $app, $mustBeClientOrAdmin ){
-
-        $client = $mustBeClientOrAdmin( $clientId );
-
-        if(!$client){
-            $app->abort( 'Client not found.', 404 );
+        if(!$app['security']->isGranted( 'ROLE_ADMIN' )){
+            return new Response( '', 403 );
         }
 
-        return new \Symfony\Component\HttpFoundation\Response(
+        $client = new \AbcBank\Resources\Client();
+        try{
+            $client->fromArray( $req->request->all() );
+            if($client->validate()){
+                $client->save();
+            } else{
+                $errors = new \StdClass();
+                $count = 1;
+                foreach ($client->getValidationFailures() as $failure) {
+                    $errors->{"error".$count++} = "Property ".$failure->getPropertyPath().": ".$failure->getMessage();
+                }
+                return new Response(
+                    json_encode($errors),
+                    400,
+                    array( 'Content-type' => 'application/json' )
+                );
+            }
+        }catch( Exception $e ){
+            $app['monolog']->addError( $e->getMessage() );
+            $app->abort( 400, "Client could not be saved." );
+        }
+
+        return new Response(
+            $client->toJson(),
+            201,
+            array( 'Content-type' => 'application/json' )
+        );
+    }
+);
+
+$app->get(
+    '/clients/{clientId}',
+    function ( $clientId ) use ( $app, $mustBeClientOrAdmin ){
+        $client = $mustBeClientOrAdmin( $clientId );
+        if(!$client){
+            $app->abort( 404, 'Client not found.' );
+        }
+
+        return new Response(
             $client->toJson(),
             200,
             array( 'Content-type' => 'application/json' )
@@ -176,37 +219,63 @@ $clients->get(
     }
 );
 
-$clients->get(
-    '/{clientId}/addresses',
+$app->get(
+    '/clients/{clientId}/addresses',
     function ( $clientId ) use ( $app, $mustBeClientOrAdmin ){
         $client = $mustBeClientOrAdmin( $clientId );
-
         if(!$client){
             $app->abort( 404, "Client not found." );
         }
-
         $addresses = $client->getAddresses();
 
-        return $addresses->toJson();
+        return new Response(
+            $addresses->toJson(),
+            200,
+            array( 'Content-type' => 'application/json' )
+        );
     }
 );
 
-$clients->get(
-    '/{clientId}/accounts',
+$app->get(
+    '/clients/{clientId}/accounts',
     function ( $clientId ) use ( $app, $mustBeClientOrAdmin ){
-
         $client = $mustBeClientOrAdmin( $clientId );
+        if(!$client){
+            $app->abort( 404, "Client not found." );
+        }
+        $accounts = $client->getAccounts();
 
+        return new Response(
+            $accounts->toJson(),
+            200,
+            array( 'Content-type' => 'application/json' )
+        );
+    }
+);
+
+$app->post(
+    '/clients/{clientId}/accounts',
+    function ( Request $req, $clientId ) use ( $app, $mustBeClientOrAdmin ){
+        $client = $mustBeClientOrAdmin( $clientId );
         if(!$client){
             $app->abort( 404, "Client not found." );
         }
 
-        $accounts = $client->getAccounts();
+        $account = new \AbcBank\Resources\Account();
+        try{
+            $account->fromArray( $req->request->all() );
+            $account->save();
+        }catch( Exception $e ){
+            $app['monolog']->addError( $e->getMessage() );
+            $app->abort( 400, "Account could not be saved." );
+        }
 
-        return $accounts->toJson();
+        return new Response(
+            $account->toJson(),
+            201,
+            array( 'Content-type' => 'application/json' )
+        );
     }
 );
-
-$app->mount( '/clients', $clients );
 
 $app->run();

@@ -72,9 +72,9 @@ class AccountTableMap extends TableMap
     const NUM_HYDRATE_COLUMNS = 6;
 
     /**
-     * the column name for the id field
+     * the column name for the account_number field
      */
-    const COL_ID = 'account.id';
+    const COL_ACCOUNT_NUMBER = 'account.account_number';
 
     /**
      * the column name for the client_id field
@@ -106,6 +106,11 @@ class AccountTableMap extends TableMap
      */
     const DEFAULT_STRING_FORMAT = 'YAML';
 
+    /** The enumerated values for the type field */
+    const COL_TYPE_SAVINGS = 'savings';
+    const COL_TYPE_CURRENT = 'current';
+    const COL_TYPE_CREDIT = 'credit';
+
     /**
      * holds an array of fieldnames
      *
@@ -113,10 +118,10 @@ class AccountTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'ClientId', 'Type', 'Balance', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('id', 'clientId', 'type', 'balance', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(AccountTableMap::COL_ID, AccountTableMap::COL_CLIENT_ID, AccountTableMap::COL_TYPE, AccountTableMap::COL_BALANCE, AccountTableMap::COL_CREATED_AT, AccountTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('id', 'client_id', 'type', 'balance', 'created_at', 'updated_at', ),
+        self::TYPE_PHPNAME       => array('AccountNumber', 'ClientId', 'Type', 'Balance', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('accountNumber', 'clientId', 'type', 'balance', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(AccountTableMap::COL_ACCOUNT_NUMBER, AccountTableMap::COL_CLIENT_ID, AccountTableMap::COL_TYPE, AccountTableMap::COL_BALANCE, AccountTableMap::COL_CREATED_AT, AccountTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('account_number', 'client_id', 'type', 'balance', 'created_at', 'updated_at', ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
 
@@ -127,12 +132,42 @@ class AccountTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'ClientId' => 1, 'Type' => 2, 'Balance' => 3, 'CreatedAt' => 4, 'UpdatedAt' => 5, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'clientId' => 1, 'type' => 2, 'balance' => 3, 'createdAt' => 4, 'updatedAt' => 5, ),
-        self::TYPE_COLNAME       => array(AccountTableMap::COL_ID => 0, AccountTableMap::COL_CLIENT_ID => 1, AccountTableMap::COL_TYPE => 2, AccountTableMap::COL_BALANCE => 3, AccountTableMap::COL_CREATED_AT => 4, AccountTableMap::COL_UPDATED_AT => 5, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'client_id' => 1, 'type' => 2, 'balance' => 3, 'created_at' => 4, 'updated_at' => 5, ),
+        self::TYPE_PHPNAME       => array('AccountNumber' => 0, 'ClientId' => 1, 'Type' => 2, 'Balance' => 3, 'CreatedAt' => 4, 'UpdatedAt' => 5, ),
+        self::TYPE_CAMELNAME     => array('accountNumber' => 0, 'clientId' => 1, 'type' => 2, 'balance' => 3, 'createdAt' => 4, 'updatedAt' => 5, ),
+        self::TYPE_COLNAME       => array(AccountTableMap::COL_ACCOUNT_NUMBER => 0, AccountTableMap::COL_CLIENT_ID => 1, AccountTableMap::COL_TYPE => 2, AccountTableMap::COL_BALANCE => 3, AccountTableMap::COL_CREATED_AT => 4, AccountTableMap::COL_UPDATED_AT => 5, ),
+        self::TYPE_FIELDNAME     => array('account_number' => 0, 'client_id' => 1, 'type' => 2, 'balance' => 3, 'created_at' => 4, 'updated_at' => 5, ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
+
+    /** The enumerated values for this table */
+    protected static $enumValueSets = array(
+                AccountTableMap::COL_TYPE => array(
+                            self::COL_TYPE_SAVINGS,
+            self::COL_TYPE_CURRENT,
+            self::COL_TYPE_CREDIT,
+        ),
+    );
+
+    /**
+     * Gets the list of values for all ENUM columns
+     * @return array
+     */
+    public static function getValueSets()
+    {
+      return static::$enumValueSets;
+    }
+
+    /**
+     * Gets the list of values for an ENUM column
+     * @param string $colname
+     * @return array list of possible values for the column
+     */
+    public static function getValueSet($colname)
+    {
+        $valueSets = self::getValueSets();
+
+        return $valueSets[$colname];
+    }
 
     /**
      * Initialize the table attributes and columns
@@ -149,11 +184,16 @@ class AccountTableMap extends TableMap
         $this->setIdentifierQuoting(false);
         $this->setClassName('\\AbcBank\\Resources\\Account');
         $this->setPackage('AbcBank.Resources');
-        $this->setUseIdGenerator(true);
+        $this->setUseIdGenerator(false);
         // columns
-        $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
-        $this->addForeignKey('client_id', 'ClientId', 'INTEGER', 'client', 'id', true, null, null);
-        $this->addColumn('type', 'Type', 'VARCHAR', true, 255, null);
+        $this->addPrimaryKey('account_number', 'AccountNumber', 'VARCHAR', true, 255, null);
+        $this->addForeignPrimaryKey('client_id', 'ClientId', 'INTEGER' , 'client', 'id', true, null, null);
+        $this->addPrimaryKey('type', 'Type', 'ENUM', true, null, null);
+        $this->getColumn('type')->setValueSet(array (
+  0 => 'savings',
+  1 => 'current',
+  2 => 'credit',
+));
         $this->addColumn('balance', 'Balance', 'FLOAT', true, null, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
@@ -187,6 +227,59 @@ class AccountTableMap extends TableMap
     } // getBehaviors()
 
     /**
+     * Adds an object to the instance pool.
+     *
+     * Propel keeps cached copies of objects in an instance pool when they are retrieved
+     * from the database. In some cases you may need to explicitly add objects
+     * to the cache in order to ensure that the same objects are always returned by find*()
+     * and findPk*() calls.
+     *
+     * @param \AbcBank\Resources\Account $obj A \AbcBank\Resources\Account object.
+     * @param string $key             (optional) key to use for instance map (for performance boost if key was already calculated externally).
+     */
+    public static function addInstanceToPool($obj, $key = null)
+    {
+        if (Propel::isInstancePoolingEnabled()) {
+            if (null === $key) {
+                $key = serialize(array((string) $obj->getAccountNumber(), (string) $obj->getClientId(), (string) $obj->getType()));
+            } // if key === null
+            self::$instances[$key] = $obj;
+        }
+    }
+
+    /**
+     * Removes an object from the instance pool.
+     *
+     * Propel keeps cached copies of objects in an instance pool when they are retrieved
+     * from the database.  In some cases -- especially when you override doDelete
+     * methods in your stub classes -- you may need to explicitly remove objects
+     * from the cache in order to prevent returning objects that no longer exist.
+     *
+     * @param mixed $value A \AbcBank\Resources\Account object or a primary key value.
+     */
+    public static function removeInstanceFromPool($value)
+    {
+        if (Propel::isInstancePoolingEnabled() && null !== $value) {
+            if (is_object($value) && $value instanceof \AbcBank\Resources\Account) {
+                $key = serialize(array((string) $value->getAccountNumber(), (string) $value->getClientId(), (string) $value->getType()));
+
+            } elseif (is_array($value) && count($value) === 3) {
+                // assume we've been passed a primary key";
+                $key = serialize(array((string) $value[0], (string) $value[1], (string) $value[2]));
+            } elseif ($value instanceof Criteria) {
+                self::$instances = [];
+
+                return;
+            } else {
+                $e = new PropelException("Invalid value passed to removeInstanceFromPool().  Expected primary key or \AbcBank\Resources\Account object; got " . (is_object($value) ? get_class($value) . ' object.' : var_export($value, true)));
+                throw $e;
+            }
+
+            unset(self::$instances[$key]);
+        }
+    }
+
+    /**
      * Retrieves a string version of the primary key from the DB resultset row that can be used to uniquely identify a row in this table.
      *
      * For tables with a single-column primary key, that simple pkey value will be returned.  For tables with
@@ -202,11 +295,11 @@ class AccountTableMap extends TableMap
     public static function getPrimaryKeyHashFromRow($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
         // If the PK cannot be derived from the row, return NULL.
-        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)] === null) {
+        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('AccountNumber', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('ClientId', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 2 + $offset : static::translateFieldName('Type', TableMap::TYPE_PHPNAME, $indexType)] === null) {
             return null;
         }
 
-        return (string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
+        return serialize(array((string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('AccountNumber', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('ClientId', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 2 + $offset : static::translateFieldName('Type', TableMap::TYPE_PHPNAME, $indexType)]));
     }
 
     /**
@@ -223,11 +316,25 @@ class AccountTableMap extends TableMap
      */
     public static function getPrimaryKeyFromRow($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        return (int) $row[
+            $pks = [];
+
+        $pks[] = (string) $row[
             $indexType == TableMap::TYPE_NUM
                 ? 0 + $offset
-                : self::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)
+                : self::translateFieldName('AccountNumber', TableMap::TYPE_PHPNAME, $indexType)
         ];
+        $pks[] = (int) $row[
+            $indexType == TableMap::TYPE_NUM
+                ? 1 + $offset
+                : self::translateFieldName('ClientId', TableMap::TYPE_PHPNAME, $indexType)
+        ];
+        $pks[] = (int) $row[
+            $indexType == TableMap::TYPE_NUM
+                ? 2 + $offset
+                : self::translateFieldName('Type', TableMap::TYPE_PHPNAME, $indexType)
+        ];
+
+        return $pks;
     }
 
     /**
@@ -327,14 +434,14 @@ class AccountTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(AccountTableMap::COL_ID);
+            $criteria->addSelectColumn(AccountTableMap::COL_ACCOUNT_NUMBER);
             $criteria->addSelectColumn(AccountTableMap::COL_CLIENT_ID);
             $criteria->addSelectColumn(AccountTableMap::COL_TYPE);
             $criteria->addSelectColumn(AccountTableMap::COL_BALANCE);
             $criteria->addSelectColumn(AccountTableMap::COL_CREATED_AT);
             $criteria->addSelectColumn(AccountTableMap::COL_UPDATED_AT);
         } else {
-            $criteria->addSelectColumn($alias . '.id');
+            $criteria->addSelectColumn($alias . '.account_number');
             $criteria->addSelectColumn($alias . '.client_id');
             $criteria->addSelectColumn($alias . '.type');
             $criteria->addSelectColumn($alias . '.balance');
@@ -391,7 +498,18 @@ class AccountTableMap extends TableMap
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
             $criteria = new Criteria(AccountTableMap::DATABASE_NAME);
-            $criteria->add(AccountTableMap::COL_ID, (array) $values, Criteria::IN);
+            // primary key is composite; we therefore, expect
+            // the primary key passed to be an array of pkey values
+            if (count($values) == count($values, COUNT_RECURSIVE)) {
+                // array is not multi-dimensional
+                $values = array($values);
+            }
+            foreach ($values as $value) {
+                $criterion = $criteria->getNewCriterion(AccountTableMap::COL_ACCOUNT_NUMBER, $value[0]);
+                $criterion->addAnd($criteria->getNewCriterion(AccountTableMap::COL_CLIENT_ID, $value[1]));
+                $criterion->addAnd($criteria->getNewCriterion(AccountTableMap::COL_TYPE, $value[2]));
+                $criteria->addOr($criterion);
+            }
         }
 
         $query = AccountQuery::create()->mergeWith($criteria);
@@ -437,10 +555,6 @@ class AccountTableMap extends TableMap
             $criteria = clone $criteria; // rename for clarity
         } else {
             $criteria = $criteria->buildCriteria(); // build Criteria from Account object
-        }
-
-        if ($criteria->containsKey(AccountTableMap::COL_ID) && $criteria->keyContainsValue(AccountTableMap::COL_ID) ) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key ('.AccountTableMap::COL_ID.')');
         }
 
 

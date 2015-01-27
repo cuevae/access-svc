@@ -3,6 +3,7 @@
 namespace AbcBank\Resources;
 
 use AbcBank\Resources\Base\Account as BaseAccount;
+use Propel\Runtime\Connection\ConnectionInterface;
 
 /**
  * Skeleton subclass for representing a row from the 'account' table.
@@ -16,12 +17,22 @@ use AbcBank\Resources\Base\Account as BaseAccount;
  */
 class Account extends BaseAccount
 {
+    const ACCOUNT_NUMBER_LENGTH = 12;
 
-    public function load()
+    protected function randomNumber($length) {
+        $result = '';
+
+        for($i = 0; $i < $length; $i++) {
+            $result .= mt_rand(0, 9);
+        }
+
+        return $result;
+    }
+
+    public function preInsert(ConnectionInterface $con = NULL)
     {
-        $accounts = AccountQuery::create()->find();
-
-        return $accounts;
+        $accNumber = $this->randomNumber(static::ACCOUNT_NUMBER_LENGTH);
+        $this->setAccountNumber($accNumber);
     }
 
 }
