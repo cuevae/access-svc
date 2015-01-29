@@ -106,11 +106,6 @@ class AccountTableMap extends TableMap
      */
     const DEFAULT_STRING_FORMAT = 'YAML';
 
-    /** The enumerated values for the type field */
-    const COL_TYPE_SAVINGS = 'savings';
-    const COL_TYPE_CURRENT = 'current';
-    const COL_TYPE_CREDIT = 'credit';
-
     /**
      * holds an array of fieldnames
      *
@@ -139,36 +134,6 @@ class AccountTableMap extends TableMap
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
 
-    /** The enumerated values for this table */
-    protected static $enumValueSets = array(
-                AccountTableMap::COL_TYPE => array(
-                            self::COL_TYPE_SAVINGS,
-            self::COL_TYPE_CURRENT,
-            self::COL_TYPE_CREDIT,
-        ),
-    );
-
-    /**
-     * Gets the list of values for all ENUM columns
-     * @return array
-     */
-    public static function getValueSets()
-    {
-      return static::$enumValueSets;
-    }
-
-    /**
-     * Gets the list of values for an ENUM column
-     * @param string $colname
-     * @return array list of possible values for the column
-     */
-    public static function getValueSet($colname)
-    {
-        $valueSets = self::getValueSets();
-
-        return $valueSets[$colname];
-    }
-
     /**
      * Initialize the table attributes and columns
      * Relations are not initialized by this method since they are lazy loaded
@@ -188,12 +153,7 @@ class AccountTableMap extends TableMap
         // columns
         $this->addPrimaryKey('account_number', 'AccountNumber', 'VARCHAR', true, 255, null);
         $this->addForeignPrimaryKey('customer_id', 'CustomerId', 'INTEGER' , 'customer', 'id', true, null, null);
-        $this->addPrimaryKey('type', 'Type', 'ENUM', true, null, null);
-        $this->getColumn('type')->setValueSet(array (
-  0 => 'savings',
-  1 => 'current',
-  2 => 'credit',
-));
+        $this->addPrimaryKey('type', 'Type', 'VARCHAR', true, 255, null);
         $this->addColumn('balance', 'Balance', 'FLOAT', true, null, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
@@ -328,7 +288,7 @@ class AccountTableMap extends TableMap
                 ? 1 + $offset
                 : self::translateFieldName('CustomerId', TableMap::TYPE_PHPNAME, $indexType)
         ];
-        $pks[] = (int) $row[
+        $pks[] = (string) $row[
             $indexType == TableMap::TYPE_NUM
                 ? 2 + $offset
                 : self::translateFieldName('Type', TableMap::TYPE_PHPNAME, $indexType)

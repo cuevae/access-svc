@@ -49,7 +49,7 @@ use Propel\Runtime\Exception\PropelException;
  *
  * @method     ChildAccount findOneByAccountNumber(string $account_number) Return the first ChildAccount filtered by the account_number column
  * @method     ChildAccount findOneByCustomerId(int $customer_id) Return the first ChildAccount filtered by the customer_id column
- * @method     ChildAccount findOneByType(int $type) Return the first ChildAccount filtered by the type column
+ * @method     ChildAccount findOneByType(string $type) Return the first ChildAccount filtered by the type column
  * @method     ChildAccount findOneByBalance(double $balance) Return the first ChildAccount filtered by the balance column
  * @method     ChildAccount findOneByCreatedAt(string $created_at) Return the first ChildAccount filtered by the created_at column
  * @method     ChildAccount findOneByUpdatedAt(string $updated_at) Return the first ChildAccount filtered by the updated_at column *
@@ -59,7 +59,7 @@ use Propel\Runtime\Exception\PropelException;
  *
  * @method     ChildAccount requireOneByAccountNumber(string $account_number) Return the first ChildAccount filtered by the account_number column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildAccount requireOneByCustomerId(int $customer_id) Return the first ChildAccount filtered by the customer_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildAccount requireOneByType(int $type) Return the first ChildAccount filtered by the type column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildAccount requireOneByType(string $type) Return the first ChildAccount filtered by the type column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildAccount requireOneByBalance(double $balance) Return the first ChildAccount filtered by the balance column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildAccount requireOneByCreatedAt(string $created_at) Return the first ChildAccount filtered by the created_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildAccount requireOneByUpdatedAt(string $updated_at) Return the first ChildAccount filtered by the updated_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -67,7 +67,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildAccount[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildAccount objects based on current ModelCriteria
  * @method     ChildAccount[]|ObjectCollection findByAccountNumber(string $account_number) Return ChildAccount objects filtered by the account_number column
  * @method     ChildAccount[]|ObjectCollection findByCustomerId(int $customer_id) Return ChildAccount objects filtered by the customer_id column
- * @method     ChildAccount[]|ObjectCollection findByType(int $type) Return ChildAccount objects filtered by the type column
+ * @method     ChildAccount[]|ObjectCollection findByType(string $type) Return ChildAccount objects filtered by the type column
  * @method     ChildAccount[]|ObjectCollection findByBalance(double $balance) Return ChildAccount objects filtered by the balance column
  * @method     ChildAccount[]|ObjectCollection findByCreatedAt(string $created_at) Return ChildAccount objects filtered by the created_at column
  * @method     ChildAccount[]|ObjectCollection findByUpdatedAt(string $updated_at) Return ChildAccount objects filtered by the updated_at column
@@ -168,7 +168,7 @@ abstract class AccountQuery extends ModelCriteria
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key[0], PDO::PARAM_STR);
             $stmt->bindValue(':p1', $key[1], PDO::PARAM_INT);
-            $stmt->bindValue(':p2', $key[2], PDO::PARAM_INT);
+            $stmt->bindValue(':p2', $key[2], PDO::PARAM_STR);
             $stmt->execute();
         } catch (Exception $e) {
             Propel::log($e->getMessage(), Propel::LOG_ERR);
@@ -344,30 +344,26 @@ abstract class AccountQuery extends ModelCriteria
     /**
      * Filter the query on the type column
      *
-     * @param     mixed $type The value to use as filter
+     * Example usage:
+     * <code>
+     * $query->filterByType('fooValue');   // WHERE type = 'fooValue'
+     * $query->filterByType('%fooValue%'); // WHERE type LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $type The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildAccountQuery The current query, for fluid interface
      */
     public function filterByType($type = null, $comparison = null)
     {
-        $valueSet = AccountTableMap::getValueSet(AccountTableMap::COL_TYPE);
-        if (is_scalar($type)) {
-            if (!in_array($type, $valueSet)) {
-                throw new PropelException(sprintf('Value "%s" is not accepted in this enumerated column', $type));
-            }
-            $type = array_search($type, $valueSet);
-        } elseif (is_array($type)) {
-            $convertedValues = array();
-            foreach ($type as $value) {
-                if (!in_array($value, $valueSet)) {
-                    throw new PropelException(sprintf('Value "%s" is not accepted in this enumerated column', $value));
-                }
-                $convertedValues []= array_search($value, $valueSet);
-            }
-            $type = $convertedValues;
-            if (null === $comparison) {
+        if (null === $comparison) {
+            if (is_array($type)) {
                 $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $type)) {
+                $type = str_replace('*', '%', $type);
+                $comparison = Criteria::LIKE;
             }
         }
 

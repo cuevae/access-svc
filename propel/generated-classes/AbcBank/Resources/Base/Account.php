@@ -78,7 +78,7 @@ abstract class Account implements ActiveRecordInterface
 
     /**
      * The value for the type field.
-     * @var        int
+     * @var        string
      */
     protected $type;
 
@@ -354,19 +354,10 @@ abstract class Account implements ActiveRecordInterface
      * Get the [type] column value.
      *
      * @return string
-     * @throws \Propel\Runtime\Exception\PropelException
      */
     public function getType()
     {
-        if (null === $this->type) {
-            return null;
-        }
-        $valueSet = AccountTableMap::getValueSet(AccountTableMap::COL_TYPE);
-        if (!isset($valueSet[$this->type])) {
-            throw new PropelException('Unknown stored enum key: ' . $this->type);
-        }
-
-        return $valueSet[$this->type];
+        return $this->type;
     }
 
     /**
@@ -468,16 +459,11 @@ abstract class Account implements ActiveRecordInterface
      *
      * @param  string $v new value
      * @return $this|\AbcBank\Resources\Account The current object (for fluent API support)
-     * @throws \Propel\Runtime\Exception\PropelException
      */
     public function setType($v)
     {
         if ($v !== null) {
-            $valueSet = AccountTableMap::getValueSet(AccountTableMap::COL_TYPE);
-            if (!in_array($v, $valueSet)) {
-                throw new PropelException(sprintf('Value "%s" is not accepted in this enumerated column', $v));
-            }
-            $v = array_search($v, $valueSet);
+            $v = (string) $v;
         }
 
         if ($this->type !== $v) {
@@ -591,7 +577,7 @@ abstract class Account implements ActiveRecordInterface
             $this->customer_id = (null !== $col) ? (int) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : AccountTableMap::translateFieldName('Type', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->type = (null !== $col) ? (int) $col : null;
+            $this->type = (null !== $col) ? (string) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : AccountTableMap::translateFieldName('Balance', TableMap::TYPE_PHPNAME, $indexType)];
             $this->balance = (null !== $col) ? (double) $col : null;
@@ -872,7 +858,7 @@ abstract class Account implements ActiveRecordInterface
                         $stmt->bindValue($identifier, $this->customer_id, PDO::PARAM_INT);
                         break;
                     case 'type':
-                        $stmt->bindValue($identifier, $this->type, PDO::PARAM_INT);
+                        $stmt->bindValue($identifier, $this->type, PDO::PARAM_STR);
                         break;
                     case 'balance':
                         $stmt->bindValue($identifier, $this->balance, PDO::PARAM_STR);
@@ -1069,10 +1055,6 @@ abstract class Account implements ActiveRecordInterface
                 $this->setCustomerId($value);
                 break;
             case 2:
-                $valueSet = AccountTableMap::getValueSet(AccountTableMap::COL_TYPE);
-                if (isset($valueSet[$value])) {
-                    $value = $valueSet[$value];
-                }
                 $this->setType($value);
                 break;
             case 3:

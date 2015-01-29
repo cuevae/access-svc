@@ -33,6 +33,7 @@ class Account extends BaseAccount
     {
         $accNumber = $this->randomNumber(static::ACCOUNT_NUMBER_LENGTH);
         $this->setAccountNumber($accNumber);
+        return true;
     }
 
 }

@@ -277,15 +277,16 @@ $app->get(
 
 $app->post(
     '/customers/{customerId}/accounts',
-    function ( Request $req, $customerId ) use ( $app, $mustBeCustomerOrAdmin ){
-        $customer = $mustBeCustomerOrAdmin( $customerId );
-        if(!$customer){
-            $app->abort( 404, "Customer not found." );
+    function ( Request $req, $customerId ) use ( $app ){
+
+        if(!$app['security']->isGranted( 'ROLE_ADMIN' )){
+            return new Response( '', 403 );
         }
 
         $account = new \AbcBank\Resources\Account();
         try{
-            $account->fromArray( $req->request->all() );
+            $data = $req->request->all() + [ 'CustomerId' => $customerId ];
+            $account->fromArray( $data );
             $account->save();
         }catch( Exception $e ){
             $app['monolog']->addError( $e->getMessage() );
@@ -295,6 +296,52 @@ $app->post(
         return new Response(
             $account->toJson(),
             201,
+            array( 'Content-type' => 'application/json' )
+        );
+    }
+);
+
+$app->get(
+    '/customers/{customerId}/accounts/{accNumber}',
+    function ( $customerId, $accNumber ) use ( $app, $mustBeCustomerOrAdmin ){
+        /** @var \AbcBank\Resources\Customer $customer */
+        $customer = $mustBeCustomerOrAdmin( $customerId );
+        if(!$customer){
+            $app->abort( 404, "Account not found." );
+        }
+
+        $account = \AbcBank\Resources\AccountQuery::create()
+            ->filterByCustomerId($customerId)
+            ->filterByAccountNumber($accNumber)
+            ->find()->getFirst();
+
+        if(!$account){
+            $app->abort( 404, "Account not found." );
+        }
+
+        return new Response(
+            $account->toJson(),
+            200,
+            array( 'Content-type' => 'application/json' )
+        );
+    }
+);
+
+$app->delete(
+    '/customers/{customerId}/accounts/{accNumber}',
+    function ( $customerId, $accNumber ) use ( $app ){
+        if(!$app['security']->isGranted( 'ROLE_ADMIN' )){
+            return new Response( '', 403 );
+        }
+
+        $account = \AbcBank\Resources\AccountQuery::create()->findByAccountNumber( $accNumber )->getFirst();
+        if($account){
+            $account->delete();
+        }
+
+        return new Response(
+            "",
+            204,
             array( 'Content-type' => 'application/json' )
         );
     }
