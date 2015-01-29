@@ -2,10 +2,10 @@
 
 namespace AbcBank\Resources;
 
-use AbcBank\Resources\Base\Address as BaseAddress;
+use AbcBank\Resources\Base\Customer as BaseCustomer;
 
 /**
- * Skeleton subclass for representing a row from the 'address' table.
+ * Skeleton subclass for representing a row from the 'customer' table.
  *
  *
  *
@@ -14,7 +14,7 @@ use AbcBank\Resources\Base\Address as BaseAddress;
  * long as it does not already exist in the output directory.
  *
  */
-class Address extends BaseAddress
+class Customer extends BaseCustomer
 {
 
 }

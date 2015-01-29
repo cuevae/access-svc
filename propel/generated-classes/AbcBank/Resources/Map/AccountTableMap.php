@@ -183,6 +183,7 @@ class AccountTableMap extends TableMap
     {
         return array(
             'timestampable' => array('create_column' => 'created_at', 'update_column' => 'updated_at', 'disable_created_at' => 'false', 'disable_updated_at' => 'false', ),
+            'validate' => array('rule1' => array ('column' => 'account_number','validator' => 'NotNull',), 'rule2' => array ('column' => 'customer_id','validator' => 'NotNull',), 'rule3' => array ('column' => 'type','validator' => 'NotNull',), ),
         );
     } // getBehaviors()
 

@@ -2,10 +2,10 @@
 
 namespace AbcBank\Resources;
 
-use AbcBank\Resources\Base\Client as BaseClient;
+use AbcBank\Resources\Base\CustomerQuery as BaseCustomerQuery;
 
 /**
- * Skeleton subclass for representing a row from the 'client' table.
+ * Skeleton subclass for performing query and update operations on the 'customer' table.
  *
  *
  *
@@ -14,7 +14,7 @@ use AbcBank\Resources\Base\Client as BaseClient;
  * long as it does not already exist in the output directory.
  *
  */
-class Client extends BaseClient
+class CustomerQuery extends BaseCustomerQuery
 {
 
 }

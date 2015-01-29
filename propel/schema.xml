@@ -8,35 +8,36 @@
         <column name="second_name" type="varchar" size="255" required="false" />
         <column name="first_surname" type="varchar" size="255" required="true" />
         <column name="second_surname" type="varchar" size="255" required="true" />
+        <column name="address_line1" type="varchar" size="255" required="true" />
+        <column name="address_line2" type="varchar" size="255" required="false" />
+        <column name="house_number" type="varchar" size="255" required="false"/>
+        <column name="postcode" type="varchar" size="255" required="true" />
+        <column name="town" type="varchar" size="255" required="true" />
+        <column name="county" type="varchar" size="255" required="false" />
+        <column name="country" type="varchar" size="255" required="true" />
+        <column name="telephone1" type="varchar" size="255" required="true" />
+        <column name="telephone2" type="varchar" size="255" required="false" />
+        <unique>
+            <unique-column name="first_name" />
+            <unique-column name="first_surname" />
+            <unique-column name="second_surname" />
+        </unique>
         <behavior name="timestampable" />
         <behavior name="validate">
             <parameter name="rule1" value="{column: first_name, validator: NotNull}" />
             <parameter name="rule2" value="{column: first_surname, validator: NotNull}" />
             <parameter name="rule3" value="{column: username, validator: NotNull}" />
-            <parameter name="rule3" value="{column: username, validator: Length, options: {min:3}}" />
+            <parameter name="rule4" value="{column: username, validator: Length, options: {min:3}}" />
+            <parameter name="rule5" value="{column: address_line1, validator: NotNull}" />
+            <parameter name="rule6" value="{column: username, validator: NotNull}" />
+            <parameter name="rule7" value="{column: username, validator: NotNull}" />
+            <parameter name="rule8" value="{column: postcode, validator: NotNull}" />
+            <parameter name="rule9" value="{column: country, validator: NotNull}" />
+            <parameter name="rule10" value="{column: telephone1, validator: NotNull}" />
         </behavior>
     </table>
-    <table name="address" phpName="Address">
-        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
-        <column name="customer_id" type="integer" required="true" />
-        <column name="number" type="varchar" size="255" required="true" />
-        <column name="line_1" type="varchar" size="255" required="true" />
-        <column name="line_2" type="varchar" size="255" required="false" />
-        <column name="line_3" type="varchar" size="255" required="false" />
-        <column name="postcode" type="varchar" size="255" required="true" />
-        <column name="town" type="varchar" size="255" required="true" />
-        <column name="county" type="varchar" size="255" required="true" />
-        <column name="country" type="varchar" size="255" required="true" />
-        <column name="telephone_1" type="varchar" size="255" required="true" />
-        <column name="telephone_2" type="varchar" size="255" required="false" />
-        <column name="telephone_3" type="varchar" size="255" required="false" />
-        <foreign-key foreignTable="customer">
-            <reference local="customer_id" foreign="id"/>
-        </foreign-key>
-        <behavior name="timestampable" />
-    </table>
     <table name="account" phpName="Account">
-        <column name="account_number" type="varchar" size="255" primaryKey="true" />
+        <column name="account_number" type="varchar" size="255" primaryKey="true" required="true" />
         <column name="customer_id" type="integer" primaryKey="true" required="true" />
         <column name="type" type="varchar" primaryKey="true" required="true" />
         <column name="balance" type="float" required="true" />
@@ -48,6 +49,11 @@
             <unique-column name="type" />
         </unique>
         <behavior name="timestampable" />
+        <behavior name="validate">
+            <parameter name="rule1" value="{column: account_number, validator: NotNull}" />
+            <parameter name="rule2" value="{column: customer_id, validator: NotNull}" />
+            <parameter name="rule3" value="{column: type, validator: NotNull}" />
+        </behavior>
     </table>
     <table name="transaction" phpName="Transaction">
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>

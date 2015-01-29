@@ -2,8 +2,8 @@
 
 namespace AbcBank\Resources\Map;
 
-use AbcBank\Resources\Client;
-use AbcBank\Resources\ClientQuery;
+use AbcBank\Resources\Customer;
+use AbcBank\Resources\CustomerQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -16,7 +16,7 @@ use Propel\Runtime\Map\TableMapTrait;
 
 
 /**
- * This class defines the structure of the 'client' table.
+ * This class defines the structure of the 'customer' table.
  *
  *
  *
@@ -26,7 +26,7 @@ use Propel\Runtime\Map\TableMapTrait;
  * (i.e. if it's a text column type).
  *
  */
-class ClientTableMap extends TableMap
+class CustomerTableMap extends TableMap
 {
     use InstancePoolTrait;
     use TableMapTrait;
@@ -34,7 +34,7 @@ class ClientTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'AbcBank.Resources.Map.ClientTableMap';
+    const CLASS_NAME = 'AbcBank.Resources.Map.CustomerTableMap';
 
     /**
      * The default database name for this class
@@ -44,22 +44,22 @@ class ClientTableMap extends TableMap
     /**
      * The table name for this class
      */
-    const TABLE_NAME = 'client';
+    const TABLE_NAME = 'customer';
 
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\AbcBank\\Resources\\Client';
+    const OM_CLASS = '\\AbcBank\\Resources\\Customer';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'AbcBank.Resources.Client';
+    const CLASS_DEFAULT = 'AbcBank.Resources.Customer';
 
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 9;
+    const NUM_COLUMNS = 18;
 
     /**
      * The number of lazy-loaded columns
@@ -69,52 +69,97 @@ class ClientTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 9;
+    const NUM_HYDRATE_COLUMNS = 18;
 
     /**
      * the column name for the id field
      */
-    const COL_ID = 'client.id';
+    const COL_ID = 'customer.id';
 
     /**
      * the column name for the username field
      */
-    const COL_USERNAME = 'client.username';
+    const COL_USERNAME = 'customer.username';
 
     /**
      * the column name for the title field
      */
-    const COL_TITLE = 'client.title';
+    const COL_TITLE = 'customer.title';
 
     /**
      * the column name for the first_name field
      */
-    const COL_FIRST_NAME = 'client.first_name';
+    const COL_FIRST_NAME = 'customer.first_name';
 
     /**
      * the column name for the second_name field
      */
-    const COL_SECOND_NAME = 'client.second_name';
+    const COL_SECOND_NAME = 'customer.second_name';
 
     /**
      * the column name for the first_surname field
      */
-    const COL_FIRST_SURNAME = 'client.first_surname';
+    const COL_FIRST_SURNAME = 'customer.first_surname';
 
     /**
      * the column name for the second_surname field
      */
-    const COL_SECOND_SURNAME = 'client.second_surname';
+    const COL_SECOND_SURNAME = 'customer.second_surname';
+
+    /**
+     * the column name for the address_line1 field
+     */
+    const COL_ADDRESS_LINE1 = 'customer.address_line1';
+
+    /**
+     * the column name for the address_line2 field
+     */
+    const COL_ADDRESS_LINE2 = 'customer.address_line2';
+
+    /**
+     * the column name for the house_number field
+     */
+    const COL_HOUSE_NUMBER = 'customer.house_number';
+
+    /**
+     * the column name for the postcode field
+     */
+    const COL_POSTCODE = 'customer.postcode';
+
+    /**
+     * the column name for the town field
+     */
+    const COL_TOWN = 'customer.town';
+
+    /**
+     * the column name for the county field
+     */
+    const COL_COUNTY = 'customer.county';
+
+    /**
+     * the column name for the country field
+     */
+    const COL_COUNTRY = 'customer.country';
+
+    /**
+     * the column name for the telephone1 field
+     */
+    const COL_TELEPHONE1 = 'customer.telephone1';
+
+    /**
+     * the column name for the telephone2 field
+     */
+    const COL_TELEPHONE2 = 'customer.telephone2';
 
     /**
      * the column name for the created_at field
      */
-    const COL_CREATED_AT = 'client.created_at';
+    const COL_CREATED_AT = 'customer.created_at';
 
     /**
      * the column name for the updated_at field
      */
-    const COL_UPDATED_AT = 'client.updated_at';
+    const COL_UPDATED_AT = 'customer.updated_at';
 
     /**
      * The default string format for model objects of the related table
@@ -128,11 +173,11 @@ class ClientTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Username', 'Title', 'FirstName', 'SecondName', 'FirstSurname', 'SecondSurname', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('id', 'username', 'title', 'firstName', 'secondName', 'firstSurname', 'secondSurname', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(ClientTableMap::COL_ID, ClientTableMap::COL_USERNAME, ClientTableMap::COL_TITLE, ClientTableMap::COL_FIRST_NAME, ClientTableMap::COL_SECOND_NAME, ClientTableMap::COL_FIRST_SURNAME, ClientTableMap::COL_SECOND_SURNAME, ClientTableMap::COL_CREATED_AT, ClientTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('id', 'username', 'title', 'first_name', 'second_name', 'first_surname', 'second_surname', 'created_at', 'updated_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
+        self::TYPE_PHPNAME       => array('Id', 'Username', 'Title', 'FirstName', 'SecondName', 'FirstSurname', 'SecondSurname', 'AddressLine1', 'AddressLine2', 'HouseNumber', 'Postcode', 'Town', 'County', 'Country', 'Telephone1', 'Telephone2', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('id', 'username', 'title', 'firstName', 'secondName', 'firstSurname', 'secondSurname', 'addressLine1', 'addressLine2', 'houseNumber', 'postcode', 'town', 'county', 'country', 'telephone1', 'telephone2', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(CustomerTableMap::COL_ID, CustomerTableMap::COL_USERNAME, CustomerTableMap::COL_TITLE, CustomerTableMap::COL_FIRST_NAME, CustomerTableMap::COL_SECOND_NAME, CustomerTableMap::COL_FIRST_SURNAME, CustomerTableMap::COL_SECOND_SURNAME, CustomerTableMap::COL_ADDRESS_LINE1, CustomerTableMap::COL_ADDRESS_LINE2, CustomerTableMap::COL_HOUSE_NUMBER, CustomerTableMap::COL_POSTCODE, CustomerTableMap::COL_TOWN, CustomerTableMap::COL_COUNTY, CustomerTableMap::COL_COUNTRY, CustomerTableMap::COL_TELEPHONE1, CustomerTableMap::COL_TELEPHONE2, CustomerTableMap::COL_CREATED_AT, CustomerTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('id', 'username', 'title', 'first_name', 'second_name', 'first_surname', 'second_surname', 'address_line1', 'address_line2', 'house_number', 'postcode', 'town', 'county', 'country', 'telephone1', 'telephone2', 'created_at', 'updated_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, )
     );
 
     /**
@@ -142,11 +187,11 @@ class ClientTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Username' => 1, 'Title' => 2, 'FirstName' => 3, 'SecondName' => 4, 'FirstSurname' => 5, 'SecondSurname' => 6, 'CreatedAt' => 7, 'UpdatedAt' => 8, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'username' => 1, 'title' => 2, 'firstName' => 3, 'secondName' => 4, 'firstSurname' => 5, 'secondSurname' => 6, 'createdAt' => 7, 'updatedAt' => 8, ),
-        self::TYPE_COLNAME       => array(ClientTableMap::COL_ID => 0, ClientTableMap::COL_USERNAME => 1, ClientTableMap::COL_TITLE => 2, ClientTableMap::COL_FIRST_NAME => 3, ClientTableMap::COL_SECOND_NAME => 4, ClientTableMap::COL_FIRST_SURNAME => 5, ClientTableMap::COL_SECOND_SURNAME => 6, ClientTableMap::COL_CREATED_AT => 7, ClientTableMap::COL_UPDATED_AT => 8, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'username' => 1, 'title' => 2, 'first_name' => 3, 'second_name' => 4, 'first_surname' => 5, 'second_surname' => 6, 'created_at' => 7, 'updated_at' => 8, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Username' => 1, 'Title' => 2, 'FirstName' => 3, 'SecondName' => 4, 'FirstSurname' => 5, 'SecondSurname' => 6, 'AddressLine1' => 7, 'AddressLine2' => 8, 'HouseNumber' => 9, 'Postcode' => 10, 'Town' => 11, 'County' => 12, 'Country' => 13, 'Telephone1' => 14, 'Telephone2' => 15, 'CreatedAt' => 16, 'UpdatedAt' => 17, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'username' => 1, 'title' => 2, 'firstName' => 3, 'secondName' => 4, 'firstSurname' => 5, 'secondSurname' => 6, 'addressLine1' => 7, 'addressLine2' => 8, 'houseNumber' => 9, 'postcode' => 10, 'town' => 11, 'county' => 12, 'country' => 13, 'telephone1' => 14, 'telephone2' => 15, 'createdAt' => 16, 'updatedAt' => 17, ),
+        self::TYPE_COLNAME       => array(CustomerTableMap::COL_ID => 0, CustomerTableMap::COL_USERNAME => 1, CustomerTableMap::COL_TITLE => 2, CustomerTableMap::COL_FIRST_NAME => 3, CustomerTableMap::COL_SECOND_NAME => 4, CustomerTableMap::COL_FIRST_SURNAME => 5, CustomerTableMap::COL_SECOND_SURNAME => 6, CustomerTableMap::COL_ADDRESS_LINE1 => 7, CustomerTableMap::COL_ADDRESS_LINE2 => 8, CustomerTableMap::COL_HOUSE_NUMBER => 9, CustomerTableMap::COL_POSTCODE => 10, CustomerTableMap::COL_TOWN => 11, CustomerTableMap::COL_COUNTY => 12, CustomerTableMap::COL_COUNTRY => 13, CustomerTableMap::COL_TELEPHONE1 => 14, CustomerTableMap::COL_TELEPHONE2 => 15, CustomerTableMap::COL_CREATED_AT => 16, CustomerTableMap::COL_UPDATED_AT => 17, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'username' => 1, 'title' => 2, 'first_name' => 3, 'second_name' => 4, 'first_surname' => 5, 'second_surname' => 6, 'address_line1' => 7, 'address_line2' => 8, 'house_number' => 9, 'postcode' => 10, 'town' => 11, 'county' => 12, 'country' => 13, 'telephone1' => 14, 'telephone2' => 15, 'created_at' => 16, 'updated_at' => 17, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, )
     );
 
     /**
@@ -159,10 +204,10 @@ class ClientTableMap extends TableMap
     public function initialize()
     {
         // attributes
-        $this->setName('client');
-        $this->setPhpName('Client');
+        $this->setName('customer');
+        $this->setPhpName('Customer');
         $this->setIdentifierQuoting(false);
-        $this->setClassName('\\AbcBank\\Resources\\Client');
+        $this->setClassName('\\AbcBank\\Resources\\Customer');
         $this->setPackage('AbcBank.Resources');
         $this->setUseIdGenerator(true);
         // columns
@@ -173,6 +218,15 @@ class ClientTableMap extends TableMap
         $this->addColumn('second_name', 'SecondName', 'VARCHAR', false, 255, null);
         $this->addColumn('first_surname', 'FirstSurname', 'VARCHAR', true, 255, null);
         $this->addColumn('second_surname', 'SecondSurname', 'VARCHAR', true, 255, null);
+        $this->addColumn('address_line1', 'AddressLine1', 'VARCHAR', true, 255, null);
+        $this->addColumn('address_line2', 'AddressLine2', 'VARCHAR', false, 255, null);
+        $this->addColumn('house_number', 'HouseNumber', 'VARCHAR', false, 255, null);
+        $this->addColumn('postcode', 'Postcode', 'VARCHAR', true, 255, null);
+        $this->addColumn('town', 'Town', 'VARCHAR', true, 255, null);
+        $this->addColumn('county', 'County', 'VARCHAR', false, 255, null);
+        $this->addColumn('country', 'Country', 'VARCHAR', true, 255, null);
+        $this->addColumn('telephone1', 'Telephone1', 'VARCHAR', true, 255, null);
+        $this->addColumn('telephone2', 'Telephone2', 'VARCHAR', false, 255, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
@@ -182,17 +236,10 @@ class ClientTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('Address', '\\AbcBank\\Resources\\Address', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':client_id',
-    1 => ':id',
-  ),
-), null, null, 'Addresses', false);
         $this->addRelation('Account', '\\AbcBank\\Resources\\Account', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (
-    0 => ':client_id',
+    0 => ':customer_id',
     1 => ':id',
   ),
 ), null, null, 'Accounts', false);
@@ -208,7 +255,7 @@ class ClientTableMap extends TableMap
     {
         return array(
             'timestampable' => array('create_column' => 'created_at', 'update_column' => 'updated_at', 'disable_created_at' => 'false', 'disable_updated_at' => 'false', ),
-            'validate' => array('rule1' => array ('column' => 'first_name','validator' => 'NotNull',), 'rule2' => array ('column' => 'first_surname','validator' => 'NotNull',), 'rule3' => array ('column' => 'username','validator' => 'Length','options' => array ('min' => 3,),), ),
+            'validate' => array('rule1' => array ('column' => 'first_name','validator' => 'NotNull',), 'rule2' => array ('column' => 'first_surname','validator' => 'NotNull',), 'rule3' => array ('column' => 'username','validator' => 'NotNull',), 'rule4' => array ('column' => 'username','validator' => 'Length','options' => array ('min' => 3,),), 'rule5' => array ('column' => 'address_line1','validator' => 'NotNull',), 'rule6' => array ('column' => 'username','validator' => 'NotNull',), 'rule7' => array ('column' => 'username','validator' => 'NotNull',), 'rule8' => array ('column' => 'postcode','validator' => 'NotNull',), 'rule9' => array ('column' => 'country','validator' => 'NotNull',), 'rule10' => array ('column' => 'telephone1','validator' => 'NotNull',), ),
         );
     } // getBehaviors()
 
@@ -220,7 +267,7 @@ class ClientTableMap extends TableMap
      * to the cache in order to ensure that the same objects are always returned by find*()
      * and findPk*() calls.
      *
-     * @param \AbcBank\Resources\Client $obj A \AbcBank\Resources\Client object.
+     * @param \AbcBank\Resources\Customer $obj A \AbcBank\Resources\Customer object.
      * @param string $key             (optional) key to use for instance map (for performance boost if key was already calculated externally).
      */
     public static function addInstanceToPool($obj, $key = null)
@@ -241,12 +288,12 @@ class ClientTableMap extends TableMap
      * methods in your stub classes -- you may need to explicitly remove objects
      * from the cache in order to prevent returning objects that no longer exist.
      *
-     * @param mixed $value A \AbcBank\Resources\Client object or a primary key value.
+     * @param mixed $value A \AbcBank\Resources\Customer object or a primary key value.
      */
     public static function removeInstanceFromPool($value)
     {
         if (Propel::isInstancePoolingEnabled() && null !== $value) {
-            if (is_object($value) && $value instanceof \AbcBank\Resources\Client) {
+            if (is_object($value) && $value instanceof \AbcBank\Resources\Customer) {
                 $key = serialize(array((string) $value->getId(), (string) $value->getUsername()));
 
             } elseif (is_array($value) && count($value) === 2) {
@@ -257,7 +304,7 @@ class ClientTableMap extends TableMap
 
                 return;
             } else {
-                $e = new PropelException("Invalid value passed to removeInstanceFromPool().  Expected primary key or \AbcBank\Resources\Client object; got " . (is_object($value) ? get_class($value) . ' object.' : var_export($value, true)));
+                $e = new PropelException("Invalid value passed to removeInstanceFromPool().  Expected primary key or \AbcBank\Resources\Customer object; got " . (is_object($value) ? get_class($value) . ' object.' : var_export($value, true)));
                 throw $e;
             }
 
@@ -331,7 +378,7 @@ class ClientTableMap extends TableMap
      */
     public static function getOMClass($withPrefix = true)
     {
-        return $withPrefix ? ClientTableMap::CLASS_DEFAULT : ClientTableMap::OM_CLASS;
+        return $withPrefix ? CustomerTableMap::CLASS_DEFAULT : CustomerTableMap::OM_CLASS;
     }
 
     /**
@@ -345,22 +392,22 @@ class ClientTableMap extends TableMap
      *
      * @throws PropelException Any exceptions caught during processing will be
      *                         rethrown wrapped into a PropelException.
-     * @return array           (Client object, last column rank)
+     * @return array           (Customer object, last column rank)
      */
     public static function populateObject($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        $key = ClientTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
-        if (null !== ($obj = ClientTableMap::getInstanceFromPool($key))) {
+        $key = CustomerTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
+        if (null !== ($obj = CustomerTableMap::getInstanceFromPool($key))) {
             // We no longer rehydrate the object, since this can cause data loss.
             // See http://www.propelorm.org/ticket/509
             // $obj->hydrate($row, $offset, true); // rehydrate
-            $col = $offset + ClientTableMap::NUM_HYDRATE_COLUMNS;
+            $col = $offset + CustomerTableMap::NUM_HYDRATE_COLUMNS;
         } else {
-            $cls = ClientTableMap::OM_CLASS;
-            /** @var Client $obj */
+            $cls = CustomerTableMap::OM_CLASS;
+            /** @var Customer $obj */
             $obj = new $cls();
             $col = $obj->hydrate($row, $offset, false, $indexType);
-            ClientTableMap::addInstanceToPool($obj, $key);
+            CustomerTableMap::addInstanceToPool($obj, $key);
         }
 
         return array($obj, $col);
@@ -383,18 +430,18 @@ class ClientTableMap extends TableMap
         $cls = static::getOMClass(false);
         // populate the object(s)
         while ($row = $dataFetcher->fetch()) {
-            $key = ClientTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
-            if (null !== ($obj = ClientTableMap::getInstanceFromPool($key))) {
+            $key = CustomerTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
+            if (null !== ($obj = CustomerTableMap::getInstanceFromPool($key))) {
                 // We no longer rehydrate the object, since this can cause data loss.
                 // See http://www.propelorm.org/ticket/509
                 // $obj->hydrate($row, 0, true); // rehydrate
                 $results[] = $obj;
             } else {
-                /** @var Client $obj */
+                /** @var Customer $obj */
                 $obj = new $cls();
                 $obj->hydrate($row);
                 $results[] = $obj;
-                ClientTableMap::addInstanceToPool($obj, $key);
+                CustomerTableMap::addInstanceToPool($obj, $key);
             } // if key exists
         }
 
@@ -415,15 +462,24 @@ class ClientTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(ClientTableMap::COL_ID);
-            $criteria->addSelectColumn(ClientTableMap::COL_USERNAME);
-            $criteria->addSelectColumn(ClientTableMap::COL_TITLE);
-            $criteria->addSelectColumn(ClientTableMap::COL_FIRST_NAME);
-            $criteria->addSelectColumn(ClientTableMap::COL_SECOND_NAME);
-            $criteria->addSelectColumn(ClientTableMap::COL_FIRST_SURNAME);
-            $criteria->addSelectColumn(ClientTableMap::COL_SECOND_SURNAME);
-            $criteria->addSelectColumn(ClientTableMap::COL_CREATED_AT);
-            $criteria->addSelectColumn(ClientTableMap::COL_UPDATED_AT);
+            $criteria->addSelectColumn(CustomerTableMap::COL_ID);
+            $criteria->addSelectColumn(CustomerTableMap::COL_USERNAME);
+            $criteria->addSelectColumn(CustomerTableMap::COL_TITLE);
+            $criteria->addSelectColumn(CustomerTableMap::COL_FIRST_NAME);
+            $criteria->addSelectColumn(CustomerTableMap::COL_SECOND_NAME);
+            $criteria->addSelectColumn(CustomerTableMap::COL_FIRST_SURNAME);
+            $criteria->addSelectColumn(CustomerTableMap::COL_SECOND_SURNAME);
+            $criteria->addSelectColumn(CustomerTableMap::COL_ADDRESS_LINE1);
+            $criteria->addSelectColumn(CustomerTableMap::COL_ADDRESS_LINE2);
+            $criteria->addSelectColumn(CustomerTableMap::COL_HOUSE_NUMBER);
+            $criteria->addSelectColumn(CustomerTableMap::COL_POSTCODE);
+            $criteria->addSelectColumn(CustomerTableMap::COL_TOWN);
+            $criteria->addSelectColumn(CustomerTableMap::COL_COUNTY);
+            $criteria->addSelectColumn(CustomerTableMap::COL_COUNTRY);
+            $criteria->addSelectColumn(CustomerTableMap::COL_TELEPHONE1);
+            $criteria->addSelectColumn(CustomerTableMap::COL_TELEPHONE2);
+            $criteria->addSelectColumn(CustomerTableMap::COL_CREATED_AT);
+            $criteria->addSelectColumn(CustomerTableMap::COL_UPDATED_AT);
         } else {
             $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.username');
@@ -432,6 +488,15 @@ class ClientTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.second_name');
             $criteria->addSelectColumn($alias . '.first_surname');
             $criteria->addSelectColumn($alias . '.second_surname');
+            $criteria->addSelectColumn($alias . '.address_line1');
+            $criteria->addSelectColumn($alias . '.address_line2');
+            $criteria->addSelectColumn($alias . '.house_number');
+            $criteria->addSelectColumn($alias . '.postcode');
+            $criteria->addSelectColumn($alias . '.town');
+            $criteria->addSelectColumn($alias . '.county');
+            $criteria->addSelectColumn($alias . '.country');
+            $criteria->addSelectColumn($alias . '.telephone1');
+            $criteria->addSelectColumn($alias . '.telephone2');
             $criteria->addSelectColumn($alias . '.created_at');
             $criteria->addSelectColumn($alias . '.updated_at');
         }
@@ -446,7 +511,7 @@ class ClientTableMap extends TableMap
      */
     public static function getTableMap()
     {
-        return Propel::getServiceContainer()->getDatabaseMap(ClientTableMap::DATABASE_NAME)->getTable(ClientTableMap::TABLE_NAME);
+        return Propel::getServiceContainer()->getDatabaseMap(CustomerTableMap::DATABASE_NAME)->getTable(CustomerTableMap::TABLE_NAME);
     }
 
     /**
@@ -454,16 +519,16 @@ class ClientTableMap extends TableMap
      */
     public static function buildTableMap()
     {
-        $dbMap = Propel::getServiceContainer()->getDatabaseMap(ClientTableMap::DATABASE_NAME);
-        if (!$dbMap->hasTable(ClientTableMap::TABLE_NAME)) {
-            $dbMap->addTableObject(new ClientTableMap());
+        $dbMap = Propel::getServiceContainer()->getDatabaseMap(CustomerTableMap::DATABASE_NAME);
+        if (!$dbMap->hasTable(CustomerTableMap::TABLE_NAME)) {
+            $dbMap->addTableObject(new CustomerTableMap());
         }
     }
 
     /**
-     * Performs a DELETE on the database, given a Client or Criteria object OR a primary key value.
+     * Performs a DELETE on the database, given a Customer or Criteria object OR a primary key value.
      *
-     * @param mixed               $values Criteria or Client object or primary key or array of primary keys
+     * @param mixed               $values Criteria or Customer object or primary key or array of primary keys
      *              which is used to create the DELETE statement
      * @param  ConnectionInterface $con the connection to use
      * @return int             The number of affected rows (if supported by underlying database driver).  This includes CASCADE-related rows
@@ -474,17 +539,17 @@ class ClientTableMap extends TableMap
      public static function doDelete($values, ConnectionInterface $con = null)
      {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(ClientTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(CustomerTableMap::DATABASE_NAME);
         }
 
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \AbcBank\Resources\Client) { // it's a model object
+        } elseif ($values instanceof \AbcBank\Resources\Customer) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
-            $criteria = new Criteria(ClientTableMap::DATABASE_NAME);
+            $criteria = new Criteria(CustomerTableMap::DATABASE_NAME);
             // primary key is composite; we therefore, expect
             // the primary key passed to be an array of pkey values
             if (count($values) == count($values, COUNT_RECURSIVE)) {
@@ -492,19 +557,19 @@ class ClientTableMap extends TableMap
                 $values = array($values);
             }
             foreach ($values as $value) {
-                $criterion = $criteria->getNewCriterion(ClientTableMap::COL_ID, $value[0]);
-                $criterion->addAnd($criteria->getNewCriterion(ClientTableMap::COL_USERNAME, $value[1]));
+                $criterion = $criteria->getNewCriterion(CustomerTableMap::COL_ID, $value[0]);
+                $criterion->addAnd($criteria->getNewCriterion(CustomerTableMap::COL_USERNAME, $value[1]));
                 $criteria->addOr($criterion);
             }
         }
 
-        $query = ClientQuery::create()->mergeWith($criteria);
+        $query = CustomerQuery::create()->mergeWith($criteria);
 
         if ($values instanceof Criteria) {
-            ClientTableMap::clearInstancePool();
+            CustomerTableMap::clearInstancePool();
         } elseif (!is_object($values)) { // it's a primary key, or an array of pks
             foreach ((array) $values as $singleval) {
-                ClientTableMap::removeInstanceFromPool($singleval);
+                CustomerTableMap::removeInstanceFromPool($singleval);
             }
         }
 
@@ -512,20 +577,20 @@ class ClientTableMap extends TableMap
     }
 
     /**
-     * Deletes all rows from the client table.
+     * Deletes all rows from the customer table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).
      */
     public static function doDeleteAll(ConnectionInterface $con = null)
     {
-        return ClientQuery::create()->doDeleteAll($con);
+        return CustomerQuery::create()->doDeleteAll($con);
     }
 
     /**
-     * Performs an INSERT on the database, given a Client or Criteria object.
+     * Performs an INSERT on the database, given a Customer or Criteria object.
      *
-     * @param mixed               $criteria Criteria or Client object containing data that is used to create the INSERT statement.
+     * @param mixed               $criteria Criteria or Customer object containing data that is used to create the INSERT statement.
      * @param ConnectionInterface $con the ConnectionInterface connection to use
      * @return mixed           The new primary key.
      * @throws PropelException Any exceptions caught during processing will be
@@ -534,22 +599,22 @@ class ClientTableMap extends TableMap
     public static function doInsert($criteria, ConnectionInterface $con = null)
     {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(ClientTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(CustomerTableMap::DATABASE_NAME);
         }
 
         if ($criteria instanceof Criteria) {
             $criteria = clone $criteria; // rename for clarity
         } else {
-            $criteria = $criteria->buildCriteria(); // build Criteria from Client object
+            $criteria = $criteria->buildCriteria(); // build Criteria from Customer object
         }
 
-        if ($criteria->containsKey(ClientTableMap::COL_ID) && $criteria->keyContainsValue(ClientTableMap::COL_ID) ) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key ('.ClientTableMap::COL_ID.')');
+        if ($criteria->containsKey(CustomerTableMap::COL_ID) && $criteria->keyContainsValue(CustomerTableMap::COL_ID) ) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key ('.CustomerTableMap::COL_ID.')');
         }
 
 
         // Set the correct dbName
-        $query = ClientQuery::create()->mergeWith($criteria);
+        $query = CustomerQuery::create()->mergeWith($criteria);
 
         // use transaction because $criteria could contain info
         // for more than one table (I guess, conceivably)
@@ -558,7 +623,7 @@ class ClientTableMap extends TableMap
         });
     }
 
-} // ClientTableMap
+} // CustomerTableMap
 // This is the static code needed to register the TableMap for this table with the main Propel class.
 //
-ClientTableMap::buildTableMap();
+CustomerTableMap::buildTableMap();
