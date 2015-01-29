@@ -220,6 +220,27 @@ $app->get(
     }
 );
 
+$app->delete(
+    '/customers/{customerId}',
+    function ( $customerId ) use ( $app ){
+
+        if(!$app['security']->isGranted( 'ROLE_ADMIN' )){
+            return new Response( '', 403 );
+        }
+
+        $customer = \AbcBank\Resources\CustomerQuery::create()->findById( $customerId )->getFirst();
+        if($customer){
+            $customer->delete();
+        }
+
+        return new Response(
+            "",
+            204,
+            array( 'Content-type' => 'application/json' )
+        );
+    }
+);
+
 $app->get(
     '/customers/{customerId}/addresses',
     function ( $customerId ) use ( $app, $mustBeCustomerOrAdmin ){
