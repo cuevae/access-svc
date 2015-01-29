@@ -115,20 +115,20 @@ $app['security.role_hierarchy'] = array(
  * Router endpoints
  */
 
-$clients = $app['controllers_factory'];
+$customers = $app['controllers_factory'];
 
-$mustBeClientOrAdmin = function ( $clientId ) use ( $app ){
+$mustBeCustomerOrAdmin = function ( $customerId ) use ( $app ){
     $token = $app['security']->getToken();
 
     if($app['security']->isGranted( 'ROLE_ADMIN' )){
-        $client = \AbcBank\Resources\ClientQuery::create()->findById( $clientId )->getFirst();
+        $customer = \AbcBank\Resources\CustomerQuery::create()->findById( $customerId )->getFirst();
     }else{
-        $client = \AbcBank\Resources\ClientQuery::create()->findPk(
-            array( $clientId, $token->getuser()->getUsername() )
+        $customer = \AbcBank\Resources\CustomerQuery::create()->findPk(
+            array( $customerId, $token->getuser()->getUsername() )
         );
     }
 
-    return $client;
+    return $customer;
 };
 
 $app->before(
@@ -141,24 +141,24 @@ $app->before(
 );
 
 $app->get(
-    '/clients',
+    '/customers',
     function ( Request $req ) use ( $app ){
 
         $query = $req->get( 'query', false );
 
-        $dbFetch = \AbcBank\Resources\ClientQuery::create();
+        $dbFetch = \AbcBank\Resources\CustomerQuery::create();
         if($query){
-            $dbFetch->condition( 'c1', 'Client.FirstName LIKE ?', "%$query%" )
-                    ->condition( 'c2', 'Client.SecondName LIKE ?', "%$query%" )
-                    ->condition( 'c3', 'Client.FirstSurname LIKE ?', "%$query%" )
-                    ->condition( 'c4', 'Client.SecondSurname LIKE ?', "%$query%" )
-                    ->condition( 'c5', 'Client.Username LIKE ?', "%$query%" )
+            $dbFetch->condition( 'c1', 'Customer.FirstName LIKE ?', "%$query%" )
+                    ->condition( 'c2', 'Customer.SecondName LIKE ?', "%$query%" )
+                    ->condition( 'c3', 'Customer.FirstSurname LIKE ?', "%$query%" )
+                    ->condition( 'c4', 'Customer.SecondSurname LIKE ?', "%$query%" )
+                    ->condition( 'c5', 'Customer.Username LIKE ?', "%$query%" )
                     ->where( array( 'c1', 'c2', 'c3', 'c4', 'c5' ), 'or' );
         }
-        $clients = $dbFetch->find();
+        $customers = $dbFetch->find();
 
         return new Response(
-            $clients->toJson(),
+            $customers->toJson(),
             200,
             array( 'Content-type' => 'application/json' )
         );
@@ -166,22 +166,22 @@ $app->get(
 );
 
 $app->post(
-    '/clients',
+    '/customers',
     function ( Request $req ) use ( $app ){
 
         if(!$app['security']->isGranted( 'ROLE_ADMIN' )){
             return new Response( '', 403 );
         }
 
-        $client = new \AbcBank\Resources\Client();
+        $customer = new \AbcBank\Resources\Customer();
         try{
-            $client->fromArray( $req->request->all() );
-            if($client->validate()){
-                $client->save();
+            $customer->fromArray( $req->request->all() );
+            if($customer->validate()){
+                $customer->save();
             }else{
                 $errors = new \StdClass();
                 $count = 1;
-                foreach($client->getValidationFailures() as $failure){
+                foreach($customer->getValidationFailures() as $failure){
                     $errors->{"error" . $count++} = "Property " . $failure->getPropertyPath(
                         ) . ": " . $failure->getMessage();
                 }
@@ -193,11 +193,11 @@ $app->post(
             }
         }catch( Exception $e ){
             $app['monolog']->addError( $e->getMessage() );
-            $app->abort( 400, "Client could not be saved." );
+            $app->abort( 400, "Customer could not be saved." );
         }
 
         return new Response(
-            $client->toJson(),
+            $customer->toJson(),
             201,
             array( 'Content-type' => 'application/json' )
         );
@@ -205,15 +205,15 @@ $app->post(
 );
 
 $app->get(
-    '/clients/{clientId}',
-    function ( $clientId ) use ( $app, $mustBeClientOrAdmin ){
-        $client = $mustBeClientOrAdmin( $clientId );
-        if(!$client){
-            $app->abort( 404, 'Client not found.' );
+    '/customers/{customerId}',
+    function ( $customerId ) use ( $app, $mustBeCustomerOrAdmin ){
+        $customer = $mustBeCustomerOrAdmin( $customerId );
+        if(!$customer){
+            $app->abort( 404, 'Customer not found.' );
         }
 
         return new Response(
-            $client->toJson(),
+            $customer->toJson(),
             200,
             array( 'Content-type' => 'application/json' )
         );
@@ -221,13 +221,13 @@ $app->get(
 );
 
 $app->get(
-    '/clients/{clientId}/addresses',
-    function ( $clientId ) use ( $app, $mustBeClientOrAdmin ){
-        $client = $mustBeClientOrAdmin( $clientId );
-        if(!$client){
-            $app->abort( 404, "Client not found." );
+    '/customers/{customerId}/addresses',
+    function ( $customerId ) use ( $app, $mustBeCustomerOrAdmin ){
+        $customer = $mustBeCustomerOrAdmin( $customerId );
+        if(!$customer){
+            $app->abort( 404, "Customer not found." );
         }
-        $addresses = $client->getAddresses();
+        $addresses = $customer->getAddresses();
 
         return new Response(
             $addresses->toJson(),
@@ -238,13 +238,13 @@ $app->get(
 );
 
 $app->get(
-    '/clients/{clientId}/accounts',
-    function ( $clientId ) use ( $app, $mustBeClientOrAdmin ){
-        $client = $mustBeClientOrAdmin( $clientId );
-        if(!$client){
-            $app->abort( 404, "Client not found." );
+    '/customers/{customerId}/accounts',
+    function ( $customerId ) use ( $app, $mustBeCustomerOrAdmin ){
+        $customer = $mustBeCustomerOrAdmin( $customerId );
+        if(!$customer){
+            $app->abort( 404, "Customer not found." );
         }
-        $accounts = $client->getAccounts();
+        $accounts = $customer->getAccounts();
 
         return new Response(
             $accounts->toJson(),
@@ -255,11 +255,11 @@ $app->get(
 );
 
 $app->post(
-    '/clients/{clientId}/accounts',
-    function ( Request $req, $clientId ) use ( $app, $mustBeClientOrAdmin ){
-        $client = $mustBeClientOrAdmin( $clientId );
-        if(!$client){
-            $app->abort( 404, "Client not found." );
+    '/customers/{customerId}/accounts',
+    function ( Request $req, $customerId ) use ( $app, $mustBeCustomerOrAdmin ){
+        $customer = $mustBeCustomerOrAdmin( $customerId );
+        if(!$customer){
+            $app->abort( 404, "Customer not found." );
         }
 
         $account = new \AbcBank\Resources\Account();

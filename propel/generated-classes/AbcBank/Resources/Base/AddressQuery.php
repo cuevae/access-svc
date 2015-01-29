@@ -21,7 +21,7 @@ use Propel\Runtime\Exception\PropelException;
  *
  *
  * @method     ChildAddressQuery orderById($order = Criteria::ASC) Order by the id column
- * @method     ChildAddressQuery orderByClientId($order = Criteria::ASC) Order by the client_id column
+ * @method     ChildAddressQuery orderByCustomerId($order = Criteria::ASC) Order by the customer_id column
  * @method     ChildAddressQuery orderByNumber($order = Criteria::ASC) Order by the number column
  * @method     ChildAddressQuery orderByLine1($order = Criteria::ASC) Order by the line_1 column
  * @method     ChildAddressQuery orderByLine2($order = Criteria::ASC) Order by the line_2 column
@@ -37,7 +37,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildAddressQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
  * @method     ChildAddressQuery groupById() Group by the id column
- * @method     ChildAddressQuery groupByClientId() Group by the client_id column
+ * @method     ChildAddressQuery groupByCustomerId() Group by the customer_id column
  * @method     ChildAddressQuery groupByNumber() Group by the number column
  * @method     ChildAddressQuery groupByLine1() Group by the line_1 column
  * @method     ChildAddressQuery groupByLine2() Group by the line_2 column
@@ -56,17 +56,17 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildAddressQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method     ChildAddressQuery innerJoin($relation) Adds a INNER JOIN clause to the query
  *
- * @method     ChildAddressQuery leftJoinClient($relationAlias = null) Adds a LEFT JOIN clause to the query using the Client relation
- * @method     ChildAddressQuery rightJoinClient($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Client relation
- * @method     ChildAddressQuery innerJoinClient($relationAlias = null) Adds a INNER JOIN clause to the query using the Client relation
+ * @method     ChildAddressQuery leftJoinCustomer($relationAlias = null) Adds a LEFT JOIN clause to the query using the Customer relation
+ * @method     ChildAddressQuery rightJoinCustomer($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Customer relation
+ * @method     ChildAddressQuery innerJoinCustomer($relationAlias = null) Adds a INNER JOIN clause to the query using the Customer relation
  *
- * @method     \AbcBank\Resources\ClientQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \AbcBank\Resources\CustomerQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildAddress findOne(ConnectionInterface $con = null) Return the first ChildAddress matching the query
  * @method     ChildAddress findOneOrCreate(ConnectionInterface $con = null) Return the first ChildAddress matching the query, or a new ChildAddress object populated from the query conditions when no match is found
  *
  * @method     ChildAddress findOneById(int $id) Return the first ChildAddress filtered by the id column
- * @method     ChildAddress findOneByClientId(int $client_id) Return the first ChildAddress filtered by the client_id column
+ * @method     ChildAddress findOneByCustomerId(int $customer_id) Return the first ChildAddress filtered by the customer_id column
  * @method     ChildAddress findOneByNumber(string $number) Return the first ChildAddress filtered by the number column
  * @method     ChildAddress findOneByLine1(string $line_1) Return the first ChildAddress filtered by the line_1 column
  * @method     ChildAddress findOneByLine2(string $line_2) Return the first ChildAddress filtered by the line_2 column
@@ -85,7 +85,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildAddress requireOne(ConnectionInterface $con = null) Return the first ChildAddress matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildAddress requireOneById(int $id) Return the first ChildAddress filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildAddress requireOneByClientId(int $client_id) Return the first ChildAddress filtered by the client_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildAddress requireOneByCustomerId(int $customer_id) Return the first ChildAddress filtered by the customer_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildAddress requireOneByNumber(string $number) Return the first ChildAddress filtered by the number column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildAddress requireOneByLine1(string $line_1) Return the first ChildAddress filtered by the line_1 column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildAddress requireOneByLine2(string $line_2) Return the first ChildAddress filtered by the line_2 column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -102,7 +102,7 @@ use Propel\Runtime\Exception\PropelException;
  *
  * @method     ChildAddress[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildAddress objects based on current ModelCriteria
  * @method     ChildAddress[]|ObjectCollection findById(int $id) Return ChildAddress objects filtered by the id column
- * @method     ChildAddress[]|ObjectCollection findByClientId(int $client_id) Return ChildAddress objects filtered by the client_id column
+ * @method     ChildAddress[]|ObjectCollection findByCustomerId(int $customer_id) Return ChildAddress objects filtered by the customer_id column
  * @method     ChildAddress[]|ObjectCollection findByNumber(string $number) Return ChildAddress objects filtered by the number column
  * @method     ChildAddress[]|ObjectCollection findByLine1(string $line_1) Return ChildAddress objects filtered by the line_1 column
  * @method     ChildAddress[]|ObjectCollection findByLine2(string $line_2) Return ChildAddress objects filtered by the line_2 column
@@ -208,7 +208,7 @@ abstract class AddressQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, client_id, number, line_1, line_2, line_3, postcode, town, county, country, telephone_1, telephone_2, telephone_3, created_at, updated_at FROM address WHERE id = :p0';
+        $sql = 'SELECT id, customer_id, number, line_1, line_2, line_3, postcode, town, county, country, telephone_1, telephone_2, telephone_3, created_at, updated_at FROM address WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -340,18 +340,18 @@ abstract class AddressQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query on the client_id column
+     * Filter the query on the customer_id column
      *
      * Example usage:
      * <code>
-     * $query->filterByClientId(1234); // WHERE client_id = 1234
-     * $query->filterByClientId(array(12, 34)); // WHERE client_id IN (12, 34)
-     * $query->filterByClientId(array('min' => 12)); // WHERE client_id > 12
+     * $query->filterByCustomerId(1234); // WHERE customer_id = 1234
+     * $query->filterByCustomerId(array(12, 34)); // WHERE customer_id IN (12, 34)
+     * $query->filterByCustomerId(array('min' => 12)); // WHERE customer_id > 12
      * </code>
      *
-     * @see       filterByClient()
+     * @see       filterByCustomer()
      *
-     * @param     mixed $clientId The value to use as filter.
+     * @param     mixed $customerId The value to use as filter.
      *              Use scalar values for equality.
      *              Use array values for in_array() equivalent.
      *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
@@ -359,16 +359,16 @@ abstract class AddressQuery extends ModelCriteria
      *
      * @return $this|ChildAddressQuery The current query, for fluid interface
      */
-    public function filterByClientId($clientId = null, $comparison = null)
+    public function filterByCustomerId($customerId = null, $comparison = null)
     {
-        if (is_array($clientId)) {
+        if (is_array($customerId)) {
             $useMinMax = false;
-            if (isset($clientId['min'])) {
-                $this->addUsingAlias(AddressTableMap::COL_CLIENT_ID, $clientId['min'], Criteria::GREATER_EQUAL);
+            if (isset($customerId['min'])) {
+                $this->addUsingAlias(AddressTableMap::COL_CUSTOMER_ID, $customerId['min'], Criteria::GREATER_EQUAL);
                 $useMinMax = true;
             }
-            if (isset($clientId['max'])) {
-                $this->addUsingAlias(AddressTableMap::COL_CLIENT_ID, $clientId['max'], Criteria::LESS_EQUAL);
+            if (isset($customerId['max'])) {
+                $this->addUsingAlias(AddressTableMap::COL_CUSTOMER_ID, $customerId['max'], Criteria::LESS_EQUAL);
                 $useMinMax = true;
             }
             if ($useMinMax) {
@@ -379,7 +379,7 @@ abstract class AddressQuery extends ModelCriteria
             }
         }
 
-        return $this->addUsingAlias(AddressTableMap::COL_CLIENT_ID, $clientId, $comparison);
+        return $this->addUsingAlias(AddressTableMap::COL_CUSTOMER_ID, $customerId, $comparison);
     }
 
     /**
@@ -788,44 +788,44 @@ abstract class AddressQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query by a related \AbcBank\Resources\Client object
+     * Filter the query by a related \AbcBank\Resources\Customer object
      *
-     * @param \AbcBank\Resources\Client|ObjectCollection $client The related object(s) to use as filter
+     * @param \AbcBank\Resources\Customer|ObjectCollection $customer The related object(s) to use as filter
      * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @throws \Propel\Runtime\Exception\PropelException
      *
      * @return ChildAddressQuery The current query, for fluid interface
      */
-    public function filterByClient($client, $comparison = null)
+    public function filterByCustomer($customer, $comparison = null)
     {
-        if ($client instanceof \AbcBank\Resources\Client) {
+        if ($customer instanceof \AbcBank\Resources\Customer) {
             return $this
-                ->addUsingAlias(AddressTableMap::COL_CLIENT_ID, $client->getId(), $comparison);
-        } elseif ($client instanceof ObjectCollection) {
+                ->addUsingAlias(AddressTableMap::COL_CUSTOMER_ID, $customer->getId(), $comparison);
+        } elseif ($customer instanceof ObjectCollection) {
             if (null === $comparison) {
                 $comparison = Criteria::IN;
             }
 
             return $this
-                ->addUsingAlias(AddressTableMap::COL_CLIENT_ID, $client->toKeyValue('Id', 'Id'), $comparison);
+                ->addUsingAlias(AddressTableMap::COL_CUSTOMER_ID, $customer->toKeyValue('Id', 'Id'), $comparison);
         } else {
-            throw new PropelException('filterByClient() only accepts arguments of type \AbcBank\Resources\Client or Collection');
+            throw new PropelException('filterByCustomer() only accepts arguments of type \AbcBank\Resources\Customer or Collection');
         }
     }
 
     /**
-     * Adds a JOIN clause to the query using the Client relation
+     * Adds a JOIN clause to the query using the Customer relation
      *
      * @param     string $relationAlias optional alias for the relation
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
      * @return $this|ChildAddressQuery The current query, for fluid interface
      */
-    public function joinClient($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function joinCustomer($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         $tableMap = $this->getTableMap();
-        $relationMap = $tableMap->getRelation('Client');
+        $relationMap = $tableMap->getRelation('Customer');
 
         // create a ModelJoin object for this join
         $join = new ModelJoin();
@@ -840,14 +840,14 @@ abstract class AddressQuery extends ModelCriteria
             $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
             $this->addJoinObject($join, $relationAlias);
         } else {
-            $this->addJoinObject($join, 'Client');
+            $this->addJoinObject($join, 'Customer');
         }
 
         return $this;
     }
 
     /**
-     * Use the Client relation Client object
+     * Use the Customer relation Customer object
      *
      * @see useQuery()
      *
@@ -855,13 +855,13 @@ abstract class AddressQuery extends ModelCriteria
      *                                   to be used as main alias in the secondary query
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
-     * @return \AbcBank\Resources\ClientQuery A secondary query class using the current class as primary query
+     * @return \AbcBank\Resources\CustomerQuery A secondary query class using the current class as primary query
      */
-    public function useClientQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function useCustomerQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         return $this
-            ->joinClient($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'Client', '\AbcBank\Resources\ClientQuery');
+            ->joinCustomer($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Customer', '\AbcBank\Resources\CustomerQuery');
     }
 
     /**

@@ -77,9 +77,9 @@ class AddressTableMap extends TableMap
     const COL_ID = 'address.id';
 
     /**
-     * the column name for the client_id field
+     * the column name for the customer_id field
      */
-    const COL_CLIENT_ID = 'address.client_id';
+    const COL_CUSTOMER_ID = 'address.customer_id';
 
     /**
      * the column name for the number field
@@ -158,10 +158,10 @@ class AddressTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'ClientId', 'Number', 'Line1', 'Line2', 'Line3', 'Postcode', 'Town', 'County', 'Country', 'Telephone1', 'Telephone2', 'Telephone3', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('id', 'clientId', 'number', 'line1', 'line2', 'line3', 'postcode', 'town', 'county', 'country', 'telephone1', 'telephone2', 'telephone3', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(AddressTableMap::COL_ID, AddressTableMap::COL_CLIENT_ID, AddressTableMap::COL_NUMBER, AddressTableMap::COL_LINE_1, AddressTableMap::COL_LINE_2, AddressTableMap::COL_LINE_3, AddressTableMap::COL_POSTCODE, AddressTableMap::COL_TOWN, AddressTableMap::COL_COUNTY, AddressTableMap::COL_COUNTRY, AddressTableMap::COL_TELEPHONE_1, AddressTableMap::COL_TELEPHONE_2, AddressTableMap::COL_TELEPHONE_3, AddressTableMap::COL_CREATED_AT, AddressTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('id', 'client_id', 'number', 'line_1', 'line_2', 'line_3', 'postcode', 'town', 'county', 'country', 'telephone_1', 'telephone_2', 'telephone_3', 'created_at', 'updated_at', ),
+        self::TYPE_PHPNAME       => array('Id', 'CustomerId', 'Number', 'Line1', 'Line2', 'Line3', 'Postcode', 'Town', 'County', 'Country', 'Telephone1', 'Telephone2', 'Telephone3', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('id', 'customerId', 'number', 'line1', 'line2', 'line3', 'postcode', 'town', 'county', 'country', 'telephone1', 'telephone2', 'telephone3', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(AddressTableMap::COL_ID, AddressTableMap::COL_CUSTOMER_ID, AddressTableMap::COL_NUMBER, AddressTableMap::COL_LINE_1, AddressTableMap::COL_LINE_2, AddressTableMap::COL_LINE_3, AddressTableMap::COL_POSTCODE, AddressTableMap::COL_TOWN, AddressTableMap::COL_COUNTY, AddressTableMap::COL_COUNTRY, AddressTableMap::COL_TELEPHONE_1, AddressTableMap::COL_TELEPHONE_2, AddressTableMap::COL_TELEPHONE_3, AddressTableMap::COL_CREATED_AT, AddressTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('id', 'customer_id', 'number', 'line_1', 'line_2', 'line_3', 'postcode', 'town', 'county', 'country', 'telephone_1', 'telephone_2', 'telephone_3', 'created_at', 'updated_at', ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, )
     );
 
@@ -172,10 +172,10 @@ class AddressTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'ClientId' => 1, 'Number' => 2, 'Line1' => 3, 'Line2' => 4, 'Line3' => 5, 'Postcode' => 6, 'Town' => 7, 'County' => 8, 'Country' => 9, 'Telephone1' => 10, 'Telephone2' => 11, 'Telephone3' => 12, 'CreatedAt' => 13, 'UpdatedAt' => 14, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'clientId' => 1, 'number' => 2, 'line1' => 3, 'line2' => 4, 'line3' => 5, 'postcode' => 6, 'town' => 7, 'county' => 8, 'country' => 9, 'telephone1' => 10, 'telephone2' => 11, 'telephone3' => 12, 'createdAt' => 13, 'updatedAt' => 14, ),
-        self::TYPE_COLNAME       => array(AddressTableMap::COL_ID => 0, AddressTableMap::COL_CLIENT_ID => 1, AddressTableMap::COL_NUMBER => 2, AddressTableMap::COL_LINE_1 => 3, AddressTableMap::COL_LINE_2 => 4, AddressTableMap::COL_LINE_3 => 5, AddressTableMap::COL_POSTCODE => 6, AddressTableMap::COL_TOWN => 7, AddressTableMap::COL_COUNTY => 8, AddressTableMap::COL_COUNTRY => 9, AddressTableMap::COL_TELEPHONE_1 => 10, AddressTableMap::COL_TELEPHONE_2 => 11, AddressTableMap::COL_TELEPHONE_3 => 12, AddressTableMap::COL_CREATED_AT => 13, AddressTableMap::COL_UPDATED_AT => 14, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'client_id' => 1, 'number' => 2, 'line_1' => 3, 'line_2' => 4, 'line_3' => 5, 'postcode' => 6, 'town' => 7, 'county' => 8, 'country' => 9, 'telephone_1' => 10, 'telephone_2' => 11, 'telephone_3' => 12, 'created_at' => 13, 'updated_at' => 14, ),
+        self::TYPE_PHPNAME       => array('Id' => 0, 'CustomerId' => 1, 'Number' => 2, 'Line1' => 3, 'Line2' => 4, 'Line3' => 5, 'Postcode' => 6, 'Town' => 7, 'County' => 8, 'Country' => 9, 'Telephone1' => 10, 'Telephone2' => 11, 'Telephone3' => 12, 'CreatedAt' => 13, 'UpdatedAt' => 14, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'customerId' => 1, 'number' => 2, 'line1' => 3, 'line2' => 4, 'line3' => 5, 'postcode' => 6, 'town' => 7, 'county' => 8, 'country' => 9, 'telephone1' => 10, 'telephone2' => 11, 'telephone3' => 12, 'createdAt' => 13, 'updatedAt' => 14, ),
+        self::TYPE_COLNAME       => array(AddressTableMap::COL_ID => 0, AddressTableMap::COL_CUSTOMER_ID => 1, AddressTableMap::COL_NUMBER => 2, AddressTableMap::COL_LINE_1 => 3, AddressTableMap::COL_LINE_2 => 4, AddressTableMap::COL_LINE_3 => 5, AddressTableMap::COL_POSTCODE => 6, AddressTableMap::COL_TOWN => 7, AddressTableMap::COL_COUNTY => 8, AddressTableMap::COL_COUNTRY => 9, AddressTableMap::COL_TELEPHONE_1 => 10, AddressTableMap::COL_TELEPHONE_2 => 11, AddressTableMap::COL_TELEPHONE_3 => 12, AddressTableMap::COL_CREATED_AT => 13, AddressTableMap::COL_UPDATED_AT => 14, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'customer_id' => 1, 'number' => 2, 'line_1' => 3, 'line_2' => 4, 'line_3' => 5, 'postcode' => 6, 'town' => 7, 'county' => 8, 'country' => 9, 'telephone_1' => 10, 'telephone_2' => 11, 'telephone_3' => 12, 'created_at' => 13, 'updated_at' => 14, ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, )
     );
 
@@ -197,7 +197,7 @@ class AddressTableMap extends TableMap
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
-        $this->addForeignKey('client_id', 'ClientId', 'INTEGER', 'client', 'id', true, null, null);
+        $this->addForeignKey('customer_id', 'CustomerId', 'INTEGER', 'customer', 'id', true, null, null);
         $this->addColumn('number', 'Number', 'VARCHAR', true, 255, null);
         $this->addColumn('line_1', 'Line1', 'VARCHAR', true, 255, null);
         $this->addColumn('line_2', 'Line2', 'VARCHAR', false, 255, null);
@@ -218,10 +218,10 @@ class AddressTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('Client', '\\AbcBank\\Resources\\Client', RelationMap::MANY_TO_ONE, array (
+        $this->addRelation('Customer', '\\AbcBank\\Resources\\Customer', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
-    0 => ':client_id',
+    0 => ':customer_id',
     1 => ':id',
   ),
 ), null, null, null, false);
@@ -382,7 +382,7 @@ class AddressTableMap extends TableMap
     {
         if (null === $alias) {
             $criteria->addSelectColumn(AddressTableMap::COL_ID);
-            $criteria->addSelectColumn(AddressTableMap::COL_CLIENT_ID);
+            $criteria->addSelectColumn(AddressTableMap::COL_CUSTOMER_ID);
             $criteria->addSelectColumn(AddressTableMap::COL_NUMBER);
             $criteria->addSelectColumn(AddressTableMap::COL_LINE_1);
             $criteria->addSelectColumn(AddressTableMap::COL_LINE_2);
@@ -398,7 +398,7 @@ class AddressTableMap extends TableMap
             $criteria->addSelectColumn(AddressTableMap::COL_UPDATED_AT);
         } else {
             $criteria->addSelectColumn($alias . '.id');
-            $criteria->addSelectColumn($alias . '.client_id');
+            $criteria->addSelectColumn($alias . '.customer_id');
             $criteria->addSelectColumn($alias . '.number');
             $criteria->addSelectColumn($alias . '.line_1');
             $criteria->addSelectColumn($alias . '.line_2');

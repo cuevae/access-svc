@@ -69,10 +69,10 @@ abstract class Transaction implements ActiveRecordInterface
     protected $id;
 
     /**
-     * The value for the client_id field.
+     * The value for the customer_id field.
      * @var        int
      */
-    protected $client_id;
+    protected $customer_id;
 
     /**
      * The value for the account_id field.
@@ -340,13 +340,13 @@ abstract class Transaction implements ActiveRecordInterface
     }
 
     /**
-     * Get the [client_id] column value.
+     * Get the [customer_id] column value.
      *
      * @return int
      */
-    public function getClientId()
+    public function getCustomerId()
     {
-        return $this->client_id;
+        return $this->customer_id;
     }
 
     /**
@@ -440,24 +440,24 @@ abstract class Transaction implements ActiveRecordInterface
     } // setId()
 
     /**
-     * Set the value of [client_id] column.
+     * Set the value of [customer_id] column.
      *
      * @param  int $v new value
      * @return $this|\AbcBank\Resources\Transaction The current object (for fluent API support)
      */
-    public function setClientId($v)
+    public function setCustomerId($v)
     {
         if ($v !== null) {
             $v = (int) $v;
         }
 
-        if ($this->client_id !== $v) {
-            $this->client_id = $v;
-            $this->modifiedColumns[TransactionTableMap::COL_CLIENT_ID] = true;
+        if ($this->customer_id !== $v) {
+            $this->customer_id = $v;
+            $this->modifiedColumns[TransactionTableMap::COL_CUSTOMER_ID] = true;
         }
 
         return $this;
-    } // setClientId()
+    } // setCustomerId()
 
     /**
      * Set the value of [account_id] column.
@@ -598,8 +598,8 @@ abstract class Transaction implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : TransactionTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
             $this->id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : TransactionTableMap::translateFieldName('ClientId', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->client_id = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : TransactionTableMap::translateFieldName('CustomerId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->customer_id = (null !== $col) ? (int) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : TransactionTableMap::translateFieldName('AccountId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->account_id = (null !== $col) ? (int) $col : null;
@@ -841,8 +841,8 @@ abstract class Transaction implements ActiveRecordInterface
         if ($this->isColumnModified(TransactionTableMap::COL_ID)) {
             $modifiedColumns[':p' . $index++]  = 'id';
         }
-        if ($this->isColumnModified(TransactionTableMap::COL_CLIENT_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'client_id';
+        if ($this->isColumnModified(TransactionTableMap::COL_CUSTOMER_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'customer_id';
         }
         if ($this->isColumnModified(TransactionTableMap::COL_ACCOUNT_ID)) {
             $modifiedColumns[':p' . $index++]  = 'account_id';
@@ -873,8 +873,8 @@ abstract class Transaction implements ActiveRecordInterface
                     case 'id':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case 'client_id':
-                        $stmt->bindValue($identifier, $this->client_id, PDO::PARAM_INT);
+                    case 'customer_id':
+                        $stmt->bindValue($identifier, $this->customer_id, PDO::PARAM_INT);
                         break;
                     case 'account_id':
                         $stmt->bindValue($identifier, $this->account_id, PDO::PARAM_INT);
@@ -957,7 +957,7 @@ abstract class Transaction implements ActiveRecordInterface
                 return $this->getId();
                 break;
             case 1:
-                return $this->getClientId();
+                return $this->getCustomerId();
                 break;
             case 2:
                 return $this->getAccountId();
@@ -1004,7 +1004,7 @@ abstract class Transaction implements ActiveRecordInterface
         $keys = TransactionTableMap::getFieldNames($keyType);
         $result = array(
             $keys[0] => $this->getId(),
-            $keys[1] => $this->getClientId(),
+            $keys[1] => $this->getCustomerId(),
             $keys[2] => $this->getAccountId(),
             $keys[3] => $this->getType(),
             $keys[4] => $this->getAmount(),
@@ -1067,7 +1067,7 @@ abstract class Transaction implements ActiveRecordInterface
                 $this->setId($value);
                 break;
             case 1:
-                $this->setClientId($value);
+                $this->setCustomerId($value);
                 break;
             case 2:
                 $this->setAccountId($value);
@@ -1114,7 +1114,7 @@ abstract class Transaction implements ActiveRecordInterface
             $this->setId($arr[$keys[0]]);
         }
         if (array_key_exists($keys[1], $arr)) {
-            $this->setClientId($arr[$keys[1]]);
+            $this->setCustomerId($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
             $this->setAccountId($arr[$keys[2]]);
@@ -1175,8 +1175,8 @@ abstract class Transaction implements ActiveRecordInterface
         if ($this->isColumnModified(TransactionTableMap::COL_ID)) {
             $criteria->add(TransactionTableMap::COL_ID, $this->id);
         }
-        if ($this->isColumnModified(TransactionTableMap::COL_CLIENT_ID)) {
-            $criteria->add(TransactionTableMap::COL_CLIENT_ID, $this->client_id);
+        if ($this->isColumnModified(TransactionTableMap::COL_CUSTOMER_ID)) {
+            $criteria->add(TransactionTableMap::COL_CUSTOMER_ID, $this->customer_id);
         }
         if ($this->isColumnModified(TransactionTableMap::COL_ACCOUNT_ID)) {
             $criteria->add(TransactionTableMap::COL_ACCOUNT_ID, $this->account_id);
@@ -1279,7 +1279,7 @@ abstract class Transaction implements ActiveRecordInterface
      */
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
-        $copyObj->setClientId($this->getClientId());
+        $copyObj->setCustomerId($this->getCustomerId());
         $copyObj->setAccountId($this->getAccountId());
         $copyObj->setType($this->getType());
         $copyObj->setAmount($this->getAmount());
@@ -1321,7 +1321,7 @@ abstract class Transaction implements ActiveRecordInterface
     public function clear()
     {
         $this->id = null;
-        $this->client_id = null;
+        $this->customer_id = null;
         $this->account_id = null;
         $this->type = null;
         $this->amount = null;

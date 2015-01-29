@@ -7,8 +7,8 @@ use \Exception;
 use \PDO;
 use AbcBank\Resources\Address as ChildAddress;
 use AbcBank\Resources\AddressQuery as ChildAddressQuery;
-use AbcBank\Resources\Client as ChildClient;
-use AbcBank\Resources\ClientQuery as ChildClientQuery;
+use AbcBank\Resources\Customer as ChildCustomer;
+use AbcBank\Resources\CustomerQuery as ChildCustomerQuery;
 use AbcBank\Resources\Map\AddressTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
@@ -71,10 +71,10 @@ abstract class Address implements ActiveRecordInterface
     protected $id;
 
     /**
-     * The value for the client_id field.
+     * The value for the customer_id field.
      * @var        int
      */
-    protected $client_id;
+    protected $customer_id;
 
     /**
      * The value for the number field.
@@ -155,9 +155,9 @@ abstract class Address implements ActiveRecordInterface
     protected $updated_at;
 
     /**
-     * @var        ChildClient
+     * @var        ChildCustomer
      */
-    protected $aClient;
+    protected $aCustomer;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -395,13 +395,13 @@ abstract class Address implements ActiveRecordInterface
     }
 
     /**
-     * Get the [client_id] column value.
+     * Get the [customer_id] column value.
      *
      * @return int
      */
-    public function getClientId()
+    public function getCustomerId()
     {
-        return $this->client_id;
+        return $this->customer_id;
     }
 
     /**
@@ -575,28 +575,28 @@ abstract class Address implements ActiveRecordInterface
     } // setId()
 
     /**
-     * Set the value of [client_id] column.
+     * Set the value of [customer_id] column.
      *
      * @param  int $v new value
      * @return $this|\AbcBank\Resources\Address The current object (for fluent API support)
      */
-    public function setClientId($v)
+    public function setCustomerId($v)
     {
         if ($v !== null) {
             $v = (int) $v;
         }
 
-        if ($this->client_id !== $v) {
-            $this->client_id = $v;
-            $this->modifiedColumns[AddressTableMap::COL_CLIENT_ID] = true;
+        if ($this->customer_id !== $v) {
+            $this->customer_id = $v;
+            $this->modifiedColumns[AddressTableMap::COL_CUSTOMER_ID] = true;
         }
 
-        if ($this->aClient !== null && $this->aClient->getId() !== $v) {
-            $this->aClient = null;
+        if ($this->aCustomer !== null && $this->aCustomer->getId() !== $v) {
+            $this->aCustomer = null;
         }
 
         return $this;
-    } // setClientId()
+    } // setCustomerId()
 
     /**
      * Set the value of [number] column.
@@ -897,8 +897,8 @@ abstract class Address implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : AddressTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
             $this->id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : AddressTableMap::translateFieldName('ClientId', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->client_id = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : AddressTableMap::translateFieldName('CustomerId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->customer_id = (null !== $col) ? (int) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : AddressTableMap::translateFieldName('Number', TableMap::TYPE_PHPNAME, $indexType)];
             $this->number = (null !== $col) ? (string) $col : null;
@@ -974,8 +974,8 @@ abstract class Address implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
-        if ($this->aClient !== null && $this->client_id !== $this->aClient->getId()) {
-            $this->aClient = null;
+        if ($this->aCustomer !== null && $this->customer_id !== $this->aCustomer->getId()) {
+            $this->aCustomer = null;
         }
     } // ensureConsistency
 
@@ -1016,7 +1016,7 @@ abstract class Address implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->aClient = null;
+            $this->aCustomer = null;
         } // if (deep)
     }
 
@@ -1133,11 +1133,11 @@ abstract class Address implements ActiveRecordInterface
             // method.  This object relates to these object(s) by a
             // foreign key reference.
 
-            if ($this->aClient !== null) {
-                if ($this->aClient->isModified() || $this->aClient->isNew()) {
-                    $affectedRows += $this->aClient->save($con);
+            if ($this->aCustomer !== null) {
+                if ($this->aCustomer->isModified() || $this->aCustomer->isNew()) {
+                    $affectedRows += $this->aCustomer->save($con);
                 }
-                $this->setClient($this->aClient);
+                $this->setCustomer($this->aCustomer);
             }
 
             if ($this->isNew() || $this->isModified()) {
@@ -1180,8 +1180,8 @@ abstract class Address implements ActiveRecordInterface
         if ($this->isColumnModified(AddressTableMap::COL_ID)) {
             $modifiedColumns[':p' . $index++]  = 'id';
         }
-        if ($this->isColumnModified(AddressTableMap::COL_CLIENT_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'client_id';
+        if ($this->isColumnModified(AddressTableMap::COL_CUSTOMER_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'customer_id';
         }
         if ($this->isColumnModified(AddressTableMap::COL_NUMBER)) {
             $modifiedColumns[':p' . $index++]  = 'number';
@@ -1236,8 +1236,8 @@ abstract class Address implements ActiveRecordInterface
                     case 'id':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case 'client_id':
-                        $stmt->bindValue($identifier, $this->client_id, PDO::PARAM_INT);
+                    case 'customer_id':
+                        $stmt->bindValue($identifier, $this->customer_id, PDO::PARAM_INT);
                         break;
                     case 'number':
                         $stmt->bindValue($identifier, $this->number, PDO::PARAM_STR);
@@ -1344,7 +1344,7 @@ abstract class Address implements ActiveRecordInterface
                 return $this->getId();
                 break;
             case 1:
-                return $this->getClientId();
+                return $this->getCustomerId();
                 break;
             case 2:
                 return $this->getNumber();
@@ -1416,7 +1416,7 @@ abstract class Address implements ActiveRecordInterface
         $keys = AddressTableMap::getFieldNames($keyType);
         $result = array(
             $keys[0] => $this->getId(),
-            $keys[1] => $this->getClientId(),
+            $keys[1] => $this->getCustomerId(),
             $keys[2] => $this->getNumber(),
             $keys[3] => $this->getLine1(),
             $keys[4] => $this->getLine2(),
@@ -1451,20 +1451,20 @@ abstract class Address implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
-            if (null !== $this->aClient) {
+            if (null !== $this->aCustomer) {
 
                 switch ($keyType) {
                     case TableMap::TYPE_CAMELNAME:
-                        $key = 'client';
+                        $key = 'customer';
                         break;
                     case TableMap::TYPE_FIELDNAME:
-                        $key = 'client';
+                        $key = 'customer';
                         break;
                     default:
-                        $key = 'Client';
+                        $key = 'Customer';
                 }
 
-                $result[$key] = $this->aClient->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+                $result[$key] = $this->aCustomer->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
         }
 
@@ -1504,7 +1504,7 @@ abstract class Address implements ActiveRecordInterface
                 $this->setId($value);
                 break;
             case 1:
-                $this->setClientId($value);
+                $this->setCustomerId($value);
                 break;
             case 2:
                 $this->setNumber($value);
@@ -1575,7 +1575,7 @@ abstract class Address implements ActiveRecordInterface
             $this->setId($arr[$keys[0]]);
         }
         if (array_key_exists($keys[1], $arr)) {
-            $this->setClientId($arr[$keys[1]]);
+            $this->setCustomerId($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
             $this->setNumber($arr[$keys[2]]);
@@ -1660,8 +1660,8 @@ abstract class Address implements ActiveRecordInterface
         if ($this->isColumnModified(AddressTableMap::COL_ID)) {
             $criteria->add(AddressTableMap::COL_ID, $this->id);
         }
-        if ($this->isColumnModified(AddressTableMap::COL_CLIENT_ID)) {
-            $criteria->add(AddressTableMap::COL_CLIENT_ID, $this->client_id);
+        if ($this->isColumnModified(AddressTableMap::COL_CUSTOMER_ID)) {
+            $criteria->add(AddressTableMap::COL_CUSTOMER_ID, $this->customer_id);
         }
         if ($this->isColumnModified(AddressTableMap::COL_NUMBER)) {
             $criteria->add(AddressTableMap::COL_NUMBER, $this->number);
@@ -1788,7 +1788,7 @@ abstract class Address implements ActiveRecordInterface
      */
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
-        $copyObj->setClientId($this->getClientId());
+        $copyObj->setCustomerId($this->getCustomerId());
         $copyObj->setNumber($this->getNumber());
         $copyObj->setLine1($this->getLine1());
         $copyObj->setLine2($this->getLine2());
@@ -1831,24 +1831,24 @@ abstract class Address implements ActiveRecordInterface
     }
 
     /**
-     * Declares an association between this object and a ChildClient object.
+     * Declares an association between this object and a ChildCustomer object.
      *
-     * @param  ChildClient $v
+     * @param  ChildCustomer $v
      * @return $this|\AbcBank\Resources\Address The current object (for fluent API support)
      * @throws PropelException
      */
-    public function setClient(ChildClient $v = null)
+    public function setCustomer(ChildCustomer $v = null)
     {
         if ($v === null) {
-            $this->setClientId(NULL);
+            $this->setCustomerId(NULL);
         } else {
-            $this->setClientId($v->getId());
+            $this->setCustomerId($v->getId());
         }
 
-        $this->aClient = $v;
+        $this->aCustomer = $v;
 
         // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the ChildClient object, it will not be re-added.
+        // If this object has already been added to the ChildCustomer object, it will not be re-added.
         if ($v !== null) {
             $v->addAddress($this);
         }
@@ -1859,16 +1859,16 @@ abstract class Address implements ActiveRecordInterface
 
 
     /**
-     * Get the associated ChildClient object
+     * Get the associated ChildCustomer object
      *
      * @param  ConnectionInterface $con Optional Connection object.
-     * @return ChildClient The associated ChildClient object.
+     * @return ChildCustomer The associated ChildCustomer object.
      * @throws PropelException
      */
-    public function getClient(ConnectionInterface $con = null)
+    public function getCustomer(ConnectionInterface $con = null)
     {
-        if ($this->aClient === null && ($this->client_id !== null)) {
-            $this->aClient = ChildClientQuery::create()
+        if ($this->aCustomer === null && ($this->customer_id !== null)) {
+            $this->aCustomer = ChildCustomerQuery::create()
                 ->filterByAddress($this) // here
                 ->findOne($con);
             /* The following can be used additionally to
@@ -1876,11 +1876,11 @@ abstract class Address implements ActiveRecordInterface
                 to this object.  This level of coupling may, however, be
                 undesirable since it could result in an only partially populated collection
                 in the referenced object.
-                $this->aClient->addAddresses($this);
+                $this->aCustomer->addAddresses($this);
              */
         }
 
-        return $this->aClient;
+        return $this->aCustomer;
     }
 
     /**
@@ -1890,11 +1890,11 @@ abstract class Address implements ActiveRecordInterface
      */
     public function clear()
     {
-        if (null !== $this->aClient) {
-            $this->aClient->removeAddress($this);
+        if (null !== $this->aCustomer) {
+            $this->aCustomer->removeAddress($this);
         }
         $this->id = null;
-        $this->client_id = null;
+        $this->customer_id = null;
         $this->number = null;
         $this->line_1 = null;
         $this->line_2 = null;
@@ -1928,7 +1928,7 @@ abstract class Address implements ActiveRecordInterface
         if ($deep) {
         } // if ($deep)
 
-        $this->aClient = null;
+        $this->aCustomer = null;
     }
 
     /**

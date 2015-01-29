@@ -77,9 +77,9 @@ class AccountTableMap extends TableMap
     const COL_ACCOUNT_NUMBER = 'account.account_number';
 
     /**
-     * the column name for the client_id field
+     * the column name for the customer_id field
      */
-    const COL_CLIENT_ID = 'account.client_id';
+    const COL_CUSTOMER_ID = 'account.customer_id';
 
     /**
      * the column name for the type field
@@ -118,10 +118,10 @@ class AccountTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('AccountNumber', 'ClientId', 'Type', 'Balance', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('accountNumber', 'clientId', 'type', 'balance', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(AccountTableMap::COL_ACCOUNT_NUMBER, AccountTableMap::COL_CLIENT_ID, AccountTableMap::COL_TYPE, AccountTableMap::COL_BALANCE, AccountTableMap::COL_CREATED_AT, AccountTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('account_number', 'client_id', 'type', 'balance', 'created_at', 'updated_at', ),
+        self::TYPE_PHPNAME       => array('AccountNumber', 'CustomerId', 'Type', 'Balance', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('accountNumber', 'customerId', 'type', 'balance', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(AccountTableMap::COL_ACCOUNT_NUMBER, AccountTableMap::COL_CUSTOMER_ID, AccountTableMap::COL_TYPE, AccountTableMap::COL_BALANCE, AccountTableMap::COL_CREATED_AT, AccountTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('account_number', 'customer_id', 'type', 'balance', 'created_at', 'updated_at', ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
 
@@ -132,10 +132,10 @@ class AccountTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('AccountNumber' => 0, 'ClientId' => 1, 'Type' => 2, 'Balance' => 3, 'CreatedAt' => 4, 'UpdatedAt' => 5, ),
-        self::TYPE_CAMELNAME     => array('accountNumber' => 0, 'clientId' => 1, 'type' => 2, 'balance' => 3, 'createdAt' => 4, 'updatedAt' => 5, ),
-        self::TYPE_COLNAME       => array(AccountTableMap::COL_ACCOUNT_NUMBER => 0, AccountTableMap::COL_CLIENT_ID => 1, AccountTableMap::COL_TYPE => 2, AccountTableMap::COL_BALANCE => 3, AccountTableMap::COL_CREATED_AT => 4, AccountTableMap::COL_UPDATED_AT => 5, ),
-        self::TYPE_FIELDNAME     => array('account_number' => 0, 'client_id' => 1, 'type' => 2, 'balance' => 3, 'created_at' => 4, 'updated_at' => 5, ),
+        self::TYPE_PHPNAME       => array('AccountNumber' => 0, 'CustomerId' => 1, 'Type' => 2, 'Balance' => 3, 'CreatedAt' => 4, 'UpdatedAt' => 5, ),
+        self::TYPE_CAMELNAME     => array('accountNumber' => 0, 'customerId' => 1, 'type' => 2, 'balance' => 3, 'createdAt' => 4, 'updatedAt' => 5, ),
+        self::TYPE_COLNAME       => array(AccountTableMap::COL_ACCOUNT_NUMBER => 0, AccountTableMap::COL_CUSTOMER_ID => 1, AccountTableMap::COL_TYPE => 2, AccountTableMap::COL_BALANCE => 3, AccountTableMap::COL_CREATED_AT => 4, AccountTableMap::COL_UPDATED_AT => 5, ),
+        self::TYPE_FIELDNAME     => array('account_number' => 0, 'customer_id' => 1, 'type' => 2, 'balance' => 3, 'created_at' => 4, 'updated_at' => 5, ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
 
@@ -187,7 +187,7 @@ class AccountTableMap extends TableMap
         $this->setUseIdGenerator(false);
         // columns
         $this->addPrimaryKey('account_number', 'AccountNumber', 'VARCHAR', true, 255, null);
-        $this->addForeignPrimaryKey('client_id', 'ClientId', 'INTEGER' , 'client', 'id', true, null, null);
+        $this->addForeignPrimaryKey('customer_id', 'CustomerId', 'INTEGER' , 'customer', 'id', true, null, null);
         $this->addPrimaryKey('type', 'Type', 'ENUM', true, null, null);
         $this->getColumn('type')->setValueSet(array (
   0 => 'savings',
@@ -204,10 +204,10 @@ class AccountTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('Client', '\\AbcBank\\Resources\\Client', RelationMap::MANY_TO_ONE, array (
+        $this->addRelation('Customer', '\\AbcBank\\Resources\\Customer', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
-    0 => ':client_id',
+    0 => ':customer_id',
     1 => ':id',
   ),
 ), null, null, null, false);
@@ -241,7 +241,7 @@ class AccountTableMap extends TableMap
     {
         if (Propel::isInstancePoolingEnabled()) {
             if (null === $key) {
-                $key = serialize(array((string) $obj->getAccountNumber(), (string) $obj->getClientId(), (string) $obj->getType()));
+                $key = serialize(array((string) $obj->getAccountNumber(), (string) $obj->getCustomerId(), (string) $obj->getType()));
             } // if key === null
             self::$instances[$key] = $obj;
         }
@@ -261,7 +261,7 @@ class AccountTableMap extends TableMap
     {
         if (Propel::isInstancePoolingEnabled() && null !== $value) {
             if (is_object($value) && $value instanceof \AbcBank\Resources\Account) {
-                $key = serialize(array((string) $value->getAccountNumber(), (string) $value->getClientId(), (string) $value->getType()));
+                $key = serialize(array((string) $value->getAccountNumber(), (string) $value->getCustomerId(), (string) $value->getType()));
 
             } elseif (is_array($value) && count($value) === 3) {
                 // assume we've been passed a primary key";
@@ -295,11 +295,11 @@ class AccountTableMap extends TableMap
     public static function getPrimaryKeyHashFromRow($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
         // If the PK cannot be derived from the row, return NULL.
-        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('AccountNumber', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('ClientId', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 2 + $offset : static::translateFieldName('Type', TableMap::TYPE_PHPNAME, $indexType)] === null) {
+        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('AccountNumber', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('CustomerId', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 2 + $offset : static::translateFieldName('Type', TableMap::TYPE_PHPNAME, $indexType)] === null) {
             return null;
         }
 
-        return serialize(array((string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('AccountNumber', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('ClientId', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 2 + $offset : static::translateFieldName('Type', TableMap::TYPE_PHPNAME, $indexType)]));
+        return serialize(array((string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('AccountNumber', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('CustomerId', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 2 + $offset : static::translateFieldName('Type', TableMap::TYPE_PHPNAME, $indexType)]));
     }
 
     /**
@@ -326,7 +326,7 @@ class AccountTableMap extends TableMap
         $pks[] = (int) $row[
             $indexType == TableMap::TYPE_NUM
                 ? 1 + $offset
-                : self::translateFieldName('ClientId', TableMap::TYPE_PHPNAME, $indexType)
+                : self::translateFieldName('CustomerId', TableMap::TYPE_PHPNAME, $indexType)
         ];
         $pks[] = (int) $row[
             $indexType == TableMap::TYPE_NUM
@@ -435,14 +435,14 @@ class AccountTableMap extends TableMap
     {
         if (null === $alias) {
             $criteria->addSelectColumn(AccountTableMap::COL_ACCOUNT_NUMBER);
-            $criteria->addSelectColumn(AccountTableMap::COL_CLIENT_ID);
+            $criteria->addSelectColumn(AccountTableMap::COL_CUSTOMER_ID);
             $criteria->addSelectColumn(AccountTableMap::COL_TYPE);
             $criteria->addSelectColumn(AccountTableMap::COL_BALANCE);
             $criteria->addSelectColumn(AccountTableMap::COL_CREATED_AT);
             $criteria->addSelectColumn(AccountTableMap::COL_UPDATED_AT);
         } else {
             $criteria->addSelectColumn($alias . '.account_number');
-            $criteria->addSelectColumn($alias . '.client_id');
+            $criteria->addSelectColumn($alias . '.customer_id');
             $criteria->addSelectColumn($alias . '.type');
             $criteria->addSelectColumn($alias . '.balance');
             $criteria->addSelectColumn($alias . '.created_at');
@@ -506,7 +506,7 @@ class AccountTableMap extends TableMap
             }
             foreach ($values as $value) {
                 $criterion = $criteria->getNewCriterion(AccountTableMap::COL_ACCOUNT_NUMBER, $value[0]);
-                $criterion->addAnd($criteria->getNewCriterion(AccountTableMap::COL_CLIENT_ID, $value[1]));
+                $criterion->addAnd($criteria->getNewCriterion(AccountTableMap::COL_CUSTOMER_ID, $value[1]));
                 $criterion->addAnd($criteria->getNewCriterion(AccountTableMap::COL_TYPE, $value[2]));
                 $criteria->addOr($criterion);
             }

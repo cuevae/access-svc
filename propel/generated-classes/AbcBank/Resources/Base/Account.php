@@ -7,8 +7,8 @@ use \Exception;
 use \PDO;
 use AbcBank\Resources\Account as ChildAccount;
 use AbcBank\Resources\AccountQuery as ChildAccountQuery;
-use AbcBank\Resources\Client as ChildClient;
-use AbcBank\Resources\ClientQuery as ChildClientQuery;
+use AbcBank\Resources\Customer as ChildCustomer;
+use AbcBank\Resources\CustomerQuery as ChildCustomerQuery;
 use AbcBank\Resources\Map\AccountTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
@@ -71,10 +71,10 @@ abstract class Account implements ActiveRecordInterface
     protected $account_number;
 
     /**
-     * The value for the client_id field.
+     * The value for the customer_id field.
      * @var        int
      */
-    protected $client_id;
+    protected $customer_id;
 
     /**
      * The value for the type field.
@@ -101,9 +101,9 @@ abstract class Account implements ActiveRecordInterface
     protected $updated_at;
 
     /**
-     * @var        ChildClient
+     * @var        ChildCustomer
      */
-    protected $aClient;
+    protected $aCustomer;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -341,13 +341,13 @@ abstract class Account implements ActiveRecordInterface
     }
 
     /**
-     * Get the [client_id] column value.
+     * Get the [customer_id] column value.
      *
      * @return int
      */
-    public function getClientId()
+    public function getCustomerId()
     {
-        return $this->client_id;
+        return $this->customer_id;
     }
 
     /**
@@ -440,28 +440,28 @@ abstract class Account implements ActiveRecordInterface
     } // setAccountNumber()
 
     /**
-     * Set the value of [client_id] column.
+     * Set the value of [customer_id] column.
      *
      * @param  int $v new value
      * @return $this|\AbcBank\Resources\Account The current object (for fluent API support)
      */
-    public function setClientId($v)
+    public function setCustomerId($v)
     {
         if ($v !== null) {
             $v = (int) $v;
         }
 
-        if ($this->client_id !== $v) {
-            $this->client_id = $v;
-            $this->modifiedColumns[AccountTableMap::COL_CLIENT_ID] = true;
+        if ($this->customer_id !== $v) {
+            $this->customer_id = $v;
+            $this->modifiedColumns[AccountTableMap::COL_CUSTOMER_ID] = true;
         }
 
-        if ($this->aClient !== null && $this->aClient->getId() !== $v) {
-            $this->aClient = null;
+        if ($this->aCustomer !== null && $this->aCustomer->getId() !== $v) {
+            $this->aCustomer = null;
         }
 
         return $this;
-    } // setClientId()
+    } // setCustomerId()
 
     /**
      * Set the value of [type] column.
@@ -587,8 +587,8 @@ abstract class Account implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : AccountTableMap::translateFieldName('AccountNumber', TableMap::TYPE_PHPNAME, $indexType)];
             $this->account_number = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : AccountTableMap::translateFieldName('ClientId', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->client_id = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : AccountTableMap::translateFieldName('CustomerId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->customer_id = (null !== $col) ? (int) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : AccountTableMap::translateFieldName('Type', TableMap::TYPE_PHPNAME, $indexType)];
             $this->type = (null !== $col) ? (int) $col : null;
@@ -637,8 +637,8 @@ abstract class Account implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
-        if ($this->aClient !== null && $this->client_id !== $this->aClient->getId()) {
-            $this->aClient = null;
+        if ($this->aCustomer !== null && $this->customer_id !== $this->aCustomer->getId()) {
+            $this->aCustomer = null;
         }
     } // ensureConsistency
 
@@ -679,7 +679,7 @@ abstract class Account implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->aClient = null;
+            $this->aCustomer = null;
         } // if (deep)
     }
 
@@ -796,11 +796,11 @@ abstract class Account implements ActiveRecordInterface
             // method.  This object relates to these object(s) by a
             // foreign key reference.
 
-            if ($this->aClient !== null) {
-                if ($this->aClient->isModified() || $this->aClient->isNew()) {
-                    $affectedRows += $this->aClient->save($con);
+            if ($this->aCustomer !== null) {
+                if ($this->aCustomer->isModified() || $this->aCustomer->isNew()) {
+                    $affectedRows += $this->aCustomer->save($con);
                 }
-                $this->setClient($this->aClient);
+                $this->setCustomer($this->aCustomer);
             }
 
             if ($this->isNew() || $this->isModified()) {
@@ -839,8 +839,8 @@ abstract class Account implements ActiveRecordInterface
         if ($this->isColumnModified(AccountTableMap::COL_ACCOUNT_NUMBER)) {
             $modifiedColumns[':p' . $index++]  = 'account_number';
         }
-        if ($this->isColumnModified(AccountTableMap::COL_CLIENT_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'client_id';
+        if ($this->isColumnModified(AccountTableMap::COL_CUSTOMER_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'customer_id';
         }
         if ($this->isColumnModified(AccountTableMap::COL_TYPE)) {
             $modifiedColumns[':p' . $index++]  = 'type';
@@ -868,8 +868,8 @@ abstract class Account implements ActiveRecordInterface
                     case 'account_number':
                         $stmt->bindValue($identifier, $this->account_number, PDO::PARAM_STR);
                         break;
-                    case 'client_id':
-                        $stmt->bindValue($identifier, $this->client_id, PDO::PARAM_INT);
+                    case 'customer_id':
+                        $stmt->bindValue($identifier, $this->customer_id, PDO::PARAM_INT);
                         break;
                     case 'type':
                         $stmt->bindValue($identifier, $this->type, PDO::PARAM_INT);
@@ -942,7 +942,7 @@ abstract class Account implements ActiveRecordInterface
                 return $this->getAccountNumber();
                 break;
             case 1:
-                return $this->getClientId();
+                return $this->getCustomerId();
                 break;
             case 2:
                 return $this->getType();
@@ -987,7 +987,7 @@ abstract class Account implements ActiveRecordInterface
         $keys = AccountTableMap::getFieldNames($keyType);
         $result = array(
             $keys[0] => $this->getAccountNumber(),
-            $keys[1] => $this->getClientId(),
+            $keys[1] => $this->getCustomerId(),
             $keys[2] => $this->getType(),
             $keys[3] => $this->getBalance(),
             $keys[4] => $this->getCreatedAt(),
@@ -1013,20 +1013,20 @@ abstract class Account implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
-            if (null !== $this->aClient) {
+            if (null !== $this->aCustomer) {
 
                 switch ($keyType) {
                     case TableMap::TYPE_CAMELNAME:
-                        $key = 'client';
+                        $key = 'customer';
                         break;
                     case TableMap::TYPE_FIELDNAME:
-                        $key = 'client';
+                        $key = 'customer';
                         break;
                     default:
-                        $key = 'Client';
+                        $key = 'Customer';
                 }
 
-                $result[$key] = $this->aClient->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+                $result[$key] = $this->aCustomer->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
         }
 
@@ -1066,7 +1066,7 @@ abstract class Account implements ActiveRecordInterface
                 $this->setAccountNumber($value);
                 break;
             case 1:
-                $this->setClientId($value);
+                $this->setCustomerId($value);
                 break;
             case 2:
                 $valueSet = AccountTableMap::getValueSet(AccountTableMap::COL_TYPE);
@@ -1114,7 +1114,7 @@ abstract class Account implements ActiveRecordInterface
             $this->setAccountNumber($arr[$keys[0]]);
         }
         if (array_key_exists($keys[1], $arr)) {
-            $this->setClientId($arr[$keys[1]]);
+            $this->setCustomerId($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
             $this->setType($arr[$keys[2]]);
@@ -1172,8 +1172,8 @@ abstract class Account implements ActiveRecordInterface
         if ($this->isColumnModified(AccountTableMap::COL_ACCOUNT_NUMBER)) {
             $criteria->add(AccountTableMap::COL_ACCOUNT_NUMBER, $this->account_number);
         }
-        if ($this->isColumnModified(AccountTableMap::COL_CLIENT_ID)) {
-            $criteria->add(AccountTableMap::COL_CLIENT_ID, $this->client_id);
+        if ($this->isColumnModified(AccountTableMap::COL_CUSTOMER_ID)) {
+            $criteria->add(AccountTableMap::COL_CUSTOMER_ID, $this->customer_id);
         }
         if ($this->isColumnModified(AccountTableMap::COL_TYPE)) {
             $criteria->add(AccountTableMap::COL_TYPE, $this->type);
@@ -1205,7 +1205,7 @@ abstract class Account implements ActiveRecordInterface
     {
         $criteria = ChildAccountQuery::create();
         $criteria->add(AccountTableMap::COL_ACCOUNT_NUMBER, $this->account_number);
-        $criteria->add(AccountTableMap::COL_CLIENT_ID, $this->client_id);
+        $criteria->add(AccountTableMap::COL_CUSTOMER_ID, $this->customer_id);
         $criteria->add(AccountTableMap::COL_TYPE, $this->type);
 
         return $criteria;
@@ -1220,14 +1220,14 @@ abstract class Account implements ActiveRecordInterface
     public function hashCode()
     {
         $validPk = null !== $this->getAccountNumber() &&
-            null !== $this->getClientId() &&
+            null !== $this->getCustomerId() &&
             null !== $this->getType();
 
         $validPrimaryKeyFKs = 1;
         $primaryKeyFKs = [];
 
-        //relation account_fk_90166c to table client
-        if ($this->aClient && $hash = spl_object_hash($this->aClient)) {
+        //relation account_fk_7e8f3e to table customer
+        if ($this->aCustomer && $hash = spl_object_hash($this->aCustomer)) {
             $primaryKeyFKs[] = $hash;
         } else {
             $validPrimaryKeyFKs = false;
@@ -1251,7 +1251,7 @@ abstract class Account implements ActiveRecordInterface
     {
         $pks = array();
         $pks[0] = $this->getAccountNumber();
-        $pks[1] = $this->getClientId();
+        $pks[1] = $this->getCustomerId();
         $pks[2] = $this->getType();
 
         return $pks;
@@ -1266,7 +1266,7 @@ abstract class Account implements ActiveRecordInterface
     public function setPrimaryKey($keys)
     {
         $this->setAccountNumber($keys[0]);
-        $this->setClientId($keys[1]);
+        $this->setCustomerId($keys[1]);
         $this->setType($keys[2]);
     }
 
@@ -1276,7 +1276,7 @@ abstract class Account implements ActiveRecordInterface
      */
     public function isPrimaryKeyNull()
     {
-        return (null === $this->getAccountNumber()) && (null === $this->getClientId()) && (null === $this->getType());
+        return (null === $this->getAccountNumber()) && (null === $this->getCustomerId()) && (null === $this->getType());
     }
 
     /**
@@ -1293,7 +1293,7 @@ abstract class Account implements ActiveRecordInterface
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
         $copyObj->setAccountNumber($this->getAccountNumber());
-        $copyObj->setClientId($this->getClientId());
+        $copyObj->setCustomerId($this->getCustomerId());
         $copyObj->setType($this->getType());
         $copyObj->setBalance($this->getBalance());
         $copyObj->setCreatedAt($this->getCreatedAt());
@@ -1326,24 +1326,24 @@ abstract class Account implements ActiveRecordInterface
     }
 
     /**
-     * Declares an association between this object and a ChildClient object.
+     * Declares an association between this object and a ChildCustomer object.
      *
-     * @param  ChildClient $v
+     * @param  ChildCustomer $v
      * @return $this|\AbcBank\Resources\Account The current object (for fluent API support)
      * @throws PropelException
      */
-    public function setClient(ChildClient $v = null)
+    public function setCustomer(ChildCustomer $v = null)
     {
         if ($v === null) {
-            $this->setClientId(NULL);
+            $this->setCustomerId(NULL);
         } else {
-            $this->setClientId($v->getId());
+            $this->setCustomerId($v->getId());
         }
 
-        $this->aClient = $v;
+        $this->aCustomer = $v;
 
         // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the ChildClient object, it will not be re-added.
+        // If this object has already been added to the ChildCustomer object, it will not be re-added.
         if ($v !== null) {
             $v->addAccount($this);
         }
@@ -1354,16 +1354,16 @@ abstract class Account implements ActiveRecordInterface
 
 
     /**
-     * Get the associated ChildClient object
+     * Get the associated ChildCustomer object
      *
      * @param  ConnectionInterface $con Optional Connection object.
-     * @return ChildClient The associated ChildClient object.
+     * @return ChildCustomer The associated ChildCustomer object.
      * @throws PropelException
      */
-    public function getClient(ConnectionInterface $con = null)
+    public function getCustomer(ConnectionInterface $con = null)
     {
-        if ($this->aClient === null && ($this->client_id !== null)) {
-            $this->aClient = ChildClientQuery::create()
+        if ($this->aCustomer === null && ($this->customer_id !== null)) {
+            $this->aCustomer = ChildCustomerQuery::create()
                 ->filterByAccount($this) // here
                 ->findOne($con);
             /* The following can be used additionally to
@@ -1371,11 +1371,11 @@ abstract class Account implements ActiveRecordInterface
                 to this object.  This level of coupling may, however, be
                 undesirable since it could result in an only partially populated collection
                 in the referenced object.
-                $this->aClient->addAccounts($this);
+                $this->aCustomer->addAccounts($this);
              */
         }
 
-        return $this->aClient;
+        return $this->aCustomer;
     }
 
     /**
@@ -1385,11 +1385,11 @@ abstract class Account implements ActiveRecordInterface
      */
     public function clear()
     {
-        if (null !== $this->aClient) {
-            $this->aClient->removeAccount($this);
+        if (null !== $this->aCustomer) {
+            $this->aCustomer->removeAccount($this);
         }
         $this->account_number = null;
-        $this->client_id = null;
+        $this->customer_id = null;
         $this->type = null;
         $this->balance = null;
         $this->created_at = null;
@@ -1414,7 +1414,7 @@ abstract class Account implements ActiveRecordInterface
         if ($deep) {
         } // if ($deep)
 
-        $this->aClient = null;
+        $this->aCustomer = null;
     }
 
     /**

@@ -21,14 +21,14 @@ use Propel\Runtime\Exception\PropelException;
  *
  *
  * @method     ChildAccountQuery orderByAccountNumber($order = Criteria::ASC) Order by the account_number column
- * @method     ChildAccountQuery orderByClientId($order = Criteria::ASC) Order by the client_id column
+ * @method     ChildAccountQuery orderByCustomerId($order = Criteria::ASC) Order by the customer_id column
  * @method     ChildAccountQuery orderByType($order = Criteria::ASC) Order by the type column
  * @method     ChildAccountQuery orderByBalance($order = Criteria::ASC) Order by the balance column
  * @method     ChildAccountQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     ChildAccountQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
  * @method     ChildAccountQuery groupByAccountNumber() Group by the account_number column
- * @method     ChildAccountQuery groupByClientId() Group by the client_id column
+ * @method     ChildAccountQuery groupByCustomerId() Group by the customer_id column
  * @method     ChildAccountQuery groupByType() Group by the type column
  * @method     ChildAccountQuery groupByBalance() Group by the balance column
  * @method     ChildAccountQuery groupByCreatedAt() Group by the created_at column
@@ -38,17 +38,17 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildAccountQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method     ChildAccountQuery innerJoin($relation) Adds a INNER JOIN clause to the query
  *
- * @method     ChildAccountQuery leftJoinClient($relationAlias = null) Adds a LEFT JOIN clause to the query using the Client relation
- * @method     ChildAccountQuery rightJoinClient($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Client relation
- * @method     ChildAccountQuery innerJoinClient($relationAlias = null) Adds a INNER JOIN clause to the query using the Client relation
+ * @method     ChildAccountQuery leftJoinCustomer($relationAlias = null) Adds a LEFT JOIN clause to the query using the Customer relation
+ * @method     ChildAccountQuery rightJoinCustomer($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Customer relation
+ * @method     ChildAccountQuery innerJoinCustomer($relationAlias = null) Adds a INNER JOIN clause to the query using the Customer relation
  *
- * @method     \AbcBank\Resources\ClientQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \AbcBank\Resources\CustomerQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildAccount findOne(ConnectionInterface $con = null) Return the first ChildAccount matching the query
  * @method     ChildAccount findOneOrCreate(ConnectionInterface $con = null) Return the first ChildAccount matching the query, or a new ChildAccount object populated from the query conditions when no match is found
  *
  * @method     ChildAccount findOneByAccountNumber(string $account_number) Return the first ChildAccount filtered by the account_number column
- * @method     ChildAccount findOneByClientId(int $client_id) Return the first ChildAccount filtered by the client_id column
+ * @method     ChildAccount findOneByCustomerId(int $customer_id) Return the first ChildAccount filtered by the customer_id column
  * @method     ChildAccount findOneByType(int $type) Return the first ChildAccount filtered by the type column
  * @method     ChildAccount findOneByBalance(double $balance) Return the first ChildAccount filtered by the balance column
  * @method     ChildAccount findOneByCreatedAt(string $created_at) Return the first ChildAccount filtered by the created_at column
@@ -58,7 +58,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildAccount requireOne(ConnectionInterface $con = null) Return the first ChildAccount matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildAccount requireOneByAccountNumber(string $account_number) Return the first ChildAccount filtered by the account_number column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildAccount requireOneByClientId(int $client_id) Return the first ChildAccount filtered by the client_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildAccount requireOneByCustomerId(int $customer_id) Return the first ChildAccount filtered by the customer_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildAccount requireOneByType(int $type) Return the first ChildAccount filtered by the type column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildAccount requireOneByBalance(double $balance) Return the first ChildAccount filtered by the balance column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildAccount requireOneByCreatedAt(string $created_at) Return the first ChildAccount filtered by the created_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -66,7 +66,7 @@ use Propel\Runtime\Exception\PropelException;
  *
  * @method     ChildAccount[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildAccount objects based on current ModelCriteria
  * @method     ChildAccount[]|ObjectCollection findByAccountNumber(string $account_number) Return ChildAccount objects filtered by the account_number column
- * @method     ChildAccount[]|ObjectCollection findByClientId(int $client_id) Return ChildAccount objects filtered by the client_id column
+ * @method     ChildAccount[]|ObjectCollection findByCustomerId(int $customer_id) Return ChildAccount objects filtered by the customer_id column
  * @method     ChildAccount[]|ObjectCollection findByType(int $type) Return ChildAccount objects filtered by the type column
  * @method     ChildAccount[]|ObjectCollection findByBalance(double $balance) Return ChildAccount objects filtered by the balance column
  * @method     ChildAccount[]|ObjectCollection findByCreatedAt(string $created_at) Return ChildAccount objects filtered by the created_at column
@@ -123,7 +123,7 @@ abstract class AccountQuery extends ModelCriteria
      * $obj = $c->findPk(array(12, 34, 56), $con);
      * </code>
      *
-     * @param array[$account_number, $client_id, $type] $key Primary key to use for the query
+     * @param array[$account_number, $customer_id, $type] $key Primary key to use for the query
      * @param ConnectionInterface $con an optional connection object
      *
      * @return ChildAccount|array|mixed the result, formatted by the current formatter
@@ -163,7 +163,7 @@ abstract class AccountQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT account_number, client_id, type, balance, created_at, updated_at FROM account WHERE account_number = :p0 AND client_id = :p1 AND type = :p2';
+        $sql = 'SELECT account_number, customer_id, type, balance, created_at, updated_at FROM account WHERE account_number = :p0 AND customer_id = :p1 AND type = :p2';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key[0], PDO::PARAM_STR);
@@ -239,7 +239,7 @@ abstract class AccountQuery extends ModelCriteria
     public function filterByPrimaryKey($key)
     {
         $this->addUsingAlias(AccountTableMap::COL_ACCOUNT_NUMBER, $key[0], Criteria::EQUAL);
-        $this->addUsingAlias(AccountTableMap::COL_CLIENT_ID, $key[1], Criteria::EQUAL);
+        $this->addUsingAlias(AccountTableMap::COL_CUSTOMER_ID, $key[1], Criteria::EQUAL);
         $this->addUsingAlias(AccountTableMap::COL_TYPE, $key[2], Criteria::EQUAL);
 
         return $this;
@@ -259,7 +259,7 @@ abstract class AccountQuery extends ModelCriteria
         }
         foreach ($keys as $key) {
             $cton0 = $this->getNewCriterion(AccountTableMap::COL_ACCOUNT_NUMBER, $key[0], Criteria::EQUAL);
-            $cton1 = $this->getNewCriterion(AccountTableMap::COL_CLIENT_ID, $key[1], Criteria::EQUAL);
+            $cton1 = $this->getNewCriterion(AccountTableMap::COL_CUSTOMER_ID, $key[1], Criteria::EQUAL);
             $cton0->addAnd($cton1);
             $cton2 = $this->getNewCriterion(AccountTableMap::COL_TYPE, $key[2], Criteria::EQUAL);
             $cton0->addAnd($cton2);
@@ -299,18 +299,18 @@ abstract class AccountQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query on the client_id column
+     * Filter the query on the customer_id column
      *
      * Example usage:
      * <code>
-     * $query->filterByClientId(1234); // WHERE client_id = 1234
-     * $query->filterByClientId(array(12, 34)); // WHERE client_id IN (12, 34)
-     * $query->filterByClientId(array('min' => 12)); // WHERE client_id > 12
+     * $query->filterByCustomerId(1234); // WHERE customer_id = 1234
+     * $query->filterByCustomerId(array(12, 34)); // WHERE customer_id IN (12, 34)
+     * $query->filterByCustomerId(array('min' => 12)); // WHERE customer_id > 12
      * </code>
      *
-     * @see       filterByClient()
+     * @see       filterByCustomer()
      *
-     * @param     mixed $clientId The value to use as filter.
+     * @param     mixed $customerId The value to use as filter.
      *              Use scalar values for equality.
      *              Use array values for in_array() equivalent.
      *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
@@ -318,16 +318,16 @@ abstract class AccountQuery extends ModelCriteria
      *
      * @return $this|ChildAccountQuery The current query, for fluid interface
      */
-    public function filterByClientId($clientId = null, $comparison = null)
+    public function filterByCustomerId($customerId = null, $comparison = null)
     {
-        if (is_array($clientId)) {
+        if (is_array($customerId)) {
             $useMinMax = false;
-            if (isset($clientId['min'])) {
-                $this->addUsingAlias(AccountTableMap::COL_CLIENT_ID, $clientId['min'], Criteria::GREATER_EQUAL);
+            if (isset($customerId['min'])) {
+                $this->addUsingAlias(AccountTableMap::COL_CUSTOMER_ID, $customerId['min'], Criteria::GREATER_EQUAL);
                 $useMinMax = true;
             }
-            if (isset($clientId['max'])) {
-                $this->addUsingAlias(AccountTableMap::COL_CLIENT_ID, $clientId['max'], Criteria::LESS_EQUAL);
+            if (isset($customerId['max'])) {
+                $this->addUsingAlias(AccountTableMap::COL_CUSTOMER_ID, $customerId['max'], Criteria::LESS_EQUAL);
                 $useMinMax = true;
             }
             if ($useMinMax) {
@@ -338,7 +338,7 @@ abstract class AccountQuery extends ModelCriteria
             }
         }
 
-        return $this->addUsingAlias(AccountTableMap::COL_CLIENT_ID, $clientId, $comparison);
+        return $this->addUsingAlias(AccountTableMap::COL_CUSTOMER_ID, $customerId, $comparison);
     }
 
     /**
@@ -502,44 +502,44 @@ abstract class AccountQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query by a related \AbcBank\Resources\Client object
+     * Filter the query by a related \AbcBank\Resources\Customer object
      *
-     * @param \AbcBank\Resources\Client|ObjectCollection $client The related object(s) to use as filter
+     * @param \AbcBank\Resources\Customer|ObjectCollection $customer The related object(s) to use as filter
      * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @throws \Propel\Runtime\Exception\PropelException
      *
      * @return ChildAccountQuery The current query, for fluid interface
      */
-    public function filterByClient($client, $comparison = null)
+    public function filterByCustomer($customer, $comparison = null)
     {
-        if ($client instanceof \AbcBank\Resources\Client) {
+        if ($customer instanceof \AbcBank\Resources\Customer) {
             return $this
-                ->addUsingAlias(AccountTableMap::COL_CLIENT_ID, $client->getId(), $comparison);
-        } elseif ($client instanceof ObjectCollection) {
+                ->addUsingAlias(AccountTableMap::COL_CUSTOMER_ID, $customer->getId(), $comparison);
+        } elseif ($customer instanceof ObjectCollection) {
             if (null === $comparison) {
                 $comparison = Criteria::IN;
             }
 
             return $this
-                ->addUsingAlias(AccountTableMap::COL_CLIENT_ID, $client->toKeyValue('Id', 'Id'), $comparison);
+                ->addUsingAlias(AccountTableMap::COL_CUSTOMER_ID, $customer->toKeyValue('Id', 'Id'), $comparison);
         } else {
-            throw new PropelException('filterByClient() only accepts arguments of type \AbcBank\Resources\Client or Collection');
+            throw new PropelException('filterByCustomer() only accepts arguments of type \AbcBank\Resources\Customer or Collection');
         }
     }
 
     /**
-     * Adds a JOIN clause to the query using the Client relation
+     * Adds a JOIN clause to the query using the Customer relation
      *
      * @param     string $relationAlias optional alias for the relation
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
      * @return $this|ChildAccountQuery The current query, for fluid interface
      */
-    public function joinClient($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function joinCustomer($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         $tableMap = $this->getTableMap();
-        $relationMap = $tableMap->getRelation('Client');
+        $relationMap = $tableMap->getRelation('Customer');
 
         // create a ModelJoin object for this join
         $join = new ModelJoin();
@@ -554,14 +554,14 @@ abstract class AccountQuery extends ModelCriteria
             $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
             $this->addJoinObject($join, $relationAlias);
         } else {
-            $this->addJoinObject($join, 'Client');
+            $this->addJoinObject($join, 'Customer');
         }
 
         return $this;
     }
 
     /**
-     * Use the Client relation Client object
+     * Use the Customer relation Customer object
      *
      * @see useQuery()
      *
@@ -569,13 +569,13 @@ abstract class AccountQuery extends ModelCriteria
      *                                   to be used as main alias in the secondary query
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
-     * @return \AbcBank\Resources\ClientQuery A secondary query class using the current class as primary query
+     * @return \AbcBank\Resources\CustomerQuery A secondary query class using the current class as primary query
      */
-    public function useClientQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function useCustomerQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         return $this
-            ->joinClient($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'Client', '\AbcBank\Resources\ClientQuery');
+            ->joinCustomer($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Customer', '\AbcBank\Resources\CustomerQuery');
     }
 
     /**
@@ -589,7 +589,7 @@ abstract class AccountQuery extends ModelCriteria
     {
         if ($account) {
             $this->addCond('pruneCond0', $this->getAliasedColName(AccountTableMap::COL_ACCOUNT_NUMBER), $account->getAccountNumber(), Criteria::NOT_EQUAL);
-            $this->addCond('pruneCond1', $this->getAliasedColName(AccountTableMap::COL_CLIENT_ID), $account->getClientId(), Criteria::NOT_EQUAL);
+            $this->addCond('pruneCond1', $this->getAliasedColName(AccountTableMap::COL_CUSTOMER_ID), $account->getCustomerId(), Criteria::NOT_EQUAL);
             $this->addCond('pruneCond2', $this->getAliasedColName(AccountTableMap::COL_TYPE), $account->getType(), Criteria::NOT_EQUAL);
             $this->combine(array('pruneCond0', 'pruneCond1', 'pruneCond2'), Criteria::LOGICAL_OR);
         }

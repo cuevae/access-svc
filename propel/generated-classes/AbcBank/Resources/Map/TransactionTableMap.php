@@ -77,9 +77,9 @@ class TransactionTableMap extends TableMap
     const COL_ID = 'transaction.id';
 
     /**
-     * the column name for the client_id field
+     * the column name for the customer_id field
      */
-    const COL_CLIENT_ID = 'transaction.client_id';
+    const COL_CUSTOMER_ID = 'transaction.customer_id';
 
     /**
      * the column name for the account_id field
@@ -118,10 +118,10 @@ class TransactionTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'ClientId', 'AccountId', 'Type', 'Amount', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('id', 'clientId', 'accountId', 'type', 'amount', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(TransactionTableMap::COL_ID, TransactionTableMap::COL_CLIENT_ID, TransactionTableMap::COL_ACCOUNT_ID, TransactionTableMap::COL_TYPE, TransactionTableMap::COL_AMOUNT, TransactionTableMap::COL_CREATED_AT, TransactionTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('id', 'client_id', 'account_id', 'type', 'amount', 'created_at', 'updated_at', ),
+        self::TYPE_PHPNAME       => array('Id', 'CustomerId', 'AccountId', 'Type', 'Amount', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('id', 'customerId', 'accountId', 'type', 'amount', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(TransactionTableMap::COL_ID, TransactionTableMap::COL_CUSTOMER_ID, TransactionTableMap::COL_ACCOUNT_ID, TransactionTableMap::COL_TYPE, TransactionTableMap::COL_AMOUNT, TransactionTableMap::COL_CREATED_AT, TransactionTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('id', 'customer_id', 'account_id', 'type', 'amount', 'created_at', 'updated_at', ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
     );
 
@@ -132,10 +132,10 @@ class TransactionTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'ClientId' => 1, 'AccountId' => 2, 'Type' => 3, 'Amount' => 4, 'CreatedAt' => 5, 'UpdatedAt' => 6, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'clientId' => 1, 'accountId' => 2, 'type' => 3, 'amount' => 4, 'createdAt' => 5, 'updatedAt' => 6, ),
-        self::TYPE_COLNAME       => array(TransactionTableMap::COL_ID => 0, TransactionTableMap::COL_CLIENT_ID => 1, TransactionTableMap::COL_ACCOUNT_ID => 2, TransactionTableMap::COL_TYPE => 3, TransactionTableMap::COL_AMOUNT => 4, TransactionTableMap::COL_CREATED_AT => 5, TransactionTableMap::COL_UPDATED_AT => 6, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'client_id' => 1, 'account_id' => 2, 'type' => 3, 'amount' => 4, 'created_at' => 5, 'updated_at' => 6, ),
+        self::TYPE_PHPNAME       => array('Id' => 0, 'CustomerId' => 1, 'AccountId' => 2, 'Type' => 3, 'Amount' => 4, 'CreatedAt' => 5, 'UpdatedAt' => 6, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'customerId' => 1, 'accountId' => 2, 'type' => 3, 'amount' => 4, 'createdAt' => 5, 'updatedAt' => 6, ),
+        self::TYPE_COLNAME       => array(TransactionTableMap::COL_ID => 0, TransactionTableMap::COL_CUSTOMER_ID => 1, TransactionTableMap::COL_ACCOUNT_ID => 2, TransactionTableMap::COL_TYPE => 3, TransactionTableMap::COL_AMOUNT => 4, TransactionTableMap::COL_CREATED_AT => 5, TransactionTableMap::COL_UPDATED_AT => 6, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'customer_id' => 1, 'account_id' => 2, 'type' => 3, 'amount' => 4, 'created_at' => 5, 'updated_at' => 6, ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
     );
 
@@ -157,7 +157,7 @@ class TransactionTableMap extends TableMap
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
-        $this->addColumn('client_id', 'ClientId', 'INTEGER', true, null, null);
+        $this->addColumn('customer_id', 'CustomerId', 'INTEGER', true, null, null);
         $this->addColumn('account_id', 'AccountId', 'INTEGER', true, null, null);
         $this->addColumn('type', 'Type', 'VARCHAR', true, 255, null);
         $this->addColumn('amount', 'Amount', 'FLOAT', true, null, null);
@@ -327,7 +327,7 @@ class TransactionTableMap extends TableMap
     {
         if (null === $alias) {
             $criteria->addSelectColumn(TransactionTableMap::COL_ID);
-            $criteria->addSelectColumn(TransactionTableMap::COL_CLIENT_ID);
+            $criteria->addSelectColumn(TransactionTableMap::COL_CUSTOMER_ID);
             $criteria->addSelectColumn(TransactionTableMap::COL_ACCOUNT_ID);
             $criteria->addSelectColumn(TransactionTableMap::COL_TYPE);
             $criteria->addSelectColumn(TransactionTableMap::COL_AMOUNT);
@@ -335,7 +335,7 @@ class TransactionTableMap extends TableMap
             $criteria->addSelectColumn(TransactionTableMap::COL_UPDATED_AT);
         } else {
             $criteria->addSelectColumn($alias . '.id');
-            $criteria->addSelectColumn($alias . '.client_id');
+            $criteria->addSelectColumn($alias . '.customer_id');
             $criteria->addSelectColumn($alias . '.account_id');
             $criteria->addSelectColumn($alias . '.type');
             $criteria->addSelectColumn($alias . '.amount');

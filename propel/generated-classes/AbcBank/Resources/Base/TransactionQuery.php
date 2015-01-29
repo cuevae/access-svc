@@ -20,7 +20,7 @@ use Propel\Runtime\Exception\PropelException;
  *
  *
  * @method     ChildTransactionQuery orderById($order = Criteria::ASC) Order by the id column
- * @method     ChildTransactionQuery orderByClientId($order = Criteria::ASC) Order by the client_id column
+ * @method     ChildTransactionQuery orderByCustomerId($order = Criteria::ASC) Order by the customer_id column
  * @method     ChildTransactionQuery orderByAccountId($order = Criteria::ASC) Order by the account_id column
  * @method     ChildTransactionQuery orderByType($order = Criteria::ASC) Order by the type column
  * @method     ChildTransactionQuery orderByAmount($order = Criteria::ASC) Order by the amount column
@@ -28,7 +28,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildTransactionQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
  * @method     ChildTransactionQuery groupById() Group by the id column
- * @method     ChildTransactionQuery groupByClientId() Group by the client_id column
+ * @method     ChildTransactionQuery groupByCustomerId() Group by the customer_id column
  * @method     ChildTransactionQuery groupByAccountId() Group by the account_id column
  * @method     ChildTransactionQuery groupByType() Group by the type column
  * @method     ChildTransactionQuery groupByAmount() Group by the amount column
@@ -43,7 +43,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildTransaction findOneOrCreate(ConnectionInterface $con = null) Return the first ChildTransaction matching the query, or a new ChildTransaction object populated from the query conditions when no match is found
  *
  * @method     ChildTransaction findOneById(int $id) Return the first ChildTransaction filtered by the id column
- * @method     ChildTransaction findOneByClientId(int $client_id) Return the first ChildTransaction filtered by the client_id column
+ * @method     ChildTransaction findOneByCustomerId(int $customer_id) Return the first ChildTransaction filtered by the customer_id column
  * @method     ChildTransaction findOneByAccountId(int $account_id) Return the first ChildTransaction filtered by the account_id column
  * @method     ChildTransaction findOneByType(string $type) Return the first ChildTransaction filtered by the type column
  * @method     ChildTransaction findOneByAmount(double $amount) Return the first ChildTransaction filtered by the amount column
@@ -54,7 +54,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildTransaction requireOne(ConnectionInterface $con = null) Return the first ChildTransaction matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildTransaction requireOneById(int $id) Return the first ChildTransaction filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildTransaction requireOneByClientId(int $client_id) Return the first ChildTransaction filtered by the client_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildTransaction requireOneByCustomerId(int $customer_id) Return the first ChildTransaction filtered by the customer_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildTransaction requireOneByAccountId(int $account_id) Return the first ChildTransaction filtered by the account_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildTransaction requireOneByType(string $type) Return the first ChildTransaction filtered by the type column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildTransaction requireOneByAmount(double $amount) Return the first ChildTransaction filtered by the amount column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -63,7 +63,7 @@ use Propel\Runtime\Exception\PropelException;
  *
  * @method     ChildTransaction[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildTransaction objects based on current ModelCriteria
  * @method     ChildTransaction[]|ObjectCollection findById(int $id) Return ChildTransaction objects filtered by the id column
- * @method     ChildTransaction[]|ObjectCollection findByClientId(int $client_id) Return ChildTransaction objects filtered by the client_id column
+ * @method     ChildTransaction[]|ObjectCollection findByCustomerId(int $customer_id) Return ChildTransaction objects filtered by the customer_id column
  * @method     ChildTransaction[]|ObjectCollection findByAccountId(int $account_id) Return ChildTransaction objects filtered by the account_id column
  * @method     ChildTransaction[]|ObjectCollection findByType(string $type) Return ChildTransaction objects filtered by the type column
  * @method     ChildTransaction[]|ObjectCollection findByAmount(double $amount) Return ChildTransaction objects filtered by the amount column
@@ -161,7 +161,7 @@ abstract class TransactionQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, client_id, account_id, type, amount, created_at, updated_at FROM transaction WHERE id = :p0';
+        $sql = 'SELECT id, customer_id, account_id, type, amount, created_at, updated_at FROM transaction WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -293,16 +293,16 @@ abstract class TransactionQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query on the client_id column
+     * Filter the query on the customer_id column
      *
      * Example usage:
      * <code>
-     * $query->filterByClientId(1234); // WHERE client_id = 1234
-     * $query->filterByClientId(array(12, 34)); // WHERE client_id IN (12, 34)
-     * $query->filterByClientId(array('min' => 12)); // WHERE client_id > 12
+     * $query->filterByCustomerId(1234); // WHERE customer_id = 1234
+     * $query->filterByCustomerId(array(12, 34)); // WHERE customer_id IN (12, 34)
+     * $query->filterByCustomerId(array('min' => 12)); // WHERE customer_id > 12
      * </code>
      *
-     * @param     mixed $clientId The value to use as filter.
+     * @param     mixed $customerId The value to use as filter.
      *              Use scalar values for equality.
      *              Use array values for in_array() equivalent.
      *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
@@ -310,16 +310,16 @@ abstract class TransactionQuery extends ModelCriteria
      *
      * @return $this|ChildTransactionQuery The current query, for fluid interface
      */
-    public function filterByClientId($clientId = null, $comparison = null)
+    public function filterByCustomerId($customerId = null, $comparison = null)
     {
-        if (is_array($clientId)) {
+        if (is_array($customerId)) {
             $useMinMax = false;
-            if (isset($clientId['min'])) {
-                $this->addUsingAlias(TransactionTableMap::COL_CLIENT_ID, $clientId['min'], Criteria::GREATER_EQUAL);
+            if (isset($customerId['min'])) {
+                $this->addUsingAlias(TransactionTableMap::COL_CUSTOMER_ID, $customerId['min'], Criteria::GREATER_EQUAL);
                 $useMinMax = true;
             }
-            if (isset($clientId['max'])) {
-                $this->addUsingAlias(TransactionTableMap::COL_CLIENT_ID, $clientId['max'], Criteria::LESS_EQUAL);
+            if (isset($customerId['max'])) {
+                $this->addUsingAlias(TransactionTableMap::COL_CUSTOMER_ID, $customerId['max'], Criteria::LESS_EQUAL);
                 $useMinMax = true;
             }
             if ($useMinMax) {
@@ -330,7 +330,7 @@ abstract class TransactionQuery extends ModelCriteria
             }
         }
 
-        return $this->addUsingAlias(TransactionTableMap::COL_CLIENT_ID, $clientId, $comparison);
+        return $this->addUsingAlias(TransactionTableMap::COL_CUSTOMER_ID, $customerId, $comparison);
     }
 
     /**
