@@ -287,7 +287,51 @@ $app->post(
         try{
             $data = $req->request->all() + [ 'CustomerId' => $customerId ];
             $account->fromArray( $data );
-            $account->save();
+
+            //Initial balance
+            $initialBalanceValidated = true;
+            if(isset( $data['InitialBalance'] ) && $data['InitialBalance'] !== 0){
+                //Start account with initial balance
+                $balance = $data['InitialBalance'];
+                $type = ( $balance > 0 ) ? 'deposit' : 'withdrawal';
+                $transData = array(
+                    'Type' => $type,
+                    'Amount' => abs( $balance ),
+                    'CustomerId' => $customerId,
+                    'AccountNumber' => $account->getAccountNumber()
+                );
+                $transaction = new \AbcBank\Resources\Transaction();
+                $transaction->fromArray( $transData );
+                $initialBalanceValidated = $transaction->validate();
+            }
+
+            if($account->validate() && $initialBalanceValidated){
+                $account->save();
+                if(isset( $transaction )){
+                    $transaction->save();
+                }
+            }else{
+                $errors = new \StdClass();
+                $count = 1;
+
+                foreach($account->getValidationFailures() as $failure){
+                    $errors->{"error" . $count++} = "Property " . $failure->getPropertyPath(
+                        ) . ": " . $failure->getMessage();
+                }
+
+                if(isset( $transaction )){
+                    foreach($transaction->getValidationFailures() as $failure){
+                        $errors->{"error" . $count++} = "Property " . $failure->getPropertyPath(
+                            ) . ": " . $failure->getMessage();
+                    }
+                }
+
+                return new Response(
+                    json_encode( $errors ),
+                    400,
+                    array( 'Content-type' => 'application/json' )
+                );
+            }
         }catch( Exception $e ){
             $app['monolog']->addError( $e->getMessage() );
             $app->abort( 400, "Account could not be saved." );
@@ -311,9 +355,11 @@ $app->get(
         }
 
         $account = \AbcBank\Resources\AccountQuery::create()
-            ->filterByCustomerId($customerId)
-            ->filterByAccountNumber($accNumber)
-            ->find()->getFirst();
+                                                  ->filterByCustomerId( $customerId )
+                                                  ->filterByAccountNumber( $accNumber )
+                                                  ->find()->getFirst();
+
+        $account->getTransactions();
 
         if(!$account){
             $app->abort( 404, "Account not found." );
@@ -335,13 +381,59 @@ $app->delete(
         }
 
         $account = \AbcBank\Resources\AccountQuery::create()->findByAccountNumber( $accNumber )->getFirst();
-        if($account){
+        if($account && $account->getCustomerId() == $customerId){
             $account->delete();
         }
 
         return new Response(
             "",
             204,
+            array( 'Content-type' => 'application/json' )
+        );
+    }
+);
+
+$app->post(
+    '/customers/{customerId}/accounts/{accNumber}/deposit/{amount}',
+    function ( $customerId, $accNumber, $amount ) use ( $app, $mustBeCustomerOrAdmin ){
+        $customer = $mustBeCustomerOrAdmin( $customerId );
+        if(!$customer){
+            $app->abort( 404, "Customer not found." );
+        }
+
+        $transaction = new \AbcBank\Resources\Transaction();
+        try{
+            $transaction->fromArray(
+                array(
+                    'CustomerId' => $customerId,
+                    'AccountNumber' => $accNumber,
+                    'Type' => 'deposit',
+                    'Amount' => $amount
+                )
+            );
+            if($transaction->validate()){
+                $transaction->save();
+            }else{
+                $errors = new \StdClass();
+                $count = 1;
+                foreach($transaction->getValidationFailures() as $failure){
+                    $errors->{"error" . $count++} = "Property " . $failure->getPropertyPath(
+                        ) . ": " . $failure->getMessage();
+                }
+                return new Response(
+                    json_encode( $errors ),
+                    400,
+                    array( 'Content-type' => 'application/json' )
+                );
+            }
+        }catch( Exception $e ){
+            $app['monolog']->addError( $e->getMessage() );
+            $app->abort( 400, "Customer could not be saved." );
+        }
+
+        return new Response(
+            $transaction->toJson(),
+            201,
             array( 'Content-type' => 'application/json' )
         );
     }

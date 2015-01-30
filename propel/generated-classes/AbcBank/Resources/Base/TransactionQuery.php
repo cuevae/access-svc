@@ -10,6 +10,7 @@ use AbcBank\Resources\Map\TransactionTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
+use Propel\Runtime\ActiveQuery\ModelJoin;
 use Propel\Runtime\Collection\ObjectCollection;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\PropelException;
@@ -21,7 +22,7 @@ use Propel\Runtime\Exception\PropelException;
  *
  * @method     ChildTransactionQuery orderById($order = Criteria::ASC) Order by the id column
  * @method     ChildTransactionQuery orderByCustomerId($order = Criteria::ASC) Order by the customer_id column
- * @method     ChildTransactionQuery orderByAccountId($order = Criteria::ASC) Order by the account_id column
+ * @method     ChildTransactionQuery orderByAccountNumber($order = Criteria::ASC) Order by the account_number column
  * @method     ChildTransactionQuery orderByType($order = Criteria::ASC) Order by the type column
  * @method     ChildTransactionQuery orderByAmount($order = Criteria::ASC) Order by the amount column
  * @method     ChildTransactionQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
@@ -29,7 +30,7 @@ use Propel\Runtime\Exception\PropelException;
  *
  * @method     ChildTransactionQuery groupById() Group by the id column
  * @method     ChildTransactionQuery groupByCustomerId() Group by the customer_id column
- * @method     ChildTransactionQuery groupByAccountId() Group by the account_id column
+ * @method     ChildTransactionQuery groupByAccountNumber() Group by the account_number column
  * @method     ChildTransactionQuery groupByType() Group by the type column
  * @method     ChildTransactionQuery groupByAmount() Group by the amount column
  * @method     ChildTransactionQuery groupByCreatedAt() Group by the created_at column
@@ -39,12 +40,22 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildTransactionQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method     ChildTransactionQuery innerJoin($relation) Adds a INNER JOIN clause to the query
  *
+ * @method     ChildTransactionQuery leftJoinCustomer($relationAlias = null) Adds a LEFT JOIN clause to the query using the Customer relation
+ * @method     ChildTransactionQuery rightJoinCustomer($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Customer relation
+ * @method     ChildTransactionQuery innerJoinCustomer($relationAlias = null) Adds a INNER JOIN clause to the query using the Customer relation
+ *
+ * @method     ChildTransactionQuery leftJoinAccount($relationAlias = null) Adds a LEFT JOIN clause to the query using the Account relation
+ * @method     ChildTransactionQuery rightJoinAccount($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Account relation
+ * @method     ChildTransactionQuery innerJoinAccount($relationAlias = null) Adds a INNER JOIN clause to the query using the Account relation
+ *
+ * @method     \AbcBank\Resources\CustomerQuery|\AbcBank\Resources\AccountQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ *
  * @method     ChildTransaction findOne(ConnectionInterface $con = null) Return the first ChildTransaction matching the query
  * @method     ChildTransaction findOneOrCreate(ConnectionInterface $con = null) Return the first ChildTransaction matching the query, or a new ChildTransaction object populated from the query conditions when no match is found
  *
  * @method     ChildTransaction findOneById(int $id) Return the first ChildTransaction filtered by the id column
  * @method     ChildTransaction findOneByCustomerId(int $customer_id) Return the first ChildTransaction filtered by the customer_id column
- * @method     ChildTransaction findOneByAccountId(int $account_id) Return the first ChildTransaction filtered by the account_id column
+ * @method     ChildTransaction findOneByAccountNumber(string $account_number) Return the first ChildTransaction filtered by the account_number column
  * @method     ChildTransaction findOneByType(string $type) Return the first ChildTransaction filtered by the type column
  * @method     ChildTransaction findOneByAmount(double $amount) Return the first ChildTransaction filtered by the amount column
  * @method     ChildTransaction findOneByCreatedAt(string $created_at) Return the first ChildTransaction filtered by the created_at column
@@ -55,7 +66,7 @@ use Propel\Runtime\Exception\PropelException;
  *
  * @method     ChildTransaction requireOneById(int $id) Return the first ChildTransaction filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildTransaction requireOneByCustomerId(int $customer_id) Return the first ChildTransaction filtered by the customer_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildTransaction requireOneByAccountId(int $account_id) Return the first ChildTransaction filtered by the account_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildTransaction requireOneByAccountNumber(string $account_number) Return the first ChildTransaction filtered by the account_number column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildTransaction requireOneByType(string $type) Return the first ChildTransaction filtered by the type column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildTransaction requireOneByAmount(double $amount) Return the first ChildTransaction filtered by the amount column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildTransaction requireOneByCreatedAt(string $created_at) Return the first ChildTransaction filtered by the created_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -64,7 +75,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildTransaction[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildTransaction objects based on current ModelCriteria
  * @method     ChildTransaction[]|ObjectCollection findById(int $id) Return ChildTransaction objects filtered by the id column
  * @method     ChildTransaction[]|ObjectCollection findByCustomerId(int $customer_id) Return ChildTransaction objects filtered by the customer_id column
- * @method     ChildTransaction[]|ObjectCollection findByAccountId(int $account_id) Return ChildTransaction objects filtered by the account_id column
+ * @method     ChildTransaction[]|ObjectCollection findByAccountNumber(string $account_number) Return ChildTransaction objects filtered by the account_number column
  * @method     ChildTransaction[]|ObjectCollection findByType(string $type) Return ChildTransaction objects filtered by the type column
  * @method     ChildTransaction[]|ObjectCollection findByAmount(double $amount) Return ChildTransaction objects filtered by the amount column
  * @method     ChildTransaction[]|ObjectCollection findByCreatedAt(string $created_at) Return ChildTransaction objects filtered by the created_at column
@@ -118,10 +129,10 @@ abstract class TransactionQuery extends ModelCriteria
      * Go fast if the query is untouched.
      *
      * <code>
-     * $obj  = $c->findPk(12, $con);
+     * $obj = $c->findPk(array(12, 34, 56, 78, 91), $con);
      * </code>
      *
-     * @param mixed $key Primary key to use for the query
+     * @param array[$id, $customer_id, $account_number, $type, $amount] $key Primary key to use for the query
      * @param ConnectionInterface $con an optional connection object
      *
      * @return ChildTransaction|array|mixed the result, formatted by the current formatter
@@ -131,7 +142,7 @@ abstract class TransactionQuery extends ModelCriteria
         if ($key === null) {
             return null;
         }
-        if ((null !== ($obj = TransactionTableMap::getInstanceFromPool((string) $key))) && !$this->formatter) {
+        if ((null !== ($obj = TransactionTableMap::getInstanceFromPool(serialize(array((string) $key[0], (string) $key[1], (string) $key[2], (string) $key[3], (string) $key[4]))))) && !$this->formatter) {
             // the object is already in the instance pool
             return $obj;
         }
@@ -161,10 +172,14 @@ abstract class TransactionQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, customer_id, account_id, type, amount, created_at, updated_at FROM transaction WHERE id = :p0';
+        $sql = 'SELECT id, customer_id, account_number, type, amount, created_at, updated_at FROM transaction WHERE id = :p0 AND customer_id = :p1 AND account_number = :p2 AND type = :p3 AND amount = :p4';
         try {
             $stmt = $con->prepare($sql);
-            $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
+            $stmt->bindValue(':p0', $key[0], PDO::PARAM_INT);
+            $stmt->bindValue(':p1', $key[1], PDO::PARAM_INT);
+            $stmt->bindValue(':p2', $key[2], PDO::PARAM_STR);
+            $stmt->bindValue(':p3', $key[3], PDO::PARAM_STR);
+            $stmt->bindValue(':p4', $key[4], PDO::PARAM_STR);
             $stmt->execute();
         } catch (Exception $e) {
             Propel::log($e->getMessage(), Propel::LOG_ERR);
@@ -175,7 +190,7 @@ abstract class TransactionQuery extends ModelCriteria
             /** @var ChildTransaction $obj */
             $obj = new ChildTransaction();
             $obj->hydrate($row);
-            TransactionTableMap::addInstanceToPool($obj, (string) $key);
+            TransactionTableMap::addInstanceToPool($obj, serialize(array((string) $key[0], (string) $key[1], (string) $key[2], (string) $key[3], (string) $key[4])));
         }
         $stmt->closeCursor();
 
@@ -204,7 +219,7 @@ abstract class TransactionQuery extends ModelCriteria
     /**
      * Find objects by primary key
      * <code>
-     * $objs = $c->findPks(array(12, 56, 832), $con);
+     * $objs = $c->findPks(array(array(12, 56), array(832, 123), array(123, 456)), $con);
      * </code>
      * @param     array $keys Primary keys to use for the query
      * @param     ConnectionInterface $con an optional connection object
@@ -234,8 +249,13 @@ abstract class TransactionQuery extends ModelCriteria
      */
     public function filterByPrimaryKey($key)
     {
+        $this->addUsingAlias(TransactionTableMap::COL_ID, $key[0], Criteria::EQUAL);
+        $this->addUsingAlias(TransactionTableMap::COL_CUSTOMER_ID, $key[1], Criteria::EQUAL);
+        $this->addUsingAlias(TransactionTableMap::COL_ACCOUNT_NUMBER, $key[2], Criteria::EQUAL);
+        $this->addUsingAlias(TransactionTableMap::COL_TYPE, $key[3], Criteria::EQUAL);
+        $this->addUsingAlias(TransactionTableMap::COL_AMOUNT, $key[4], Criteria::EQUAL);
 
-        return $this->addUsingAlias(TransactionTableMap::COL_ID, $key, Criteria::EQUAL);
+        return $this;
     }
 
     /**
@@ -247,8 +267,23 @@ abstract class TransactionQuery extends ModelCriteria
      */
     public function filterByPrimaryKeys($keys)
     {
+        if (empty($keys)) {
+            return $this->add(null, '1<>1', Criteria::CUSTOM);
+        }
+        foreach ($keys as $key) {
+            $cton0 = $this->getNewCriterion(TransactionTableMap::COL_ID, $key[0], Criteria::EQUAL);
+            $cton1 = $this->getNewCriterion(TransactionTableMap::COL_CUSTOMER_ID, $key[1], Criteria::EQUAL);
+            $cton0->addAnd($cton1);
+            $cton2 = $this->getNewCriterion(TransactionTableMap::COL_ACCOUNT_NUMBER, $key[2], Criteria::EQUAL);
+            $cton0->addAnd($cton2);
+            $cton3 = $this->getNewCriterion(TransactionTableMap::COL_TYPE, $key[3], Criteria::EQUAL);
+            $cton0->addAnd($cton3);
+            $cton4 = $this->getNewCriterion(TransactionTableMap::COL_AMOUNT, $key[4], Criteria::EQUAL);
+            $cton0->addAnd($cton4);
+            $this->addOr($cton0);
+        }
 
-        return $this->addUsingAlias(TransactionTableMap::COL_ID, $keys, Criteria::IN);
+        return $this;
     }
 
     /**
@@ -302,6 +337,8 @@ abstract class TransactionQuery extends ModelCriteria
      * $query->filterByCustomerId(array('min' => 12)); // WHERE customer_id > 12
      * </code>
      *
+     * @see       filterByCustomer()
+     *
      * @param     mixed $customerId The value to use as filter.
      *              Use scalar values for equality.
      *              Use array values for in_array() equivalent.
@@ -334,44 +371,32 @@ abstract class TransactionQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query on the account_id column
+     * Filter the query on the account_number column
      *
      * Example usage:
      * <code>
-     * $query->filterByAccountId(1234); // WHERE account_id = 1234
-     * $query->filterByAccountId(array(12, 34)); // WHERE account_id IN (12, 34)
-     * $query->filterByAccountId(array('min' => 12)); // WHERE account_id > 12
+     * $query->filterByAccountNumber('fooValue');   // WHERE account_number = 'fooValue'
+     * $query->filterByAccountNumber('%fooValue%'); // WHERE account_number LIKE '%fooValue%'
      * </code>
      *
-     * @param     mixed $accountId The value to use as filter.
-     *              Use scalar values for equality.
-     *              Use array values for in_array() equivalent.
-     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $accountNumber The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildTransactionQuery The current query, for fluid interface
      */
-    public function filterByAccountId($accountId = null, $comparison = null)
+    public function filterByAccountNumber($accountNumber = null, $comparison = null)
     {
-        if (is_array($accountId)) {
-            $useMinMax = false;
-            if (isset($accountId['min'])) {
-                $this->addUsingAlias(TransactionTableMap::COL_ACCOUNT_ID, $accountId['min'], Criteria::GREATER_EQUAL);
-                $useMinMax = true;
-            }
-            if (isset($accountId['max'])) {
-                $this->addUsingAlias(TransactionTableMap::COL_ACCOUNT_ID, $accountId['max'], Criteria::LESS_EQUAL);
-                $useMinMax = true;
-            }
-            if ($useMinMax) {
-                return $this;
-            }
-            if (null === $comparison) {
+        if (null === $comparison) {
+            if (is_array($accountNumber)) {
                 $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $accountNumber)) {
+                $accountNumber = str_replace('*', '%', $accountNumber);
+                $comparison = Criteria::LIKE;
             }
         }
 
-        return $this->addUsingAlias(TransactionTableMap::COL_ACCOUNT_ID, $accountId, $comparison);
+        return $this->addUsingAlias(TransactionTableMap::COL_ACCOUNT_NUMBER, $accountNumber, $comparison);
     }
 
     /**
@@ -531,6 +556,160 @@ abstract class TransactionQuery extends ModelCriteria
     }
 
     /**
+     * Filter the query by a related \AbcBank\Resources\Customer object
+     *
+     * @param \AbcBank\Resources\Customer|ObjectCollection $customer The related object(s) to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @throws \Propel\Runtime\Exception\PropelException
+     *
+     * @return ChildTransactionQuery The current query, for fluid interface
+     */
+    public function filterByCustomer($customer, $comparison = null)
+    {
+        if ($customer instanceof \AbcBank\Resources\Customer) {
+            return $this
+                ->addUsingAlias(TransactionTableMap::COL_CUSTOMER_ID, $customer->getId(), $comparison);
+        } elseif ($customer instanceof ObjectCollection) {
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+
+            return $this
+                ->addUsingAlias(TransactionTableMap::COL_CUSTOMER_ID, $customer->toKeyValue('Id', 'Id'), $comparison);
+        } else {
+            throw new PropelException('filterByCustomer() only accepts arguments of type \AbcBank\Resources\Customer or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the Customer relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildTransactionQuery The current query, for fluid interface
+     */
+    public function joinCustomer($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('Customer');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'Customer');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the Customer relation Customer object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \AbcBank\Resources\CustomerQuery A secondary query class using the current class as primary query
+     */
+    public function useCustomerQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinCustomer($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Customer', '\AbcBank\Resources\CustomerQuery');
+    }
+
+    /**
+     * Filter the query by a related \AbcBank\Resources\Account object
+     *
+     * @param \AbcBank\Resources\Account|ObjectCollection $account The related object(s) to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @throws \Propel\Runtime\Exception\PropelException
+     *
+     * @return ChildTransactionQuery The current query, for fluid interface
+     */
+    public function filterByAccount($account, $comparison = null)
+    {
+        if ($account instanceof \AbcBank\Resources\Account) {
+            return $this
+                ->addUsingAlias(TransactionTableMap::COL_ACCOUNT_NUMBER, $account->getAccountNumber(), $comparison);
+        } elseif ($account instanceof ObjectCollection) {
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+
+            return $this
+                ->addUsingAlias(TransactionTableMap::COL_ACCOUNT_NUMBER, $account->toKeyValue('AccountNumber', 'AccountNumber'), $comparison);
+        } else {
+            throw new PropelException('filterByAccount() only accepts arguments of type \AbcBank\Resources\Account or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the Account relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildTransactionQuery The current query, for fluid interface
+     */
+    public function joinAccount($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('Account');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'Account');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the Account relation Account object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \AbcBank\Resources\AccountQuery A secondary query class using the current class as primary query
+     */
+    public function useAccountQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinAccount($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Account', '\AbcBank\Resources\AccountQuery');
+    }
+
+    /**
      * Exclude object from result
      *
      * @param   ChildTransaction $transaction Object to remove from the list of results
@@ -540,10 +719,79 @@ abstract class TransactionQuery extends ModelCriteria
     public function prune($transaction = null)
     {
         if ($transaction) {
-            $this->addUsingAlias(TransactionTableMap::COL_ID, $transaction->getId(), Criteria::NOT_EQUAL);
+            $this->addCond('pruneCond0', $this->getAliasedColName(TransactionTableMap::COL_ID), $transaction->getId(), Criteria::NOT_EQUAL);
+            $this->addCond('pruneCond1', $this->getAliasedColName(TransactionTableMap::COL_CUSTOMER_ID), $transaction->getCustomerId(), Criteria::NOT_EQUAL);
+            $this->addCond('pruneCond2', $this->getAliasedColName(TransactionTableMap::COL_ACCOUNT_NUMBER), $transaction->getAccountNumber(), Criteria::NOT_EQUAL);
+            $this->addCond('pruneCond3', $this->getAliasedColName(TransactionTableMap::COL_TYPE), $transaction->getType(), Criteria::NOT_EQUAL);
+            $this->addCond('pruneCond4', $this->getAliasedColName(TransactionTableMap::COL_AMOUNT), $transaction->getAmount(), Criteria::NOT_EQUAL);
+            $this->combine(array('pruneCond0', 'pruneCond1', 'pruneCond2', 'pruneCond3', 'pruneCond4'), Criteria::LOGICAL_OR);
         }
 
         return $this;
+    }
+
+    /**
+     * Code to execute before every DELETE statement
+     *
+     * @param     ConnectionInterface $con The connection object used by the query
+     */
+    protected function basePreDelete(ConnectionInterface $con)
+    {
+        // aggregate_column_relation_deposits behavior
+        $this->findRelatedAccountDepositss($con);
+        // aggregate_column_relation_withdrawals behavior
+        $this->findRelatedAccountWithdrawalss($con);
+
+        return $this->preDelete($con);
+    }
+
+    /**
+     * Code to execute after every DELETE statement
+     *
+     * @param     int $affectedRows the number of deleted rows
+     * @param     ConnectionInterface $con The connection object used by the query
+     */
+    protected function basePostDelete($affectedRows, ConnectionInterface $con)
+    {
+        // aggregate_column_relation_deposits behavior
+        $this->updateRelatedAccountDepositss($con);
+        // aggregate_column_relation_withdrawals behavior
+        $this->updateRelatedAccountWithdrawalss($con);
+
+        return $this->postDelete($affectedRows, $con);
+    }
+
+    /**
+     * Code to execute before every UPDATE statement
+     *
+     * @param     array $values The associative array of columns and values for the update
+     * @param     ConnectionInterface $con The connection object used by the query
+     * @param     boolean $forceIndividualSaves If false (default), the resulting call is a Criteria::doUpdate(), otherwise it is a series of save() calls on all the found objects
+     */
+    protected function basePreUpdate(&$values, ConnectionInterface $con, $forceIndividualSaves = false)
+    {
+        // aggregate_column_relation_deposits behavior
+        $this->findRelatedAccountDepositss($con);
+        // aggregate_column_relation_withdrawals behavior
+        $this->findRelatedAccountWithdrawalss($con);
+
+        return $this->preUpdate($values, $con, $forceIndividualSaves);
+    }
+
+    /**
+     * Code to execute after every UPDATE statement
+     *
+     * @param     int $affectedRows the number of updated rows
+     * @param     ConnectionInterface $con The connection object used by the query
+     */
+    protected function basePostUpdate($affectedRows, ConnectionInterface $con)
+    {
+        // aggregate_column_relation_deposits behavior
+        $this->updateRelatedAccountDepositss($con);
+        // aggregate_column_relation_withdrawals behavior
+        $this->updateRelatedAccountWithdrawalss($con);
+
+        return $this->postUpdate($affectedRows, $con);
     }
 
     /**
@@ -671,6 +919,66 @@ abstract class TransactionQuery extends ModelCriteria
     public function firstCreatedFirst()
     {
         return $this->addAscendingOrderByColumn(TransactionTableMap::COL_CREATED_AT);
+    }
+
+    // aggregate_column_relation_deposits behavior
+
+    /**
+     * Finds the related Account objects and keep them for later
+     *
+     * @param ConnectionInterface $con A connection object
+     */
+    protected function findRelatedAccountDepositss($con)
+    {
+        $criteria = clone $this;
+        if ($this->useAliasInSQL) {
+            $alias = $this->getModelAlias();
+            $criteria->removeAlias($alias);
+        } else {
+            $alias = '';
+        }
+        $this->accountDepositss = \AbcBank\Resources\AccountQuery::create()
+            ->joinTransaction($alias)
+            ->mergeWith($criteria)
+            ->find($con);
+    }
+
+    protected function updateRelatedAccountDepositss($con)
+    {
+        foreach ($this->accountDepositss as $accountDeposits) {
+            $accountDeposits->updateDeposits($con);
+        }
+        $this->accountDepositss = array();
+    }
+
+    // aggregate_column_relation_withdrawals behavior
+
+    /**
+     * Finds the related Account objects and keep them for later
+     *
+     * @param ConnectionInterface $con A connection object
+     */
+    protected function findRelatedAccountWithdrawalss($con)
+    {
+        $criteria = clone $this;
+        if ($this->useAliasInSQL) {
+            $alias = $this->getModelAlias();
+            $criteria->removeAlias($alias);
+        } else {
+            $alias = '';
+        }
+        $this->accountWithdrawalss = \AbcBank\Resources\AccountQuery::create()
+            ->joinTransaction($alias)
+            ->mergeWith($criteria)
+            ->find($con);
+    }
+
+    protected function updateRelatedAccountWithdrawalss($con)
+    {
+        foreach ($this->accountWithdrawalss as $accountWithdrawals) {
+            $accountWithdrawals->updateWithdrawals($con);
+        }
+        $this->accountWithdrawalss = array();
     }
 
 } // TransactionQuery

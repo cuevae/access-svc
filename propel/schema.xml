@@ -40,8 +40,19 @@
         <column name="account_number" type="varchar" size="255" primaryKey="true" required="true" />
         <column name="customer_id" type="integer" primaryKey="true" required="true" />
         <column name="type" type="varchar" primaryKey="true" required="true" />
-        <column name="balance" type="float" required="true" />
-        <foreign-key foreignTable="customer">
+        <behavior name="aggregate_column" id="deposits">
+            <parameter name="name" value="deposits" />
+            <parameter name="foreign_table" value="transaction" />
+            <parameter name="expression" value="COALESCE(SUM(amount),0.0)" />
+            <parameter name="condition" value='type = "deposit"' />
+        </behavior>
+        <behavior name="aggregate_column" id="withdrawals">
+            <parameter name="name" value="withdrawals" />
+            <parameter name="foreign_table" value="transaction" />
+            <parameter name="expression" value="COALESCE(SUM(amount),0.0)" />
+            <parameter name="condition" value='type = "withdrawal"' />
+        </behavior>
+        <foreign-key foreignTable="customer" onDelete="CASCADE">
             <reference local="customer_id" foreign="id"/>
         </foreign-key>
         <unique>
@@ -57,10 +68,27 @@
     </table>
     <table name="transaction" phpName="Transaction">
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
-        <column name="customer_id" type="integer" required="true" />
-        <column name="account_id" type="integer" required="true" />
-        <column name="type" type="varchar" size="255" required="true" />
-        <column name="amount" type="float" required="true" />
+        <column name="customer_id" type="integer" required="true" primaryKey="true" />
+        <column name="account_number" type="varchar" size="255" required="true" primaryKey="true" />
+        <column name="type" type="varchar" size="255" required="true" primaryKey="true" />
+        <column name="amount" type="float" required="true" primaryKey="true" />
         <behavior name="timestampable" />
+        <foreign-key foreignTable="customer" onDelete="CASCADE">
+            <reference local="customer_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="account" onDelete="CASCADE">
+            <reference local="account_number" foreign="account_number" />
+        </foreign-key>
+        <unique>
+            <unique-column name="id" />
+            <unique-column name="customer_id" />
+            <unique-column name="account_number" />
+            <unique-column name="type" />
+            <unique-column name="amount" />
+        </unique>
+        <behavior name="validate">
+            <parameter name="rule1" value="{column: type, validator: NotNull}" />
+            <parameter name="rule2" value="{column: amount, validator: GreaterThan, options: {value:0}}" />
+        </behavior>
     </table>
 </database>

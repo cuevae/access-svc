@@ -82,9 +82,9 @@ class TransactionTableMap extends TableMap
     const COL_CUSTOMER_ID = 'transaction.customer_id';
 
     /**
-     * the column name for the account_id field
+     * the column name for the account_number field
      */
-    const COL_ACCOUNT_ID = 'transaction.account_id';
+    const COL_ACCOUNT_NUMBER = 'transaction.account_number';
 
     /**
      * the column name for the type field
@@ -118,10 +118,10 @@ class TransactionTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'CustomerId', 'AccountId', 'Type', 'Amount', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('id', 'customerId', 'accountId', 'type', 'amount', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(TransactionTableMap::COL_ID, TransactionTableMap::COL_CUSTOMER_ID, TransactionTableMap::COL_ACCOUNT_ID, TransactionTableMap::COL_TYPE, TransactionTableMap::COL_AMOUNT, TransactionTableMap::COL_CREATED_AT, TransactionTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('id', 'customer_id', 'account_id', 'type', 'amount', 'created_at', 'updated_at', ),
+        self::TYPE_PHPNAME       => array('Id', 'CustomerId', 'AccountNumber', 'Type', 'Amount', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('id', 'customerId', 'accountNumber', 'type', 'amount', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(TransactionTableMap::COL_ID, TransactionTableMap::COL_CUSTOMER_ID, TransactionTableMap::COL_ACCOUNT_NUMBER, TransactionTableMap::COL_TYPE, TransactionTableMap::COL_AMOUNT, TransactionTableMap::COL_CREATED_AT, TransactionTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('id', 'customer_id', 'account_number', 'type', 'amount', 'created_at', 'updated_at', ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
     );
 
@@ -132,10 +132,10 @@ class TransactionTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'CustomerId' => 1, 'AccountId' => 2, 'Type' => 3, 'Amount' => 4, 'CreatedAt' => 5, 'UpdatedAt' => 6, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'customerId' => 1, 'accountId' => 2, 'type' => 3, 'amount' => 4, 'createdAt' => 5, 'updatedAt' => 6, ),
-        self::TYPE_COLNAME       => array(TransactionTableMap::COL_ID => 0, TransactionTableMap::COL_CUSTOMER_ID => 1, TransactionTableMap::COL_ACCOUNT_ID => 2, TransactionTableMap::COL_TYPE => 3, TransactionTableMap::COL_AMOUNT => 4, TransactionTableMap::COL_CREATED_AT => 5, TransactionTableMap::COL_UPDATED_AT => 6, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'customer_id' => 1, 'account_id' => 2, 'type' => 3, 'amount' => 4, 'created_at' => 5, 'updated_at' => 6, ),
+        self::TYPE_PHPNAME       => array('Id' => 0, 'CustomerId' => 1, 'AccountNumber' => 2, 'Type' => 3, 'Amount' => 4, 'CreatedAt' => 5, 'UpdatedAt' => 6, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'customerId' => 1, 'accountNumber' => 2, 'type' => 3, 'amount' => 4, 'createdAt' => 5, 'updatedAt' => 6, ),
+        self::TYPE_COLNAME       => array(TransactionTableMap::COL_ID => 0, TransactionTableMap::COL_CUSTOMER_ID => 1, TransactionTableMap::COL_ACCOUNT_NUMBER => 2, TransactionTableMap::COL_TYPE => 3, TransactionTableMap::COL_AMOUNT => 4, TransactionTableMap::COL_CREATED_AT => 5, TransactionTableMap::COL_UPDATED_AT => 6, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'customer_id' => 1, 'account_number' => 2, 'type' => 3, 'amount' => 4, 'created_at' => 5, 'updated_at' => 6, ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
     );
 
@@ -157,10 +157,10 @@ class TransactionTableMap extends TableMap
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
-        $this->addColumn('customer_id', 'CustomerId', 'INTEGER', true, null, null);
-        $this->addColumn('account_id', 'AccountId', 'INTEGER', true, null, null);
-        $this->addColumn('type', 'Type', 'VARCHAR', true, 255, null);
-        $this->addColumn('amount', 'Amount', 'FLOAT', true, null, null);
+        $this->addForeignPrimaryKey('customer_id', 'CustomerId', 'INTEGER' , 'customer', 'id', true, null, null);
+        $this->addForeignPrimaryKey('account_number', 'AccountNumber', 'VARCHAR' , 'account', 'account_number', true, 255, null);
+        $this->addPrimaryKey('type', 'Type', 'VARCHAR', true, 255, null);
+        $this->addPrimaryKey('amount', 'Amount', 'FLOAT', true, null, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
@@ -170,6 +170,20 @@ class TransactionTableMap extends TableMap
      */
     public function buildRelations()
     {
+        $this->addRelation('Customer', '\\AbcBank\\Resources\\Customer', RelationMap::MANY_TO_ONE, array (
+  0 =>
+  array (
+    0 => ':customer_id',
+    1 => ':id',
+  ),
+), 'CASCADE', null, null, false);
+        $this->addRelation('Account', '\\AbcBank\\Resources\\Account', RelationMap::MANY_TO_ONE, array (
+  0 =>
+  array (
+    0 => ':account_number',
+    1 => ':account_number',
+  ),
+), 'CASCADE', null, null, false);
     } // buildRelations()
 
     /**
@@ -182,8 +196,64 @@ class TransactionTableMap extends TableMap
     {
         return array(
             'timestampable' => array('create_column' => 'created_at', 'update_column' => 'updated_at', 'disable_created_at' => 'false', 'disable_updated_at' => 'false', ),
+            'validate' => array('rule1' => array ('column' => 'type','validator' => 'NotNull',), 'rule2' => array ('column' => 'amount','validator' => 'GreaterThan','options' => array ('value' => 0,),), ),
+            'aggregate_column_relation_deposits' => array('foreign_table' => 'account', 'update_method' => 'updateDeposits', 'aggregate_name' => 'Deposits', ),
+            'aggregate_column_relation_withdrawals' => array('foreign_table' => 'account', 'update_method' => 'updateWithdrawals', 'aggregate_name' => 'Withdrawals', ),
         );
     } // getBehaviors()
+
+    /**
+     * Adds an object to the instance pool.
+     *
+     * Propel keeps cached copies of objects in an instance pool when they are retrieved
+     * from the database. In some cases you may need to explicitly add objects
+     * to the cache in order to ensure that the same objects are always returned by find*()
+     * and findPk*() calls.
+     *
+     * @param \AbcBank\Resources\Transaction $obj A \AbcBank\Resources\Transaction object.
+     * @param string $key             (optional) key to use for instance map (for performance boost if key was already calculated externally).
+     */
+    public static function addInstanceToPool($obj, $key = null)
+    {
+        if (Propel::isInstancePoolingEnabled()) {
+            if (null === $key) {
+                $key = serialize(array((string) $obj->getId(), (string) $obj->getCustomerId(), (string) $obj->getAccountNumber(), (string) $obj->getType(), (string) $obj->getAmount()));
+            } // if key === null
+            self::$instances[$key] = $obj;
+        }
+    }
+
+    /**
+     * Removes an object from the instance pool.
+     *
+     * Propel keeps cached copies of objects in an instance pool when they are retrieved
+     * from the database.  In some cases -- especially when you override doDelete
+     * methods in your stub classes -- you may need to explicitly remove objects
+     * from the cache in order to prevent returning objects that no longer exist.
+     *
+     * @param mixed $value A \AbcBank\Resources\Transaction object or a primary key value.
+     */
+    public static function removeInstanceFromPool($value)
+    {
+        if (Propel::isInstancePoolingEnabled() && null !== $value) {
+            if (is_object($value) && $value instanceof \AbcBank\Resources\Transaction) {
+                $key = serialize(array((string) $value->getId(), (string) $value->getCustomerId(), (string) $value->getAccountNumber(), (string) $value->getType(), (string) $value->getAmount()));
+
+            } elseif (is_array($value) && count($value) === 5) {
+                // assume we've been passed a primary key";
+                $key = serialize(array((string) $value[0], (string) $value[1], (string) $value[2], (string) $value[3], (string) $value[4]));
+            } elseif ($value instanceof Criteria) {
+                self::$instances = [];
+
+                return;
+            } else {
+                $e = new PropelException("Invalid value passed to removeInstanceFromPool().  Expected primary key or \AbcBank\Resources\Transaction object; got " . (is_object($value) ? get_class($value) . ' object.' : var_export($value, true)));
+                throw $e;
+            }
+
+            unset(self::$instances[$key]);
+        }
+    }
 
     /**
      * Retrieves a string version of the primary key from the DB resultset row that can be used to uniquely identify a row in this table.
@@ -201,11 +271,11 @@ class TransactionTableMap extends TableMap
     public static function getPrimaryKeyHashFromRow($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
         // If the PK cannot be derived from the row, return NULL.
-        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)] === null) {
+        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('CustomerId', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 2 + $offset : static::translateFieldName('AccountNumber', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 3 + $offset : static::translateFieldName('Type', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 4 + $offset : static::translateFieldName('Amount', TableMap::TYPE_PHPNAME, $indexType)] === null) {
             return null;
         }
 
-        return (string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
+        return serialize(array((string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('CustomerId', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 2 + $offset : static::translateFieldName('AccountNumber', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 3 + $offset : static::translateFieldName('Type', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 4 + $offset : static::translateFieldName('Amount', TableMap::TYPE_PHPNAME, $indexType)]));
     }
 
     /**
@@ -222,11 +292,35 @@ class TransactionTableMap extends TableMap
      */
     public static function getPrimaryKeyFromRow($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        return (int) $row[
+            $pks = [];
+
+        $pks[] = (int) $row[
             $indexType == TableMap::TYPE_NUM
                 ? 0 + $offset
                 : self::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)
         ];
+        $pks[] = (int) $row[
+            $indexType == TableMap::TYPE_NUM
+                ? 1 + $offset
+                : self::translateFieldName('CustomerId', TableMap::TYPE_PHPNAME, $indexType)
+        ];
+        $pks[] = (string) $row[
+            $indexType == TableMap::TYPE_NUM
+                ? 2 + $offset
+                : self::translateFieldName('AccountNumber', TableMap::TYPE_PHPNAME, $indexType)
+        ];
+        $pks[] = (string) $row[
+            $indexType == TableMap::TYPE_NUM
+                ? 3 + $offset
+                : self::translateFieldName('Type', TableMap::TYPE_PHPNAME, $indexType)
+        ];
+        $pks[] = (double) $row[
+            $indexType == TableMap::TYPE_NUM
+                ? 4 + $offset
+                : self::translateFieldName('Amount', TableMap::TYPE_PHPNAME, $indexType)
+        ];
+
+        return $pks;
     }
 
     /**
@@ -328,7 +422,7 @@ class TransactionTableMap extends TableMap
         if (null === $alias) {
             $criteria->addSelectColumn(TransactionTableMap::COL_ID);
             $criteria->addSelectColumn(TransactionTableMap::COL_CUSTOMER_ID);
-            $criteria->addSelectColumn(TransactionTableMap::COL_ACCOUNT_ID);
+            $criteria->addSelectColumn(TransactionTableMap::COL_ACCOUNT_NUMBER);
             $criteria->addSelectColumn(TransactionTableMap::COL_TYPE);
             $criteria->addSelectColumn(TransactionTableMap::COL_AMOUNT);
             $criteria->addSelectColumn(TransactionTableMap::COL_CREATED_AT);
@@ -336,7 +430,7 @@ class TransactionTableMap extends TableMap
         } else {
             $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.customer_id');
-            $criteria->addSelectColumn($alias . '.account_id');
+            $criteria->addSelectColumn($alias . '.account_number');
             $criteria->addSelectColumn($alias . '.type');
             $criteria->addSelectColumn($alias . '.amount');
             $criteria->addSelectColumn($alias . '.created_at');
@@ -392,7 +486,20 @@ class TransactionTableMap extends TableMap
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
             $criteria = new Criteria(TransactionTableMap::DATABASE_NAME);
-            $criteria->add(TransactionTableMap::COL_ID, (array) $values, Criteria::IN);
+            // primary key is composite; we therefore, expect
+            // the primary key passed to be an array of pkey values
+            if (count($values) == count($values, COUNT_RECURSIVE)) {
+                // array is not multi-dimensional
+                $values = array($values);
+            }
+            foreach ($values as $value) {
+                $criterion = $criteria->getNewCriterion(TransactionTableMap::COL_ID, $value[0]);
+                $criterion->addAnd($criteria->getNewCriterion(TransactionTableMap::COL_CUSTOMER_ID, $value[1]));
+                $criterion->addAnd($criteria->getNewCriterion(TransactionTableMap::COL_ACCOUNT_NUMBER, $value[2]));
+                $criterion->addAnd($criteria->getNewCriterion(TransactionTableMap::COL_TYPE, $value[3]));
+                $criterion->addAnd($criteria->getNewCriterion(TransactionTableMap::COL_AMOUNT, $value[4]));
+                $criteria->addOr($criterion);
+            }
         }
 
         $query = TransactionQuery::create()->mergeWith($criteria);

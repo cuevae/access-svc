@@ -19,19 +19,19 @@ class Account extends BaseAccount
 {
     const ACCOUNT_NUMBER_LENGTH = 12;
 
+    public function __construct()
+    {
+        parent::__construct();
+        $accountNumber = $this->randomNumber(static::ACCOUNT_NUMBER_LENGTH);
+        $this->setAccountNumber($accountNumber);
+    }
+
     protected function randomNumber($length) {
         $result = '';
         for($i = 0; $i < $length; $i++) {
             $result .= mt_rand(0, 9);
         }
         return $result;
-    }
-
-    public function preInsert(ConnectionInterface $con = NULL)
-    {
-        $accNumber = $this->randomNumber(static::ACCOUNT_NUMBER_LENGTH);
-        $this->setAccountNumber($accNumber);
-        return true;
     }
 
 }

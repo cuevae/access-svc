@@ -9,12 +9,15 @@ use AbcBank\Resources\Account as ChildAccount;
 use AbcBank\Resources\AccountQuery as ChildAccountQuery;
 use AbcBank\Resources\Customer as ChildCustomer;
 use AbcBank\Resources\CustomerQuery as ChildCustomerQuery;
+use AbcBank\Resources\Transaction as ChildTransaction;
+use AbcBank\Resources\TransactionQuery as ChildTransactionQuery;
 use AbcBank\Resources\Map\AccountTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
 use Propel\Runtime\ActiveRecord\ActiveRecordInterface;
 use Propel\Runtime\Collection\Collection;
+use Propel\Runtime\Collection\ObjectCollection;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\BadMethodCallException;
 use Propel\Runtime\Exception\LogicException;
@@ -93,10 +96,16 @@ abstract class Account implements ActiveRecordInterface
     protected $type;
 
     /**
-     * The value for the balance field.
-     * @var        double
+     * The value for the deposits field.
+     * @var        int
      */
-    protected $balance;
+    protected $deposits;
+
+    /**
+     * The value for the withdrawals field.
+     * @var        int
+     */
+    protected $withdrawals;
 
     /**
      * The value for the created_at field.
@@ -114,6 +123,12 @@ abstract class Account implements ActiveRecordInterface
      * @var        ChildCustomer
      */
     protected $aCustomer;
+
+    /**
+     * @var        ObjectCollection|ChildTransaction[] Collection to store aggregation of ChildTransaction objects.
+     */
+    protected $collTransactions;
+    protected $collTransactionsPartial;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -139,6 +154,12 @@ abstract class Account implements ActiveRecordInterface
      * @var     ConstraintViolationList
      */
     protected $validationFailures;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildTransaction[]
+     */
+    protected $transactionsScheduledForDeletion = null;
 
     /**
      * Initializes internal state of AbcBank\Resources\Base\Account object.
@@ -388,13 +409,23 @@ abstract class Account implements ActiveRecordInterface
     }
 
     /**
-     * Get the [balance] column value.
+     * Get the [deposits] column value.
      *
-     * @return double
+     * @return int
      */
-    public function getBalance()
+    public function getDeposits()
     {
-        return $this->balance;
+        return $this->deposits;
+    }
+
+    /**
+     * Get the [withdrawals] column value.
+     *
+     * @return int
+     */
+    public function getWithdrawals()
+    {
+        return $this->withdrawals;
     }
 
     /**
@@ -502,24 +533,44 @@ abstract class Account implements ActiveRecordInterface
     } // setType()
 
     /**
-     * Set the value of [balance] column.
+     * Set the value of [deposits] column.
      *
-     * @param  double $v new value
+     * @param  int $v new value
      * @return $this|\AbcBank\Resources\Account The current object (for fluent API support)
      */
-    public function setBalance($v)
+    public function setDeposits($v)
     {
         if ($v !== null) {
-            $v = (double) $v;
+            $v = (int) $v;
         }
 
-        if ($this->balance !== $v) {
-            $this->balance = $v;
-            $this->modifiedColumns[AccountTableMap::COL_BALANCE] = true;
+        if ($this->deposits !== $v) {
+            $this->deposits = $v;
+            $this->modifiedColumns[AccountTableMap::COL_DEPOSITS] = true;
         }
 
         return $this;
-    } // setBalance()
+    } // setDeposits()
+
+    /**
+     * Set the value of [withdrawals] column.
+     *
+     * @param  int $v new value
+     * @return $this|\AbcBank\Resources\Account The current object (for fluent API support)
+     */
+    public function setWithdrawals($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->withdrawals !== $v) {
+            $this->withdrawals = $v;
+            $this->modifiedColumns[AccountTableMap::COL_WITHDRAWALS] = true;
+        }
+
+        return $this;
+    } // setWithdrawals()
 
     /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
@@ -606,16 +657,19 @@ abstract class Account implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : AccountTableMap::translateFieldName('Type', TableMap::TYPE_PHPNAME, $indexType)];
             $this->type = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : AccountTableMap::translateFieldName('Balance', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->balance = (null !== $col) ? (double) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : AccountTableMap::translateFieldName('Deposits', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->deposits = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : AccountTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : AccountTableMap::translateFieldName('Withdrawals', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->withdrawals = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : AccountTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : AccountTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : AccountTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -628,7 +682,7 @@ abstract class Account implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 6; // 6 = AccountTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 7; // 7 = AccountTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\AbcBank\\Resources\\Account'), 0, $e);
@@ -693,6 +747,8 @@ abstract class Account implements ActiveRecordInterface
         if ($deep) {  // also de-associate any related objects?
 
             $this->aCustomer = null;
+            $this->collTransactions = null;
+
         } // if (deep)
     }
 
@@ -827,6 +883,23 @@ abstract class Account implements ActiveRecordInterface
                 $this->resetModified();
             }
 
+            if ($this->transactionsScheduledForDeletion !== null) {
+                if (!$this->transactionsScheduledForDeletion->isEmpty()) {
+                    \AbcBank\Resources\TransactionQuery::create()
+                        ->filterByPrimaryKeys($this->transactionsScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->transactionsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collTransactions !== null) {
+                foreach ($this->collTransactions as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
             $this->alreadyInSave = false;
 
         }
@@ -858,8 +931,11 @@ abstract class Account implements ActiveRecordInterface
         if ($this->isColumnModified(AccountTableMap::COL_TYPE)) {
             $modifiedColumns[':p' . $index++]  = 'type';
         }
-        if ($this->isColumnModified(AccountTableMap::COL_BALANCE)) {
-            $modifiedColumns[':p' . $index++]  = 'balance';
+        if ($this->isColumnModified(AccountTableMap::COL_DEPOSITS)) {
+            $modifiedColumns[':p' . $index++]  = 'deposits';
+        }
+        if ($this->isColumnModified(AccountTableMap::COL_WITHDRAWALS)) {
+            $modifiedColumns[':p' . $index++]  = 'withdrawals';
         }
         if ($this->isColumnModified(AccountTableMap::COL_CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'created_at';
@@ -887,8 +963,11 @@ abstract class Account implements ActiveRecordInterface
                     case 'type':
                         $stmt->bindValue($identifier, $this->type, PDO::PARAM_STR);
                         break;
-                    case 'balance':
-                        $stmt->bindValue($identifier, $this->balance, PDO::PARAM_STR);
+                    case 'deposits':
+                        $stmt->bindValue($identifier, $this->deposits, PDO::PARAM_INT);
+                        break;
+                    case 'withdrawals':
+                        $stmt->bindValue($identifier, $this->withdrawals, PDO::PARAM_INT);
                         break;
                     case 'created_at':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -961,12 +1040,15 @@ abstract class Account implements ActiveRecordInterface
                 return $this->getType();
                 break;
             case 3:
-                return $this->getBalance();
+                return $this->getDeposits();
                 break;
             case 4:
-                return $this->getCreatedAt();
+                return $this->getWithdrawals();
                 break;
             case 5:
+                return $this->getCreatedAt();
+                break;
+            case 6:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -1002,22 +1084,23 @@ abstract class Account implements ActiveRecordInterface
             $keys[0] => $this->getAccountNumber(),
             $keys[1] => $this->getCustomerId(),
             $keys[2] => $this->getType(),
-            $keys[3] => $this->getBalance(),
-            $keys[4] => $this->getCreatedAt(),
-            $keys[5] => $this->getUpdatedAt(),
+            $keys[3] => $this->getDeposits(),
+            $keys[4] => $this->getWithdrawals(),
+            $keys[5] => $this->getCreatedAt(),
+            $keys[6] => $this->getUpdatedAt(),
         );
 
         $utc = new \DateTimeZone('utc');
-        if ($result[$keys[4]] instanceof \DateTime) {
-            // When changing timezone we don't want to change existing instances
-            $dateTime = clone $result[$keys[4]];
-            $result[$keys[4]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
-        }
-
         if ($result[$keys[5]] instanceof \DateTime) {
             // When changing timezone we don't want to change existing instances
             $dateTime = clone $result[$keys[5]];
             $result[$keys[5]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+        }
+
+        if ($result[$keys[6]] instanceof \DateTime) {
+            // When changing timezone we don't want to change existing instances
+            $dateTime = clone $result[$keys[6]];
+            $result[$keys[6]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -1040,6 +1123,21 @@ abstract class Account implements ActiveRecordInterface
                 }
 
                 $result[$key] = $this->aCustomer->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->collTransactions) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'transactions';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'transactions';
+                        break;
+                    default:
+                        $key = 'Transactions';
+                }
+
+                $result[$key] = $this->collTransactions->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
         }
 
@@ -1085,12 +1183,15 @@ abstract class Account implements ActiveRecordInterface
                 $this->setType($value);
                 break;
             case 3:
-                $this->setBalance($value);
+                $this->setDeposits($value);
                 break;
             case 4:
-                $this->setCreatedAt($value);
+                $this->setWithdrawals($value);
                 break;
             case 5:
+                $this->setCreatedAt($value);
+                break;
+            case 6:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1129,13 +1230,16 @@ abstract class Account implements ActiveRecordInterface
             $this->setType($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setBalance($arr[$keys[3]]);
+            $this->setDeposits($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setCreatedAt($arr[$keys[4]]);
+            $this->setWithdrawals($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setUpdatedAt($arr[$keys[5]]);
+            $this->setCreatedAt($arr[$keys[5]]);
+        }
+        if (array_key_exists($keys[6], $arr)) {
+            $this->setUpdatedAt($arr[$keys[6]]);
         }
     }
 
@@ -1187,8 +1291,11 @@ abstract class Account implements ActiveRecordInterface
         if ($this->isColumnModified(AccountTableMap::COL_TYPE)) {
             $criteria->add(AccountTableMap::COL_TYPE, $this->type);
         }
-        if ($this->isColumnModified(AccountTableMap::COL_BALANCE)) {
-            $criteria->add(AccountTableMap::COL_BALANCE, $this->balance);
+        if ($this->isColumnModified(AccountTableMap::COL_DEPOSITS)) {
+            $criteria->add(AccountTableMap::COL_DEPOSITS, $this->deposits);
+        }
+        if ($this->isColumnModified(AccountTableMap::COL_WITHDRAWALS)) {
+            $criteria->add(AccountTableMap::COL_WITHDRAWALS, $this->withdrawals);
         }
         if ($this->isColumnModified(AccountTableMap::COL_CREATED_AT)) {
             $criteria->add(AccountTableMap::COL_CREATED_AT, $this->created_at);
@@ -1304,9 +1411,24 @@ abstract class Account implements ActiveRecordInterface
         $copyObj->setAccountNumber($this->getAccountNumber());
         $copyObj->setCustomerId($this->getCustomerId());
         $copyObj->setType($this->getType());
-        $copyObj->setBalance($this->getBalance());
+        $copyObj->setDeposits($this->getDeposits());
+        $copyObj->setWithdrawals($this->getWithdrawals());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
+
+        if ($deepCopy) {
+            // important: temporarily setNew(false) because this affects the behavior of
+            // the getter/setter methods for fkey referrer objects.
+            $copyObj->setNew(false);
+
+            foreach ($this->getTransactions() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addTransaction($relObj->copy($deepCopy));
+                }
+            }
+
+        } // if ($deepCopy)
+
         if ($makeNew) {
             $copyObj->setNew(true);
         }
@@ -1387,6 +1509,268 @@ abstract class Account implements ActiveRecordInterface
         return $this->aCustomer;
     }
 
+
+    /**
+     * Initializes a collection based on the name of a relation.
+     * Avoids crafting an 'init[$relationName]s' method name
+     * that wouldn't work when StandardEnglishPluralizer is used.
+     *
+     * @param      string $relationName The name of the relation to initialize
+     * @return void
+     */
+    public function initRelation($relationName)
+    {
+        if ('Transaction' == $relationName) {
+            return $this->initTransactions();
+        }
+    }
+
+    /**
+     * Clears out the collTransactions collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addTransactions()
+     */
+    public function clearTransactions()
+    {
+        $this->collTransactions = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collTransactions collection loaded partially.
+     */
+    public function resetPartialTransactions($v = true)
+    {
+        $this->collTransactionsPartial = $v;
+    }
+
+    /**
+     * Initializes the collTransactions collection.
+     *
+     * By default this just sets the collTransactions collection to an empty array (like clearcollTransactions());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initTransactions($overrideExisting = true)
+    {
+        if (null !== $this->collTransactions && !$overrideExisting) {
+            return;
+        }
+        $this->collTransactions = new ObjectCollection();
+        $this->collTransactions->setModel('\AbcBank\Resources\Transaction');
+    }
+
+    /**
+     * Gets an array of ChildTransaction objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildAccount is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildTransaction[] List of ChildTransaction objects
+     * @throws PropelException
+     */
+    public function getTransactions(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collTransactionsPartial && !$this->isNew();
+        if (null === $this->collTransactions || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collTransactions) {
+                // return empty collection
+                $this->initTransactions();
+            } else {
+                $collTransactions = ChildTransactionQuery::create(null, $criteria)
+                    ->filterByAccount($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collTransactionsPartial && count($collTransactions)) {
+                        $this->initTransactions(false);
+
+                        foreach ($collTransactions as $obj) {
+                            if (false == $this->collTransactions->contains($obj)) {
+                                $this->collTransactions->append($obj);
+                            }
+                        }
+
+                        $this->collTransactionsPartial = true;
+                    }
+
+                    return $collTransactions;
+                }
+
+                if ($partial && $this->collTransactions) {
+                    foreach ($this->collTransactions as $obj) {
+                        if ($obj->isNew()) {
+                            $collTransactions[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collTransactions = $collTransactions;
+                $this->collTransactionsPartial = false;
+            }
+        }
+
+        return $this->collTransactions;
+    }
+
+    /**
+     * Sets a collection of ChildTransaction objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $transactions A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildAccount The current object (for fluent API support)
+     */
+    public function setTransactions(Collection $transactions, ConnectionInterface $con = null)
+    {
+        /** @var ChildTransaction[] $transactionsToDelete */
+        $transactionsToDelete = $this->getTransactions(new Criteria(), $con)->diff($transactions);
+
+
+        //since at least one column in the foreign key is at the same time a PK
+        //we can not just set a PK to NULL in the lines below. We have to store
+        //a backup of all values, so we are able to manipulate these items based on the onDelete value later.
+        $this->transactionsScheduledForDeletion = clone $transactionsToDelete;
+
+        foreach ($transactionsToDelete as $transactionRemoved) {
+            $transactionRemoved->setAccount(null);
+        }
+
+        $this->collTransactions = null;
+        foreach ($transactions as $transaction) {
+            $this->addTransaction($transaction);
+        }
+
+        $this->collTransactions = $transactions;
+        $this->collTransactionsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related Transaction objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related Transaction objects.
+     * @throws PropelException
+     */
+    public function countTransactions(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collTransactionsPartial && !$this->isNew();
+        if (null === $this->collTransactions || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collTransactions) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getTransactions());
+            }
+
+            $query = ChildTransactionQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByAccount($this)
+                ->count($con);
+        }
+
+        return count($this->collTransactions);
+    }
+
+    /**
+     * Method called to associate a ChildTransaction object to this object
+     * through the ChildTransaction foreign key attribute.
+     *
+     * @param  ChildTransaction $l ChildTransaction
+     * @return $this|\AbcBank\Resources\Account The current object (for fluent API support)
+     */
+    public function addTransaction(ChildTransaction $l)
+    {
+        if ($this->collTransactions === null) {
+            $this->initTransactions();
+            $this->collTransactionsPartial = true;
+        }
+
+        if (!$this->collTransactions->contains($l)) {
+            $this->doAddTransaction($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildTransaction $transaction The ChildTransaction object to add.
+     */
+    protected function doAddTransaction(ChildTransaction $transaction)
+    {
+        $this->collTransactions[]= $transaction;
+        $transaction->setAccount($this);
+    }
+
+    /**
+     * @param  ChildTransaction $transaction The ChildTransaction object to remove.
+     * @return $this|ChildAccount The current object (for fluent API support)
+     */
+    public function removeTransaction(ChildTransaction $transaction)
+    {
+        if ($this->getTransactions()->contains($transaction)) {
+            $pos = $this->collTransactions->search($transaction);
+            $this->collTransactions->remove($pos);
+            if (null === $this->transactionsScheduledForDeletion) {
+                $this->transactionsScheduledForDeletion = clone $this->collTransactions;
+                $this->transactionsScheduledForDeletion->clear();
+            }
+            $this->transactionsScheduledForDeletion[]= clone $transaction;
+            $transaction->setAccount(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Account is new, it will return
+     * an empty collection; or if this Account has previously
+     * been saved, it will retrieve related Transactions from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Account.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildTransaction[] List of ChildTransaction objects
+     */
+    public function getTransactionsJoinCustomer(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildTransactionQuery::create(null, $criteria);
+        $query->joinWith('Customer', $joinBehavior);
+
+        return $this->getTransactions($query, $con);
+    }
+
     /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
@@ -1400,7 +1784,8 @@ abstract class Account implements ActiveRecordInterface
         $this->account_number = null;
         $this->customer_id = null;
         $this->type = null;
-        $this->balance = null;
+        $this->deposits = null;
+        $this->withdrawals = null;
         $this->created_at = null;
         $this->updated_at = null;
         $this->alreadyInSave = false;
@@ -1421,8 +1806,14 @@ abstract class Account implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
+            if ($this->collTransactions) {
+                foreach ($this->collTransactions as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
         } // if ($deep)
 
+        $this->collTransactions = null;
         $this->aCustomer = null;
     }
 
@@ -1434,6 +1825,60 @@ abstract class Account implements ActiveRecordInterface
     public function __toString()
     {
         return (string) $this->exportTo(AccountTableMap::DEFAULT_STRING_FORMAT);
+    }
+
+    // deposits behavior
+
+    /**
+     * Computes the value of the aggregate column deposits *
+     * @param ConnectionInterface $con A connection object
+     *
+     * @return mixed The scalar result from the aggregate query
+     */
+    public function computeDeposits(ConnectionInterface $con)
+    {
+        $stmt = $con->prepare('SELECT COALESCE(SUM(amount),0.0) FROM transaction WHERE type = "deposit" AND transaction.ACCOUNT_NUMBER = :p1');
+        $stmt->bindValue(':p1', $this->getAccountNumber());
+        $stmt->execute();
+
+        return $stmt->fetchColumn();
+    }
+
+    /**
+     * Updates the aggregate column deposits *
+     * @param ConnectionInterface $con A connection object
+     */
+    public function updateDeposits(ConnectionInterface $con)
+    {
+        $this->setDeposits($this->computeDeposits($con));
+        $this->save($con);
+    }
+
+    // withdrawals behavior
+
+    /**
+     * Computes the value of the aggregate column withdrawals *
+     * @param ConnectionInterface $con A connection object
+     *
+     * @return mixed The scalar result from the aggregate query
+     */
+    public function computeWithdrawals(ConnectionInterface $con)
+    {
+        $stmt = $con->prepare('SELECT COALESCE(SUM(amount),0.0) FROM transaction WHERE type = "withdrawal" AND transaction.ACCOUNT_NUMBER = :p1');
+        $stmt->bindValue(':p1', $this->getAccountNumber());
+        $stmt->execute();
+
+        return $stmt->fetchColumn();
+    }
+
+    /**
+     * Updates the aggregate column withdrawals *
+     * @param ConnectionInterface $con A connection object
+     */
+    public function updateWithdrawals(ConnectionInterface $con)
+    {
+        $this->setWithdrawals($this->computeWithdrawals($con));
+        $this->save($con);
     }
 
     // timestampable behavior
@@ -1513,6 +1958,15 @@ abstract class Account implements ActiveRecordInterface
                 $failureMap->addAll($retval);
             }
 
+            if (null !== $this->collTransactions) {
+                foreach ($this->collTransactions as $referrerFK) {
+                    if (method_exists($referrerFK, 'validate')) {
+                        if (!$referrerFK->validate($validator)) {
+                            $failureMap->addAll($referrerFK->getValidationFailures());
+                        }
+                    }
+                }
+            }
 
             $this->alreadyInValidation = false;
         }

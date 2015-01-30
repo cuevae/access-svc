@@ -242,7 +242,14 @@ class CustomerTableMap extends TableMap
     0 => ':customer_id',
     1 => ':id',
   ),
-), null, null, 'Accounts', false);
+), 'CASCADE', null, 'Accounts', false);
+        $this->addRelation('Transaction', '\\AbcBank\\Resources\\Transaction', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':customer_id',
+    1 => ':id',
+  ),
+), 'CASCADE', null, 'Transactions', false);
     } // buildRelations()
 
     /**
@@ -310,6 +317,16 @@ class CustomerTableMap extends TableMap
 
             unset(self::$instances[$key]);
         }
+    }
+    /**
+     * Method to invalidate the instance pool of all tables related to customer     * by a foreign key with ON DELETE CASCADE
+     */
+    public static function clearRelatedInstancePool()
+    {
+        // Invalidate objects in related instance pools,
+        // since one or more of them may be deleted by ON DELETE CASCADE/SETNULL rule.
+        AccountTableMap::clearInstancePool();
+        TransactionTableMap::clearInstancePool();
     }
 
     /**

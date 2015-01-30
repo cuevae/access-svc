@@ -5,6 +5,10 @@ namespace AbcBank\Resources\Base;
 use \DateTime;
 use \Exception;
 use \PDO;
+use AbcBank\Resources\Account as ChildAccount;
+use AbcBank\Resources\AccountQuery as ChildAccountQuery;
+use AbcBank\Resources\Customer as ChildCustomer;
+use AbcBank\Resources\CustomerQuery as ChildCustomerQuery;
 use AbcBank\Resources\Transaction as ChildTransaction;
 use AbcBank\Resources\TransactionQuery as ChildTransactionQuery;
 use AbcBank\Resources\Map\TransactionTableMap;
@@ -20,6 +24,17 @@ use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
 use Propel\Runtime\Util\PropelDateTime;
+use Symfony\Component\Validator\ConstraintValidatorFactory;
+use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\Validator\DefaultTranslator;
+use Symfony\Component\Validator\Constraints\GreaterThan;
+use Symfony\Component\Validator\Constraints\NotNull;
+use Symfony\Component\Validator\Context\ExecutionContextFactory;
+use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Symfony\Component\Validator\Mapping\ClassMetadataFactory;
+use Symfony\Component\Validator\Mapping\Loader\StaticMethodLoader;
+use Symfony\Component\Validator\Validator\LegacyValidator;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * Base class that represents a row from the 'transaction' table.
@@ -75,10 +90,10 @@ abstract class Transaction implements ActiveRecordInterface
     protected $customer_id;
 
     /**
-     * The value for the account_id field.
-     * @var        int
+     * The value for the account_number field.
+     * @var        string
      */
-    protected $account_id;
+    protected $account_number;
 
     /**
      * The value for the type field.
@@ -105,12 +120,51 @@ abstract class Transaction implements ActiveRecordInterface
     protected $updated_at;
 
     /**
+     * @var        ChildCustomer
+     */
+    protected $aCustomer;
+
+    /**
+     * @var        ChildAccount
+     */
+    protected $aAccount;
+
+    /**
      * Flag to prevent endless save loop, if this object is referenced
      * by another object which falls in this transaction.
      *
      * @var boolean
      */
     protected $alreadyInSave = false;
+
+    // validate behavior
+
+    /**
+     * Flag to prevent endless validation loop, if this object is referenced
+     * by another object which falls in this transaction.
+     * @var        boolean
+     */
+    protected $alreadyInValidation = false;
+
+    /**
+     * ConstraintViolationList object
+     *
+     * @see     http://api.symfony.com/2.0/Symfony/Component/Validator/ConstraintViolationList.html
+     * @var     ConstraintViolationList
+     */
+    protected $validationFailures;
+
+    // aggregate_column_relation_deposits behavior
+    /**
+     * @var ChildAccount
+     */
+    protected $oldAccountDeposits;
+
+    // aggregate_column_relation_withdrawals behavior
+    /**
+     * @var ChildAccount
+     */
+    protected $oldAccountWithdrawals;
 
     /**
      * Initializes internal state of AbcBank\Resources\Base\Transaction object.
@@ -350,13 +404,13 @@ abstract class Transaction implements ActiveRecordInterface
     }
 
     /**
-     * Get the [account_id] column value.
+     * Get the [account_number] column value.
      *
-     * @return int
+     * @return string
      */
-    public function getAccountId()
+    public function getAccountNumber()
     {
-        return $this->account_id;
+        return $this->account_number;
     }
 
     /**
@@ -456,28 +510,36 @@ abstract class Transaction implements ActiveRecordInterface
             $this->modifiedColumns[TransactionTableMap::COL_CUSTOMER_ID] = true;
         }
 
+        if ($this->aCustomer !== null && $this->aCustomer->getId() !== $v) {
+            $this->aCustomer = null;
+        }
+
         return $this;
     } // setCustomerId()
 
     /**
-     * Set the value of [account_id] column.
+     * Set the value of [account_number] column.
      *
-     * @param  int $v new value
+     * @param  string $v new value
      * @return $this|\AbcBank\Resources\Transaction The current object (for fluent API support)
      */
-    public function setAccountId($v)
+    public function setAccountNumber($v)
     {
         if ($v !== null) {
-            $v = (int) $v;
+            $v = (string) $v;
         }
 
-        if ($this->account_id !== $v) {
-            $this->account_id = $v;
-            $this->modifiedColumns[TransactionTableMap::COL_ACCOUNT_ID] = true;
+        if ($this->account_number !== $v) {
+            $this->account_number = $v;
+            $this->modifiedColumns[TransactionTableMap::COL_ACCOUNT_NUMBER] = true;
+        }
+
+        if ($this->aAccount !== null && $this->aAccount->getAccountNumber() !== $v) {
+            $this->aAccount = null;
         }
 
         return $this;
-    } // setAccountId()
+    } // setAccountNumber()
 
     /**
      * Set the value of [type] column.
@@ -601,8 +663,8 @@ abstract class Transaction implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : TransactionTableMap::translateFieldName('CustomerId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->customer_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : TransactionTableMap::translateFieldName('AccountId', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->account_id = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : TransactionTableMap::translateFieldName('AccountNumber', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->account_number = (null !== $col) ? (string) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : TransactionTableMap::translateFieldName('Type', TableMap::TYPE_PHPNAME, $indexType)];
             $this->type = (null !== $col) ? (string) $col : null;
@@ -651,6 +713,12 @@ abstract class Transaction implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
+        if ($this->aCustomer !== null && $this->customer_id !== $this->aCustomer->getId()) {
+            $this->aCustomer = null;
+        }
+        if ($this->aAccount !== null && $this->account_number !== $this->aAccount->getAccountNumber()) {
+            $this->aAccount = null;
+        }
     } // ensureConsistency
 
     /**
@@ -690,6 +758,8 @@ abstract class Transaction implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
+            $this->aCustomer = null;
+            $this->aAccount = null;
         } // if (deep)
     }
 
@@ -775,6 +845,10 @@ abstract class Transaction implements ActiveRecordInterface
                     $this->postUpdate($con);
                 }
                 $this->postSave($con);
+                // aggregate_column_relation_deposits behavior
+                $this->updateRelatedAccountDeposits($con);
+                // aggregate_column_relation_withdrawals behavior
+                $this->updateRelatedAccountWithdrawals($con);
                 TransactionTableMap::addInstanceToPool($this);
             } else {
                 $affectedRows = 0;
@@ -800,6 +874,25 @@ abstract class Transaction implements ActiveRecordInterface
         $affectedRows = 0; // initialize var to track total num of affected rows
         if (!$this->alreadyInSave) {
             $this->alreadyInSave = true;
+
+            // We call the save method on the following object(s) if they
+            // were passed to this object by their corresponding set
+            // method.  This object relates to these object(s) by a
+            // foreign key reference.
+
+            if ($this->aCustomer !== null) {
+                if ($this->aCustomer->isModified() || $this->aCustomer->isNew()) {
+                    $affectedRows += $this->aCustomer->save($con);
+                }
+                $this->setCustomer($this->aCustomer);
+            }
+
+            if ($this->aAccount !== null) {
+                if ($this->aAccount->isModified() || $this->aAccount->isNew()) {
+                    $affectedRows += $this->aAccount->save($con);
+                }
+                $this->setAccount($this->aAccount);
+            }
 
             if ($this->isNew() || $this->isModified()) {
                 // persist changes
@@ -844,8 +937,8 @@ abstract class Transaction implements ActiveRecordInterface
         if ($this->isColumnModified(TransactionTableMap::COL_CUSTOMER_ID)) {
             $modifiedColumns[':p' . $index++]  = 'customer_id';
         }
-        if ($this->isColumnModified(TransactionTableMap::COL_ACCOUNT_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'account_id';
+        if ($this->isColumnModified(TransactionTableMap::COL_ACCOUNT_NUMBER)) {
+            $modifiedColumns[':p' . $index++]  = 'account_number';
         }
         if ($this->isColumnModified(TransactionTableMap::COL_TYPE)) {
             $modifiedColumns[':p' . $index++]  = 'type';
@@ -876,8 +969,8 @@ abstract class Transaction implements ActiveRecordInterface
                     case 'customer_id':
                         $stmt->bindValue($identifier, $this->customer_id, PDO::PARAM_INT);
                         break;
-                    case 'account_id':
-                        $stmt->bindValue($identifier, $this->account_id, PDO::PARAM_INT);
+                    case 'account_number':
+                        $stmt->bindValue($identifier, $this->account_number, PDO::PARAM_STR);
                         break;
                     case 'type':
                         $stmt->bindValue($identifier, $this->type, PDO::PARAM_STR);
@@ -960,7 +1053,7 @@ abstract class Transaction implements ActiveRecordInterface
                 return $this->getCustomerId();
                 break;
             case 2:
-                return $this->getAccountId();
+                return $this->getAccountNumber();
                 break;
             case 3:
                 return $this->getType();
@@ -991,10 +1084,11 @@ abstract class Transaction implements ActiveRecordInterface
      *                    Defaults to TableMap::TYPE_PHPNAME.
      * @param     boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns. Defaults to TRUE.
      * @param     array $alreadyDumpedObjects List of objects to skip to avoid recursion
+     * @param     boolean $includeForeignObjects (optional) Whether to include hydrated related objects. Default to FALSE.
      *
      * @return array an associative array containing the field names (as keys) and field values
      */
-    public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array())
+    public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
     {
 
         if (isset($alreadyDumpedObjects['Transaction'][$this->hashCode()])) {
@@ -1005,7 +1099,7 @@ abstract class Transaction implements ActiveRecordInterface
         $result = array(
             $keys[0] => $this->getId(),
             $keys[1] => $this->getCustomerId(),
-            $keys[2] => $this->getAccountId(),
+            $keys[2] => $this->getAccountNumber(),
             $keys[3] => $this->getType(),
             $keys[4] => $this->getAmount(),
             $keys[5] => $this->getCreatedAt(),
@@ -1030,6 +1124,38 @@ abstract class Transaction implements ActiveRecordInterface
             $result[$key] = $virtualColumn;
         }
 
+        if ($includeForeignObjects) {
+            if (null !== $this->aCustomer) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'customer';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'customer';
+                        break;
+                    default:
+                        $key = 'Customer';
+                }
+
+                $result[$key] = $this->aCustomer->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->aAccount) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'account';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'account';
+                        break;
+                    default:
+                        $key = 'Account';
+                }
+
+                $result[$key] = $this->aAccount->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+        }
 
         return $result;
     }
@@ -1070,7 +1196,7 @@ abstract class Transaction implements ActiveRecordInterface
                 $this->setCustomerId($value);
                 break;
             case 2:
-                $this->setAccountId($value);
+                $this->setAccountNumber($value);
                 break;
             case 3:
                 $this->setType($value);
@@ -1117,7 +1243,7 @@ abstract class Transaction implements ActiveRecordInterface
             $this->setCustomerId($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setAccountId($arr[$keys[2]]);
+            $this->setAccountNumber($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
             $this->setType($arr[$keys[3]]);
@@ -1178,8 +1304,8 @@ abstract class Transaction implements ActiveRecordInterface
         if ($this->isColumnModified(TransactionTableMap::COL_CUSTOMER_ID)) {
             $criteria->add(TransactionTableMap::COL_CUSTOMER_ID, $this->customer_id);
         }
-        if ($this->isColumnModified(TransactionTableMap::COL_ACCOUNT_ID)) {
-            $criteria->add(TransactionTableMap::COL_ACCOUNT_ID, $this->account_id);
+        if ($this->isColumnModified(TransactionTableMap::COL_ACCOUNT_NUMBER)) {
+            $criteria->add(TransactionTableMap::COL_ACCOUNT_NUMBER, $this->account_number);
         }
         if ($this->isColumnModified(TransactionTableMap::COL_TYPE)) {
             $criteria->add(TransactionTableMap::COL_TYPE, $this->type);
@@ -1211,6 +1337,10 @@ abstract class Transaction implements ActiveRecordInterface
     {
         $criteria = ChildTransactionQuery::create();
         $criteria->add(TransactionTableMap::COL_ID, $this->id);
+        $criteria->add(TransactionTableMap::COL_CUSTOMER_ID, $this->customer_id);
+        $criteria->add(TransactionTableMap::COL_ACCOUNT_NUMBER, $this->account_number);
+        $criteria->add(TransactionTableMap::COL_TYPE, $this->type);
+        $criteria->add(TransactionTableMap::COL_AMOUNT, $this->amount);
 
         return $criteria;
     }
@@ -1223,10 +1353,28 @@ abstract class Transaction implements ActiveRecordInterface
      */
     public function hashCode()
     {
-        $validPk = null !== $this->getId();
+        $validPk = null !== $this->getId() &&
+            null !== $this->getCustomerId() &&
+            null !== $this->getAccountNumber() &&
+            null !== $this->getType() &&
+            null !== $this->getAmount();
 
-        $validPrimaryKeyFKs = 0;
+        $validPrimaryKeyFKs = 2;
         $primaryKeyFKs = [];
+
+        //relation transaction_fk_7e8f3e to table customer
+        if ($this->aCustomer && $hash = spl_object_hash($this->aCustomer)) {
+            $primaryKeyFKs[] = $hash;
+        } else {
+            $validPrimaryKeyFKs = false;
+        }
+
+        //relation transaction_fk_31d0fe to table account
+        if ($this->aAccount && $hash = spl_object_hash($this->aAccount)) {
+            $primaryKeyFKs[] = $hash;
+        } else {
+            $validPrimaryKeyFKs = false;
+        }
 
         if ($validPk) {
             return crc32(json_encode($this->getPrimaryKey(), JSON_UNESCAPED_UNICODE));
@@ -1238,23 +1386,35 @@ abstract class Transaction implements ActiveRecordInterface
     }
 
     /**
-     * Returns the primary key for this object (row).
-     * @return int
+     * Returns the composite primary key for this object.
+     * The array elements will be in same order as specified in XML.
+     * @return array
      */
     public function getPrimaryKey()
     {
-        return $this->getId();
+        $pks = array();
+        $pks[0] = $this->getId();
+        $pks[1] = $this->getCustomerId();
+        $pks[2] = $this->getAccountNumber();
+        $pks[3] = $this->getType();
+        $pks[4] = $this->getAmount();
+
+        return $pks;
     }
 
     /**
-     * Generic method to set the primary key (id column).
+     * Set the [composite] primary key.
      *
-     * @param       int $key Primary key.
+     * @param      array $keys The elements of the composite key (order must match the order in XML file).
      * @return void
      */
-    public function setPrimaryKey($key)
+    public function setPrimaryKey($keys)
     {
-        $this->setId($key);
+        $this->setId($keys[0]);
+        $this->setCustomerId($keys[1]);
+        $this->setAccountNumber($keys[2]);
+        $this->setType($keys[3]);
+        $this->setAmount($keys[4]);
     }
 
     /**
@@ -1263,7 +1423,7 @@ abstract class Transaction implements ActiveRecordInterface
      */
     public function isPrimaryKeyNull()
     {
-        return null === $this->getId();
+        return (null === $this->getId()) && (null === $this->getCustomerId()) && (null === $this->getAccountNumber()) && (null === $this->getType()) && (null === $this->getAmount());
     }
 
     /**
@@ -1280,7 +1440,7 @@ abstract class Transaction implements ActiveRecordInterface
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
         $copyObj->setCustomerId($this->getCustomerId());
-        $copyObj->setAccountId($this->getAccountId());
+        $copyObj->setAccountNumber($this->getAccountNumber());
         $copyObj->setType($this->getType());
         $copyObj->setAmount($this->getAmount());
         $copyObj->setCreatedAt($this->getCreatedAt());
@@ -1314,15 +1474,135 @@ abstract class Transaction implements ActiveRecordInterface
     }
 
     /**
+     * Declares an association between this object and a ChildCustomer object.
+     *
+     * @param  ChildCustomer $v
+     * @return $this|\AbcBank\Resources\Transaction The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setCustomer(ChildCustomer $v = null)
+    {
+        if ($v === null) {
+            $this->setCustomerId(NULL);
+        } else {
+            $this->setCustomerId($v->getId());
+        }
+
+        $this->aCustomer = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildCustomer object, it will not be re-added.
+        if ($v !== null) {
+            $v->addTransaction($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildCustomer object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildCustomer The associated ChildCustomer object.
+     * @throws PropelException
+     */
+    public function getCustomer(ConnectionInterface $con = null)
+    {
+        if ($this->aCustomer === null && ($this->customer_id !== null)) {
+            $this->aCustomer = ChildCustomerQuery::create()
+                ->filterByTransaction($this) // here
+                ->findOne($con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aCustomer->addTransactions($this);
+             */
+        }
+
+        return $this->aCustomer;
+    }
+
+    /**
+     * Declares an association between this object and a ChildAccount object.
+     *
+     * @param  ChildAccount $v
+     * @return $this|\AbcBank\Resources\Transaction The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setAccount(ChildAccount $v = null)
+    {
+        // aggregate_column_relation behavior
+        if (null !== $this->aAccount && $v !== $this->aAccount) {
+            $this->oldAccountWithdrawals = $this->aAccount;
+        }
+        // aggregate_column_relation behavior
+        if (null !== $this->aAccount && $v !== $this->aAccount) {
+            $this->oldAccountDeposits = $this->aAccount;
+        }
+        if ($v === null) {
+            $this->setAccountNumber(NULL);
+        } else {
+            $this->setAccountNumber($v->getAccountNumber());
+        }
+
+        $this->aAccount = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildAccount object, it will not be re-added.
+        if ($v !== null) {
+            $v->addTransaction($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildAccount object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildAccount The associated ChildAccount object.
+     * @throws PropelException
+     */
+    public function getAccount(ConnectionInterface $con = null)
+    {
+        if ($this->aAccount === null && (($this->account_number !== "" && $this->account_number !== null))) {
+            $this->aAccount = ChildAccountQuery::create()
+                ->filterByTransaction($this) // here
+                ->findOne($con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aAccount->addTransactions($this);
+             */
+        }
+
+        return $this->aAccount;
+    }
+
+    /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
      * change of those foreign objects when you call `save` there).
      */
     public function clear()
     {
+        if (null !== $this->aCustomer) {
+            $this->aCustomer->removeTransaction($this);
+        }
+        if (null !== $this->aAccount) {
+            $this->aAccount->removeTransaction($this);
+        }
         $this->id = null;
         $this->customer_id = null;
-        $this->account_id = null;
+        $this->account_number = null;
         $this->type = null;
         $this->amount = null;
         $this->created_at = null;
@@ -1347,6 +1627,8 @@ abstract class Transaction implements ActiveRecordInterface
         if ($deep) {
         } // if ($deep)
 
+        $this->aCustomer = null;
+        $this->aAccount = null;
     }
 
     /**
@@ -1371,6 +1653,132 @@ abstract class Transaction implements ActiveRecordInterface
         $this->modifiedColumns[TransactionTableMap::COL_UPDATED_AT] = true;
 
         return $this;
+    }
+
+    // validate behavior
+
+    /**
+     * Configure validators constraints. The Validator object uses this method
+     * to perform object validation.
+     *
+     * @param ClassMetadata $metadata
+     */
+    static public function loadValidatorMetadata(ClassMetadata $metadata)
+    {
+        $metadata->addPropertyConstraint('type', new NotNull());
+        $metadata->addPropertyConstraint('amount', new GreaterThan(array ('value' => 0,)));
+    }
+
+    /**
+     * Validates the object and all objects related to this table.
+     *
+     * @see        getValidationFailures()
+     * @param      object $validator A Validator class instance
+     * @return     boolean Whether all objects pass validation.
+     */
+    public function validate(ValidatorInterface $validator = null)
+    {
+        if (null === $validator) {
+            if(class_exists('Symfony\\Component\\Validator\\Validator\\LegacyValidator')){
+                $validator = new LegacyValidator(
+                            new ExecutionContextFactory(new DefaultTranslator()),
+                            new ClassMetaDataFactory(new StaticMethodLoader()),
+                            new ConstraintValidatorFactory()
+                );
+            }else{
+                $validator = new Validator(
+                            new ClassMetadataFactory(new StaticMethodLoader()),
+                            new ConstraintValidatorFactory(),
+                            new DefaultTranslator()
+                );
+            }
+        }
+
+        $failureMap = new ConstraintViolationList();
+
+        if (!$this->alreadyInValidation) {
+            $this->alreadyInValidation = true;
+            $retval = null;
+
+            // We call the validate method on the following object(s) if they
+            // were passed to this object by their corresponding set
+            // method.  This object relates to these object(s) by a
+            // foreign key reference.
+
+            // If validate() method exists, the validate-behavior is configured for related object
+            if (method_exists($this->aCustomer, 'validate')) {
+                if (!$this->aCustomer->validate($validator)) {
+                    $failureMap->addAll($this->aCustomer->getValidationFailures());
+                }
+            }
+            // If validate() method exists, the validate-behavior is configured for related object
+            if (method_exists($this->aAccount, 'validate')) {
+                if (!$this->aAccount->validate($validator)) {
+                    $failureMap->addAll($this->aAccount->getValidationFailures());
+                }
+            }
+
+            $retval = $validator->validate($this);
+            if (count($retval) > 0) {
+                $failureMap->addAll($retval);
+            }
+
+
+            $this->alreadyInValidation = false;
+        }
+
+        $this->validationFailures = $failureMap;
+
+        return (Boolean) (!(count($this->validationFailures) > 0));
+
+    }
+
+    /**
+     * Gets any ConstraintViolation objects that resulted from last call to validate().
+     *
+     *
+     * @return     object ConstraintViolationList
+     * @see        validate()
+     */
+    public function getValidationFailures()
+    {
+        return $this->validationFailures;
+    }
+
+    // aggregate_column_relation_deposits behavior
+
+    /**
+     * Update the aggregate column in the related Account object
+     *
+     * @param ConnectionInterface $con A connection object
+     */
+    protected function updateRelatedAccountDeposits(ConnectionInterface $con)
+    {
+        if ($account = $this->getAccount()) {
+            $account->updateDeposits($con);
+        }
+        if ($this->oldAccountDeposits) {
+            $this->oldAccountDeposits->updateDeposits($con);
+            $this->oldAccountDeposits = null;
+        }
+    }
+
+    // aggregate_column_relation_withdrawals behavior
+
+    /**
+     * Update the aggregate column in the related Account object
+     *
+     * @param ConnectionInterface $con A connection object
+     */
+    protected function updateRelatedAccountWithdrawals(ConnectionInterface $con)
+    {
+        if ($account = $this->getAccount()) {
+            $account->updateWithdrawals($con);
+        }
+        if ($this->oldAccountWithdrawals) {
+            $this->oldAccountWithdrawals->updateWithdrawals($con);
+            $this->oldAccountWithdrawals = null;
+        }
     }
 
     /**

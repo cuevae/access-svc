@@ -9,6 +9,8 @@ use AbcBank\Resources\Account as ChildAccount;
 use AbcBank\Resources\AccountQuery as ChildAccountQuery;
 use AbcBank\Resources\Customer as ChildCustomer;
 use AbcBank\Resources\CustomerQuery as ChildCustomerQuery;
+use AbcBank\Resources\Transaction as ChildTransaction;
+use AbcBank\Resources\TransactionQuery as ChildTransactionQuery;
 use AbcBank\Resources\Map\CustomerTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
@@ -191,6 +193,12 @@ abstract class Customer implements ActiveRecordInterface
     protected $collAccountsPartial;
 
     /**
+     * @var        ObjectCollection|ChildTransaction[] Collection to store aggregation of ChildTransaction objects.
+     */
+    protected $collTransactions;
+    protected $collTransactionsPartial;
+
+    /**
      * Flag to prevent endless save loop, if this object is referenced
      * by another object which falls in this transaction.
      *
@@ -220,6 +228,12 @@ abstract class Customer implements ActiveRecordInterface
      * @var ObjectCollection|ChildAccount[]
      */
     protected $accountsScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildTransaction[]
+     */
+    protected $transactionsScheduledForDeletion = null;
 
     /**
      * Initializes internal state of AbcBank\Resources\Base\Customer object.
@@ -1164,6 +1178,8 @@ abstract class Customer implements ActiveRecordInterface
 
             $this->collAccounts = null;
 
+            $this->collTransactions = null;
+
         } // if (deep)
     }
 
@@ -1297,6 +1313,23 @@ abstract class Customer implements ActiveRecordInterface
 
             if ($this->collAccounts !== null) {
                 foreach ($this->collAccounts as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->transactionsScheduledForDeletion !== null) {
+                if (!$this->transactionsScheduledForDeletion->isEmpty()) {
+                    \AbcBank\Resources\TransactionQuery::create()
+                        ->filterByPrimaryKeys($this->transactionsScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->transactionsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collTransactions !== null) {
+                foreach ($this->collTransactions as $referrerFK) {
                     if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
                         $affectedRows += $referrerFK->save($con);
                     }
@@ -1647,6 +1680,21 @@ abstract class Customer implements ActiveRecordInterface
                 }
 
                 $result[$key] = $this->collAccounts->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collTransactions) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'transactions';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'transactions';
+                        break;
+                    default:
+                        $key = 'Transactions';
+                }
+
+                $result[$key] = $this->collTransactions->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
         }
 
@@ -2034,6 +2082,12 @@ abstract class Customer implements ActiveRecordInterface
                 }
             }
 
+            foreach ($this->getTransactions() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addTransaction($relObj->copy($deepCopy));
+                }
+            }
+
         } // if ($deepCopy)
 
         if ($makeNew) {
@@ -2077,6 +2131,9 @@ abstract class Customer implements ActiveRecordInterface
     {
         if ('Account' == $relationName) {
             return $this->initAccounts();
+        }
+        if ('Transaction' == $relationName) {
+            return $this->initTransactions();
         }
     }
 
@@ -2302,6 +2359,252 @@ abstract class Customer implements ActiveRecordInterface
     }
 
     /**
+     * Clears out the collTransactions collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addTransactions()
+     */
+    public function clearTransactions()
+    {
+        $this->collTransactions = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collTransactions collection loaded partially.
+     */
+    public function resetPartialTransactions($v = true)
+    {
+        $this->collTransactionsPartial = $v;
+    }
+
+    /**
+     * Initializes the collTransactions collection.
+     *
+     * By default this just sets the collTransactions collection to an empty array (like clearcollTransactions());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initTransactions($overrideExisting = true)
+    {
+        if (null !== $this->collTransactions && !$overrideExisting) {
+            return;
+        }
+        $this->collTransactions = new ObjectCollection();
+        $this->collTransactions->setModel('\AbcBank\Resources\Transaction');
+    }
+
+    /**
+     * Gets an array of ChildTransaction objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildCustomer is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildTransaction[] List of ChildTransaction objects
+     * @throws PropelException
+     */
+    public function getTransactions(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collTransactionsPartial && !$this->isNew();
+        if (null === $this->collTransactions || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collTransactions) {
+                // return empty collection
+                $this->initTransactions();
+            } else {
+                $collTransactions = ChildTransactionQuery::create(null, $criteria)
+                    ->filterByCustomer($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collTransactionsPartial && count($collTransactions)) {
+                        $this->initTransactions(false);
+
+                        foreach ($collTransactions as $obj) {
+                            if (false == $this->collTransactions->contains($obj)) {
+                                $this->collTransactions->append($obj);
+                            }
+                        }
+
+                        $this->collTransactionsPartial = true;
+                    }
+
+                    return $collTransactions;
+                }
+
+                if ($partial && $this->collTransactions) {
+                    foreach ($this->collTransactions as $obj) {
+                        if ($obj->isNew()) {
+                            $collTransactions[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collTransactions = $collTransactions;
+                $this->collTransactionsPartial = false;
+            }
+        }
+
+        return $this->collTransactions;
+    }
+
+    /**
+     * Sets a collection of ChildTransaction objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $transactions A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildCustomer The current object (for fluent API support)
+     */
+    public function setTransactions(Collection $transactions, ConnectionInterface $con = null)
+    {
+        /** @var ChildTransaction[] $transactionsToDelete */
+        $transactionsToDelete = $this->getTransactions(new Criteria(), $con)->diff($transactions);
+
+
+        //since at least one column in the foreign key is at the same time a PK
+        //we can not just set a PK to NULL in the lines below. We have to store
+        //a backup of all values, so we are able to manipulate these items based on the onDelete value later.
+        $this->transactionsScheduledForDeletion = clone $transactionsToDelete;
+
+        foreach ($transactionsToDelete as $transactionRemoved) {
+            $transactionRemoved->setCustomer(null);
+        }
+
+        $this->collTransactions = null;
+        foreach ($transactions as $transaction) {
+            $this->addTransaction($transaction);
+        }
+
+        $this->collTransactions = $transactions;
+        $this->collTransactionsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related Transaction objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related Transaction objects.
+     * @throws PropelException
+     */
+    public function countTransactions(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collTransactionsPartial && !$this->isNew();
+        if (null === $this->collTransactions || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collTransactions) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getTransactions());
+            }
+
+            $query = ChildTransactionQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByCustomer($this)
+                ->count($con);
+        }
+
+        return count($this->collTransactions);
+    }
+
+    /**
+     * Method called to associate a ChildTransaction object to this object
+     * through the ChildTransaction foreign key attribute.
+     *
+     * @param  ChildTransaction $l ChildTransaction
+     * @return $this|\AbcBank\Resources\Customer The current object (for fluent API support)
+     */
+    public function addTransaction(ChildTransaction $l)
+    {
+        if ($this->collTransactions === null) {
+            $this->initTransactions();
+            $this->collTransactionsPartial = true;
+        }
+
+        if (!$this->collTransactions->contains($l)) {
+            $this->doAddTransaction($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildTransaction $transaction The ChildTransaction object to add.
+     */
+    protected function doAddTransaction(ChildTransaction $transaction)
+    {
+        $this->collTransactions[]= $transaction;
+        $transaction->setCustomer($this);
+    }
+
+    /**
+     * @param  ChildTransaction $transaction The ChildTransaction object to remove.
+     * @return $this|ChildCustomer The current object (for fluent API support)
+     */
+    public function removeTransaction(ChildTransaction $transaction)
+    {
+        if ($this->getTransactions()->contains($transaction)) {
+            $pos = $this->collTransactions->search($transaction);
+            $this->collTransactions->remove($pos);
+            if (null === $this->transactionsScheduledForDeletion) {
+                $this->transactionsScheduledForDeletion = clone $this->collTransactions;
+                $this->transactionsScheduledForDeletion->clear();
+            }
+            $this->transactionsScheduledForDeletion[]= clone $transaction;
+            $transaction->setCustomer(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Customer is new, it will return
+     * an empty collection; or if this Customer has previously
+     * been saved, it will retrieve related Transactions from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Customer.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildTransaction[] List of ChildTransaction objects
+     */
+    public function getTransactionsJoinAccount(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildTransactionQuery::create(null, $criteria);
+        $query->joinWith('Account', $joinBehavior);
+
+        return $this->getTransactions($query, $con);
+    }
+
+    /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
      * change of those foreign objects when you call `save` there).
@@ -2349,9 +2652,15 @@ abstract class Customer implements ActiveRecordInterface
                     $o->clearAllReferences($deep);
                 }
             }
+            if ($this->collTransactions) {
+                foreach ($this->collTransactions as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
         } // if ($deep)
 
         $this->collAccounts = null;
+        $this->collTransactions = null;
     }
 
     /**
@@ -2439,6 +2748,15 @@ abstract class Customer implements ActiveRecordInterface
 
             if (null !== $this->collAccounts) {
                 foreach ($this->collAccounts as $referrerFK) {
+                    if (method_exists($referrerFK, 'validate')) {
+                        if (!$referrerFK->validate($validator)) {
+                            $failureMap->addAll($referrerFK->getValidationFailures());
+                        }
+                    }
+                }
+            }
+            if (null !== $this->collTransactions) {
+                foreach ($this->collTransactions as $referrerFK) {
                     if (method_exists($referrerFK, 'validate')) {
                         if (!$referrerFK->validate($validator)) {
                             $failureMap->addAll($referrerFK->getValidationFailures());
