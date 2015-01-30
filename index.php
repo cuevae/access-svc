@@ -484,4 +484,39 @@ $app->post(
     }
 );
 
+$app->get(
+    '/customers/{customerId}/accounts/{accNumber}/transactions',
+    function ( Request $req, $customerId, $accNumber ) use ( $app, $mustBeCustomerOrAdmin ){
+        $customer = $mustBeCustomerOrAdmin( $customerId );
+        if(!$customer){
+            $app->abort( 404, "Customer not found." );
+        }
+
+        $page = $req->query->get( 'page' ) ?: 1;
+        $maxPerPage = $req->query->get( 'limit' ) ?: 10;
+        $type = $req->query->get( 'type' );
+        $transactions = \AbcBank\Resources\TransactionQuery::create()
+                                                           ->filterByAccountNumber( $accNumber )
+                                                           ->filterByCustomerId( $customerId );
+        if($type && in_array( $type, array( 'deposit', 'withdrawal' ) )){
+            $transactions->filterByType( $type );
+        }
+
+        $transactions = $transactions->orderByCreatedAt( \Propel\Runtime\ActiveQuery\Criteria::DESC )
+                                     ->paginate( $page, $maxPerPage );
+
+
+        return new Response(
+            $transactions->toJson(),
+            201,
+            array(
+                'Content-type' => 'application/json',
+                'X-Total-Pages' => $transactions->getLastPage(),
+                'X-Current-Page' => $transactions->getPage(),
+                'X-Limit' => $transactions->getMaxPerPage()
+            )
+        );
+    }
+);
+
 $app->run();
