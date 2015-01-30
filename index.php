@@ -250,6 +250,21 @@ $app->delete(
     }
 );
 
+$app->match(
+    '/customers/{customerId}',
+    function (){
+        return new Response(
+            "",
+            200,
+            array(
+                'Access-Control-Allow-Methods' => 'GET, PUT',
+                'Access-Control-Allow-Origin' => '*',
+                'Access-Control-Allow-Headers'=> 'Content-Type'
+            )
+        );
+    }
+)->method( 'OPTIONS' );
+
 $app->put(
     '/customers/{customerId}',
     function ( Request $req, $customerId ) use ( $app, $mustBeCustomerOrAdmin ){
@@ -262,7 +277,9 @@ $app->put(
         try{
             $customerStub->fromArray( $req->request->all() );
             if($customerStub->validate()){
-                $res = \AbcBank\Resources\CustomerQuery::create()->filterById($customerId)->update($req->request->all());
+                $res = \AbcBank\Resources\CustomerQuery::create()->filterById( $customerId )->update(
+                    $req->request->all()
+                );
             }else{
                 $errors = new \StdClass();
                 $count = 1;
