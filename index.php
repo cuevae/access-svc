@@ -519,4 +519,55 @@ $app->get(
     }
 );
 
+$app->get(
+    '/customers/{customerId}/accounts/{accNumber}/transactions/{transactionId}',
+    function ( $customerId, $accNumber, $transactionId ) use ( $app, $mustBeCustomerOrAdmin ){
+        $customer = $mustBeCustomerOrAdmin( $customerId );
+        if(!$customer){
+            $app->abort( 404, "Transaction not found." );
+        }
+
+        $transaction = $transaction = \AbcBank\Resources\TransactionQuery::create()
+                                                                         ->filterByCustomerId( $customerId )
+                                                                         ->filterByAccountNumber( $accNumber )
+                                                                         ->filterById( $transactionId )
+                                                                         ->find()
+                                                                         ->getFirst();
+        if(!$transaction){
+            $app->abort( 404, "Transaction not found." );
+        }
+
+        return new Response(
+            $transaction->toJson(),
+            200,
+            array(
+                'Content-type' => 'application/json'
+            )
+        );
+    }
+);
+
+$app->delete(
+    '/customers/{customerId}/accounts/{accNumber}/transactions/{transactionId}',
+    function ( $customerId, $accNumber, $transactionId ) use ( $app ){
+        if(!$app['security']->isGranted( 'ROLE_ADMIN' )){
+            return new Response( '', 403 );
+        }
+
+        $transaction = \AbcBank\Resources\TransactionQuery::create()
+                                                          ->filterByCustomerId( $customerId )
+                                                          ->filterByAccountNumber( $accNumber )
+                                                          ->filterById( $transactionId )->find()->getFirst();
+        if($transaction){
+            $transaction->delete();
+        }
+
+        return new Response(
+            "",
+            204,
+            array( 'Content-type' => 'application/json' )
+        );
+    }
+);
+
 $app->run();

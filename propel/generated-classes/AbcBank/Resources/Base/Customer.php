@@ -2475,10 +2475,7 @@ abstract class Customer implements ActiveRecordInterface
         $transactionsToDelete = $this->getTransactions(new Criteria(), $con)->diff($transactions);
 
 
-        //since at least one column in the foreign key is at the same time a PK
-        //we can not just set a PK to NULL in the lines below. We have to store
-        //a backup of all values, so we are able to manipulate these items based on the onDelete value later.
-        $this->transactionsScheduledForDeletion = clone $transactionsToDelete;
+        $this->transactionsScheduledForDeletion = $transactionsToDelete;
 
         foreach ($transactionsToDelete as $transactionRemoved) {
             $transactionRemoved->setCustomer(null);

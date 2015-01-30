@@ -1,90 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<database name="abcbank" defaultIdMethod="native" namespace="AbcBank\Resources" >
+<database name="abcbank" defaultIdMethod="native" namespace="AbcBank\Resources">
     <table name="customer" phpName="Customer">
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
         <column name="username" type="varchar" size="255" required="true" primaryKey="true"/>
-        <column name="title" type="varchar" size="255" required="true" />
-        <column name="first_name" type="varchar" size="255" required="true" />
-        <column name="second_name" type="varchar" size="255" required="false" />
-        <column name="first_surname" type="varchar" size="255" required="true" />
-        <column name="second_surname" type="varchar" size="255" required="true" />
-        <column name="address_line1" type="varchar" size="255" required="true" />
-        <column name="address_line2" type="varchar" size="255" required="false" />
+        <column name="title" type="varchar" size="255" required="true"/>
+        <column name="first_name" type="varchar" size="255" required="true"/>
+        <column name="second_name" type="varchar" size="255" required="false"/>
+        <column name="first_surname" type="varchar" size="255" required="true"/>
+        <column name="second_surname" type="varchar" size="255" required="true"/>
+        <column name="address_line1" type="varchar" size="255" required="true"/>
+        <column name="address_line2" type="varchar" size="255" required="false"/>
         <column name="house_number" type="varchar" size="255" required="false"/>
-        <column name="postcode" type="varchar" size="255" required="true" />
-        <column name="town" type="varchar" size="255" required="true" />
-        <column name="county" type="varchar" size="255" required="false" />
-        <column name="country" type="varchar" size="255" required="true" />
-        <column name="telephone1" type="varchar" size="255" required="true" />
-        <column name="telephone2" type="varchar" size="255" required="false" />
+        <column name="postcode" type="varchar" size="255" required="true"/>
+        <column name="town" type="varchar" size="255" required="true"/>
+        <column name="county" type="varchar" size="255" required="false"/>
+        <column name="country" type="varchar" size="255" required="true"/>
+        <column name="telephone1" type="varchar" size="255" required="true"/>
+        <column name="telephone2" type="varchar" size="255" required="false"/>
         <unique>
-            <unique-column name="first_name" />
-            <unique-column name="first_surname" />
-            <unique-column name="second_surname" />
+            <unique-column name="first_name"/>
+            <unique-column name="first_surname"/>
+            <unique-column name="second_surname"/>
         </unique>
-        <behavior name="timestampable" />
+        <behavior name="timestampable"/>
         <behavior name="validate">
-            <parameter name="rule1" value="{column: first_name, validator: NotNull}" />
-            <parameter name="rule2" value="{column: first_surname, validator: NotNull}" />
-            <parameter name="rule3" value="{column: username, validator: NotNull}" />
-            <parameter name="rule4" value="{column: username, validator: Length, options: {min:3}}" />
-            <parameter name="rule5" value="{column: address_line1, validator: NotNull}" />
-            <parameter name="rule6" value="{column: username, validator: NotNull}" />
-            <parameter name="rule7" value="{column: username, validator: NotNull}" />
-            <parameter name="rule8" value="{column: postcode, validator: NotNull}" />
-            <parameter name="rule9" value="{column: country, validator: NotNull}" />
-            <parameter name="rule10" value="{column: telephone1, validator: NotNull}" />
+            <parameter name="rule1" value="{column: first_name, validator: NotNull}"/>
+            <parameter name="rule2" value="{column: first_surname, validator: NotNull}"/>
+            <parameter name="rule3" value="{column: username, validator: NotNull}"/>
+            <parameter name="rule4" value="{column: username, validator: Length, options: {min:3}}"/>
+            <parameter name="rule5" value="{column: address_line1, validator: NotNull}"/>
+            <parameter name="rule6" value="{column: username, validator: NotNull}"/>
+            <parameter name="rule7" value="{column: username, validator: NotNull}"/>
+            <parameter name="rule8" value="{column: postcode, validator: NotNull}"/>
+            <parameter name="rule9" value="{column: country, validator: NotNull}"/>
+            <parameter name="rule10" value="{column: telephone1, validator: NotNull}"/>
         </behavior>
     </table>
     <table name="account" phpName="Account">
-        <column name="account_number" type="varchar" size="255" primaryKey="true" required="true" />
-        <column name="customer_id" type="integer" primaryKey="true" required="true" />
-        <column name="type" type="varchar" primaryKey="true" required="true" />
-        <column name="balance" type="float" defaultValue="0.0" scale="2" />
+        <column name="account_number" type="varchar" size="255" primaryKey="true" required="true"/>
+        <column name="customer_id" type="integer" primaryKey="true" required="true"/>
+        <column name="type" type="varchar" primaryKey="true" required="true"/>
+        <column name="balance" type="float" defaultValue="0.0" scale="2"/>
         <behavior name="aggregate_column" id="balance">
-            <parameter name="name" value="balance" />
-            <parameter name="foreign_table" value="transaction" />
-            <parameter name="expression" value='SUM(IF(transaction.type = "deposit", amount, 0)) - SUM(IF(transaction.type = "withdrawal", amount, 0))' />
+            <parameter name="name" value="balance"/>
+            <parameter name="foreign_table" value="transaction"/>
+            <parameter name="expression"
+                       value='SUM(IF(transaction.type = "deposit", amount, 0)) - SUM(IF(transaction.type = "withdrawal", amount, 0))'/>
         </behavior>
         <foreign-key foreignTable="customer" onDelete="CASCADE">
             <reference local="customer_id" foreign="id"/>
         </foreign-key>
         <unique>
-            <unique-column name="customer_id" />
-            <unique-column name="type" />
+            <unique-column name="customer_id"/>
+            <unique-column name="type"/>
         </unique>
-        <behavior name="timestampable" />
+        <behavior name="timestampable"/>
         <behavior name="validate">
-            <parameter name="rule1" value="{column: account_number, validator: NotNull}" />
-            <parameter name="rule2" value="{column: customer_id, validator: NotNull}" />
-            <parameter name="rule3" value="{column: type, validator: NotNull}" />
+            <parameter name="rule1" value="{column: account_number, validator: NotNull}"/>
+            <parameter name="rule2" value="{column: customer_id, validator: NotNull}"/>
+            <parameter name="rule3" value="{column: type, validator: NotNull}"/>
         </behavior>
     </table>
     <table name="transaction" phpName="Transaction">
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
-        <column name="customer_id" type="integer" required="true" primaryKey="true" />
-        <column name="account_number" type="varchar" size="255" required="true" primaryKey="true" />
-        <column name="type" type="varchar" size="255" required="true" primaryKey="true" />
-        <column name="amount" type="float" required="true" primaryKey="true" />
-        <behavior name="timestampable" />
+        <column name="customer_id" type="integer" required="true"/>
+        <column name="account_number" type="varchar" size="255" required="true"/>
+        <column name="type" type="varchar" size="255" required="true"/>
+        <column name="amount" type="float" required="true"/>
+        <behavior name="timestampable"/>
         <foreign-key foreignTable="customer" onDelete="CASCADE">
             <reference local="customer_id" foreign="id"/>
         </foreign-key>
         <foreign-key foreignTable="account" onDelete="CASCADE">
-            <reference local="account_number" foreign="account_number" />
+            <reference local="account_number" foreign="account_number"/>
         </foreign-key>
         <unique>
-            <unique-column name="id" />
-            <unique-column name="customer_id" />
-            <unique-column name="account_number" />
-            <unique-column name="type" />
-            <unique-column name="amount" />
+            <unique-column name="id"/>
+            <unique-column name="customer_id"/>
+            <unique-column name="account_number"/>
+            <unique-column name="type"/>
+            <unique-column name="amount"/>
         </unique>
         <behavior name="validate">
-            <parameter name="rule1" value="{column: type, validator: NotNull, options:{message:Please specify the transaction type deposit/withdrawal}}" />
-            <parameter name="rule1" value="{column: amount, validator: NotNull, options:{message:Amount cannot be null}}" />
-            <parameter name="rule2" value="{column: amount, validator: GreaterThan, options: {value:0}}" />
-            <parameter name="rule3" value="{column: amount, validator: Regex, options: {pattern: &quot;/^\d+\.\d{2}$/&quot;, match: true, message: Please enter positive amounts with 2 decimal points maximum}}" />
+            <parameter name="rule1"
+                       value="{column: type, validator: NotNull, options:{message:Please specify the transaction type deposit/withdrawal}}"/>
+            <parameter name="rule1"
+                       value="{column: amount, validator: NotNull, options:{message:Amount cannot be null}}"/>
+            <parameter name="rule2" value="{column: amount, validator: GreaterThan, options: {value:0}}"/>
+            <parameter name="rule3"
+                       value="{column: amount, validator: Regex, options: {pattern: &quot;/^\d+\.\d{2}$/&quot;, match: true, message: Please enter positive amounts with 2 decimal points maximum}}"/>
         </behavior>
     </table>
 </database>

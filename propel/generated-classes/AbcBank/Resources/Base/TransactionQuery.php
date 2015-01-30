@@ -129,10 +129,10 @@ abstract class TransactionQuery extends ModelCriteria
      * Go fast if the query is untouched.
      *
      * <code>
-     * $obj = $c->findPk(array(12, 34, 56, 78, 91), $con);
+     * $obj  = $c->findPk(12, $con);
      * </code>
      *
-     * @param array[$id, $customer_id, $account_number, $type, $amount] $key Primary key to use for the query
+     * @param mixed $key Primary key to use for the query
      * @param ConnectionInterface $con an optional connection object
      *
      * @return ChildTransaction|array|mixed the result, formatted by the current formatter
@@ -142,7 +142,7 @@ abstract class TransactionQuery extends ModelCriteria
         if ($key === null) {
             return null;
         }
-        if ((null !== ($obj = TransactionTableMap::getInstanceFromPool(serialize(array((string) $key[0], (string) $key[1], (string) $key[2], (string) $key[3], (string) $key[4]))))) && !$this->formatter) {
+        if ((null !== ($obj = TransactionTableMap::getInstanceFromPool((string) $key))) && !$this->formatter) {
             // the object is already in the instance pool
             return $obj;
         }
@@ -172,14 +172,10 @@ abstract class TransactionQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, customer_id, account_number, type, amount, created_at, updated_at FROM transaction WHERE id = :p0 AND customer_id = :p1 AND account_number = :p2 AND type = :p3 AND amount = :p4';
+        $sql = 'SELECT id, customer_id, account_number, type, amount, created_at, updated_at FROM transaction WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);
-            $stmt->bindValue(':p0', $key[0], PDO::PARAM_INT);
-            $stmt->bindValue(':p1', $key[1], PDO::PARAM_INT);
-            $stmt->bindValue(':p2', $key[2], PDO::PARAM_STR);
-            $stmt->bindValue(':p3', $key[3], PDO::PARAM_STR);
-            $stmt->bindValue(':p4', $key[4], PDO::PARAM_STR);
+            $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
             $stmt->execute();
         } catch (Exception $e) {
             Propel::log($e->getMessage(), Propel::LOG_ERR);
@@ -190,7 +186,7 @@ abstract class TransactionQuery extends ModelCriteria
             /** @var ChildTransaction $obj */
             $obj = new ChildTransaction();
             $obj->hydrate($row);
-            TransactionTableMap::addInstanceToPool($obj, serialize(array((string) $key[0], (string) $key[1], (string) $key[2], (string) $key[3], (string) $key[4])));
+            TransactionTableMap::addInstanceToPool($obj, (string) $key);
         }
         $stmt->closeCursor();
 
@@ -219,7 +215,7 @@ abstract class TransactionQuery extends ModelCriteria
     /**
      * Find objects by primary key
      * <code>
-     * $objs = $c->findPks(array(array(12, 56), array(832, 123), array(123, 456)), $con);
+     * $objs = $c->findPks(array(12, 56, 832), $con);
      * </code>
      * @param     array $keys Primary keys to use for the query
      * @param     ConnectionInterface $con an optional connection object
@@ -249,13 +245,8 @@ abstract class TransactionQuery extends ModelCriteria
      */
     public function filterByPrimaryKey($key)
     {
-        $this->addUsingAlias(TransactionTableMap::COL_ID, $key[0], Criteria::EQUAL);
-        $this->addUsingAlias(TransactionTableMap::COL_CUSTOMER_ID, $key[1], Criteria::EQUAL);
-        $this->addUsingAlias(TransactionTableMap::COL_ACCOUNT_NUMBER, $key[2], Criteria::EQUAL);
-        $this->addUsingAlias(TransactionTableMap::COL_TYPE, $key[3], Criteria::EQUAL);
-        $this->addUsingAlias(TransactionTableMap::COL_AMOUNT, $key[4], Criteria::EQUAL);
 
-        return $this;
+        return $this->addUsingAlias(TransactionTableMap::COL_ID, $key, Criteria::EQUAL);
     }
 
     /**
@@ -267,23 +258,8 @@ abstract class TransactionQuery extends ModelCriteria
      */
     public function filterByPrimaryKeys($keys)
     {
-        if (empty($keys)) {
-            return $this->add(null, '1<>1', Criteria::CUSTOM);
-        }
-        foreach ($keys as $key) {
-            $cton0 = $this->getNewCriterion(TransactionTableMap::COL_ID, $key[0], Criteria::EQUAL);
-            $cton1 = $this->getNewCriterion(TransactionTableMap::COL_CUSTOMER_ID, $key[1], Criteria::EQUAL);
-            $cton0->addAnd($cton1);
-            $cton2 = $this->getNewCriterion(TransactionTableMap::COL_ACCOUNT_NUMBER, $key[2], Criteria::EQUAL);
-            $cton0->addAnd($cton2);
-            $cton3 = $this->getNewCriterion(TransactionTableMap::COL_TYPE, $key[3], Criteria::EQUAL);
-            $cton0->addAnd($cton3);
-            $cton4 = $this->getNewCriterion(TransactionTableMap::COL_AMOUNT, $key[4], Criteria::EQUAL);
-            $cton0->addAnd($cton4);
-            $this->addOr($cton0);
-        }
 
-        return $this;
+        return $this->addUsingAlias(TransactionTableMap::COL_ID, $keys, Criteria::IN);
     }
 
     /**
@@ -719,12 +695,7 @@ abstract class TransactionQuery extends ModelCriteria
     public function prune($transaction = null)
     {
         if ($transaction) {
-            $this->addCond('pruneCond0', $this->getAliasedColName(TransactionTableMap::COL_ID), $transaction->getId(), Criteria::NOT_EQUAL);
-            $this->addCond('pruneCond1', $this->getAliasedColName(TransactionTableMap::COL_CUSTOMER_ID), $transaction->getCustomerId(), Criteria::NOT_EQUAL);
-            $this->addCond('pruneCond2', $this->getAliasedColName(TransactionTableMap::COL_ACCOUNT_NUMBER), $transaction->getAccountNumber(), Criteria::NOT_EQUAL);
-            $this->addCond('pruneCond3', $this->getAliasedColName(TransactionTableMap::COL_TYPE), $transaction->getType(), Criteria::NOT_EQUAL);
-            $this->addCond('pruneCond4', $this->getAliasedColName(TransactionTableMap::COL_AMOUNT), $transaction->getAmount(), Criteria::NOT_EQUAL);
-            $this->combine(array('pruneCond0', 'pruneCond1', 'pruneCond2', 'pruneCond3', 'pruneCond4'), Criteria::LOGICAL_OR);
+            $this->addUsingAlias(TransactionTableMap::COL_ID, $transaction->getId(), Criteria::NOT_EQUAL);
         }
 
         return $this;

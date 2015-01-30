@@ -1330,10 +1330,6 @@ abstract class Transaction implements ActiveRecordInterface
     {
         $criteria = ChildTransactionQuery::create();
         $criteria->add(TransactionTableMap::COL_ID, $this->id);
-        $criteria->add(TransactionTableMap::COL_CUSTOMER_ID, $this->customer_id);
-        $criteria->add(TransactionTableMap::COL_ACCOUNT_NUMBER, $this->account_number);
-        $criteria->add(TransactionTableMap::COL_TYPE, $this->type);
-        $criteria->add(TransactionTableMap::COL_AMOUNT, $this->amount);
 
         return $criteria;
     }
@@ -1346,28 +1342,10 @@ abstract class Transaction implements ActiveRecordInterface
      */
     public function hashCode()
     {
-        $validPk = null !== $this->getId() &&
-            null !== $this->getCustomerId() &&
-            null !== $this->getAccountNumber() &&
-            null !== $this->getType() &&
-            null !== $this->getAmount();
+        $validPk = null !== $this->getId();
 
-        $validPrimaryKeyFKs = 2;
+        $validPrimaryKeyFKs = 0;
         $primaryKeyFKs = [];
-
-        //relation transaction_fk_7e8f3e to table customer
-        if ($this->aCustomer && $hash = spl_object_hash($this->aCustomer)) {
-            $primaryKeyFKs[] = $hash;
-        } else {
-            $validPrimaryKeyFKs = false;
-        }
-
-        //relation transaction_fk_31d0fe to table account
-        if ($this->aAccount && $hash = spl_object_hash($this->aAccount)) {
-            $primaryKeyFKs[] = $hash;
-        } else {
-            $validPrimaryKeyFKs = false;
-        }
 
         if ($validPk) {
             return crc32(json_encode($this->getPrimaryKey(), JSON_UNESCAPED_UNICODE));
@@ -1379,35 +1357,23 @@ abstract class Transaction implements ActiveRecordInterface
     }
 
     /**
-     * Returns the composite primary key for this object.
-     * The array elements will be in same order as specified in XML.
-     * @return array
+     * Returns the primary key for this object (row).
+     * @return int
      */
     public function getPrimaryKey()
     {
-        $pks = array();
-        $pks[0] = $this->getId();
-        $pks[1] = $this->getCustomerId();
-        $pks[2] = $this->getAccountNumber();
-        $pks[3] = $this->getType();
-        $pks[4] = $this->getAmount();
-
-        return $pks;
+        return $this->getId();
     }
 
     /**
-     * Set the [composite] primary key.
+     * Generic method to set the primary key (id column).
      *
-     * @param      array $keys The elements of the composite key (order must match the order in XML file).
+     * @param       int $key Primary key.
      * @return void
      */
-    public function setPrimaryKey($keys)
+    public function setPrimaryKey($key)
     {
-        $this->setId($keys[0]);
-        $this->setCustomerId($keys[1]);
-        $this->setAccountNumber($keys[2]);
-        $this->setType($keys[3]);
-        $this->setAmount($keys[4]);
+        $this->setId($key);
     }
 
     /**
@@ -1416,7 +1382,7 @@ abstract class Transaction implements ActiveRecordInterface
      */
     public function isPrimaryKeyNull()
     {
-        return (null === $this->getId()) && (null === $this->getCustomerId()) && (null === $this->getAccountNumber()) && (null === $this->getType()) && (null === $this->getAmount());
+        return null === $this->getId();
     }
 
     /**
