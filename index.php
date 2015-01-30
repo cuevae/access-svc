@@ -110,6 +110,16 @@ $app['security.role_hierarchy'] = array(
     'ROLE_ADMIN' => array( 'ROLE_CLIENT', 'ROLE_ALLOWED_TO_SWITCH' ),
 );
 
+/**
+ * Allowing cross origin requests
+ */
+
+$app->after(
+    function ( Request $request, Response $response ){
+        $response->headers->set( 'Access-Control-Allow-Origin', '*' );
+    }
+);
+
 
 /**
  * Router endpoints
@@ -146,17 +156,16 @@ $app->get(
 
         $query = $req->get( 'query', false );
 
-        $dbFetch = \AbcBank\Resources\CustomerQuery::create();
+        $customers = \AbcBank\Resources\CustomerQuery::create();
         if($query){
-            $dbFetch->condition( 'c1', 'Customer.FirstName LIKE ?', "%$query%" )
-                    ->condition( 'c2', 'Customer.SecondName LIKE ?', "%$query%" )
-                    ->condition( 'c3', 'Customer.FirstSurname LIKE ?', "%$query%" )
-                    ->condition( 'c4', 'Customer.SecondSurname LIKE ?', "%$query%" )
-                    ->condition( 'c5', 'Customer.Username LIKE ?', "%$query%" )
-                    ->where( array( 'c1', 'c2', 'c3', 'c4', 'c5' ), 'or' );
+            $customers->condition( 'c1', 'Customer.FirstName LIKE ?', "%$query%" )
+                      ->condition( 'c2', 'Customer.SecondName LIKE ?', "%$query%" )
+                      ->condition( 'c3', 'Customer.FirstSurname LIKE ?', "%$query%" )
+                      ->condition( 'c4', 'Customer.SecondSurname LIKE ?', "%$query%" )
+                      ->condition( 'c5', 'Customer.Username LIKE ?', "%$query%" )
+                      ->where( array( 'c1', 'c2', 'c3', 'c4', 'c5' ), 'or' );
         }
-        $customers = $dbFetch->find();
-
+        $customers = $customers->find();
         return new Response(
             $customers->toJson(),
             200,
@@ -238,6 +247,46 @@ $app->delete(
             204,
             array( 'Content-type' => 'application/json' )
         );
+    }
+);
+
+$app->put(
+    '/customers/{customerId}',
+    function ( Request $req, $customerId ) use ( $app, $mustBeCustomerOrAdmin ){
+        $customer = $mustBeCustomerOrAdmin( $customerId );
+        if(!$customer){
+            $app->abort( 404, 'Customer not found.' );
+        }
+
+        $customerStub = new \AbcBank\Resources\Customer();
+        try{
+            $customerStub->fromArray( $req->request->all() );
+            if($customerStub->validate()){
+                $res = \AbcBank\Resources\CustomerQuery::create()->filterById($customerId)->update($req->request->all());
+            }else{
+                $errors = new \StdClass();
+                $count = 1;
+                foreach($customerStub->getValidationFailures() as $failure){
+                    $errors->{"error" . $count++} = "Property " . $failure->getPropertyPath(
+                        ) . ": " . $failure->getMessage();
+                }
+                return new Response(
+                    json_encode( $errors ),
+                    400,
+                    array( 'Content-type' => 'application/json' )
+                );
+            }
+        }catch( Exception $e ){
+            $app['monolog']->addError( $e->getMessage() );
+            $app->abort( 400, "Customer could not be saved." );
+        }
+
+        return new Response(
+            $customerStub->toJson(),
+            200,
+            array( 'Content-type' => 'application/json' )
+        );
+
     }
 );
 
