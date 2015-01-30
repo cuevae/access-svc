@@ -154,17 +154,11 @@ abstract class Transaction implements ActiveRecordInterface
      */
     protected $validationFailures;
 
-    // aggregate_column_relation_deposits behavior
+    // aggregate_column_relation_balance behavior
     /**
      * @var ChildAccount
      */
-    protected $oldAccountDeposits;
-
-    // aggregate_column_relation_withdrawals behavior
-    /**
-     * @var ChildAccount
-     */
-    protected $oldAccountWithdrawals;
+    protected $oldAccountBalance;
 
     /**
      * Initializes internal state of AbcBank\Resources\Base\Transaction object.
@@ -845,10 +839,8 @@ abstract class Transaction implements ActiveRecordInterface
                     $this->postUpdate($con);
                 }
                 $this->postSave($con);
-                // aggregate_column_relation_deposits behavior
-                $this->updateRelatedAccountDeposits($con);
-                // aggregate_column_relation_withdrawals behavior
-                $this->updateRelatedAccountWithdrawals($con);
+                // aggregate_column_relation_balance behavior
+                $this->updateRelatedAccountBalance($con);
                 TransactionTableMap::addInstanceToPool($this);
             } else {
                 $affectedRows = 0;
@@ -1537,11 +1529,7 @@ abstract class Transaction implements ActiveRecordInterface
     {
         // aggregate_column_relation behavior
         if (null !== $this->aAccount && $v !== $this->aAccount) {
-            $this->oldAccountWithdrawals = $this->aAccount;
-        }
-        // aggregate_column_relation behavior
-        if (null !== $this->aAccount && $v !== $this->aAccount) {
-            $this->oldAccountDeposits = $this->aAccount;
+            $this->oldAccountBalance = $this->aAccount;
         }
         if ($v === null) {
             $this->setAccountNumber(NULL);
@@ -1745,39 +1733,21 @@ abstract class Transaction implements ActiveRecordInterface
         return $this->validationFailures;
     }
 
-    // aggregate_column_relation_deposits behavior
+    // aggregate_column_relation_balance behavior
 
     /**
      * Update the aggregate column in the related Account object
      *
      * @param ConnectionInterface $con A connection object
      */
-    protected function updateRelatedAccountDeposits(ConnectionInterface $con)
+    protected function updateRelatedAccountBalance(ConnectionInterface $con)
     {
         if ($account = $this->getAccount()) {
-            $account->updateDeposits($con);
+            $account->updateBalance($con);
         }
-        if ($this->oldAccountDeposits) {
-            $this->oldAccountDeposits->updateDeposits($con);
-            $this->oldAccountDeposits = null;
-        }
-    }
-
-    // aggregate_column_relation_withdrawals behavior
-
-    /**
-     * Update the aggregate column in the related Account object
-     *
-     * @param ConnectionInterface $con A connection object
-     */
-    protected function updateRelatedAccountWithdrawals(ConnectionInterface $con)
-    {
-        if ($account = $this->getAccount()) {
-            $account->updateWithdrawals($con);
-        }
-        if ($this->oldAccountWithdrawals) {
-            $this->oldAccountWithdrawals->updateWithdrawals($con);
-            $this->oldAccountWithdrawals = null;
+        if ($this->oldAccountBalance) {
+            $this->oldAccountBalance->updateBalance($con);
+            $this->oldAccountBalance = null;
         }
     }
 

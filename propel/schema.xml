@@ -40,17 +40,11 @@
         <column name="account_number" type="varchar" size="255" primaryKey="true" required="true" />
         <column name="customer_id" type="integer" primaryKey="true" required="true" />
         <column name="type" type="varchar" primaryKey="true" required="true" />
-        <behavior name="aggregate_column" id="deposits">
-            <parameter name="name" value="deposits" />
+        <column name="balance" type="float" defaultValue="0.0" scale="2" />
+        <behavior name="aggregate_column" id="balance">
+            <parameter name="name" value="balance" />
             <parameter name="foreign_table" value="transaction" />
-            <parameter name="expression" value="COALESCE(SUM(amount),0.0)" />
-            <parameter name="condition" value='type = "deposit"' />
-        </behavior>
-        <behavior name="aggregate_column" id="withdrawals">
-            <parameter name="name" value="withdrawals" />
-            <parameter name="foreign_table" value="transaction" />
-            <parameter name="expression" value="COALESCE(SUM(amount),0.0)" />
-            <parameter name="condition" value='type = "withdrawal"' />
+            <parameter name="expression" value='SUM(IF(transaction.type = "deposit", amount, 0)) - SUM(IF(transaction.type = "withdrawal", amount, 0))' />
         </behavior>
         <foreign-key foreignTable="customer" onDelete="CASCADE">
             <reference local="customer_id" foreign="id"/>

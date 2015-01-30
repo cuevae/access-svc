@@ -96,16 +96,11 @@ abstract class Account implements ActiveRecordInterface
     protected $type;
 
     /**
-     * The value for the deposits field.
-     * @var        int
+     * The value for the balance field.
+     * Note: this column has a database default value of: 0
+     * @var        double
      */
-    protected $deposits;
-
-    /**
-     * The value for the withdrawals field.
-     * @var        int
-     */
-    protected $withdrawals;
+    protected $balance;
 
     /**
      * The value for the created_at field.
@@ -162,10 +157,23 @@ abstract class Account implements ActiveRecordInterface
     protected $transactionsScheduledForDeletion = null;
 
     /**
+     * Applies default values to this object.
+     * This method should be called from the object's constructor (or
+     * equivalent initialization method).
+     * @see __construct()
+     */
+    public function applyDefaultValues()
+    {
+        $this->balance = 0;
+    }
+
+    /**
      * Initializes internal state of AbcBank\Resources\Base\Account object.
+     * @see applyDefaults()
      */
     public function __construct()
     {
+        $this->applyDefaultValues();
     }
 
     /**
@@ -409,23 +417,13 @@ abstract class Account implements ActiveRecordInterface
     }
 
     /**
-     * Get the [deposits] column value.
+     * Get the [balance] column value.
      *
-     * @return int
+     * @return double
      */
-    public function getDeposits()
+    public function getBalance()
     {
-        return $this->deposits;
-    }
-
-    /**
-     * Get the [withdrawals] column value.
-     *
-     * @return int
-     */
-    public function getWithdrawals()
-    {
-        return $this->withdrawals;
+        return $this->balance;
     }
 
     /**
@@ -533,44 +531,24 @@ abstract class Account implements ActiveRecordInterface
     } // setType()
 
     /**
-     * Set the value of [deposits] column.
+     * Set the value of [balance] column.
      *
-     * @param  int $v new value
+     * @param  double $v new value
      * @return $this|\AbcBank\Resources\Account The current object (for fluent API support)
      */
-    public function setDeposits($v)
+    public function setBalance($v)
     {
         if ($v !== null) {
-            $v = (int) $v;
+            $v = (double) $v;
         }
 
-        if ($this->deposits !== $v) {
-            $this->deposits = $v;
-            $this->modifiedColumns[AccountTableMap::COL_DEPOSITS] = true;
+        if ($this->balance !== $v) {
+            $this->balance = $v;
+            $this->modifiedColumns[AccountTableMap::COL_BALANCE] = true;
         }
 
         return $this;
-    } // setDeposits()
-
-    /**
-     * Set the value of [withdrawals] column.
-     *
-     * @param  int $v new value
-     * @return $this|\AbcBank\Resources\Account The current object (for fluent API support)
-     */
-    public function setWithdrawals($v)
-    {
-        if ($v !== null) {
-            $v = (int) $v;
-        }
-
-        if ($this->withdrawals !== $v) {
-            $this->withdrawals = $v;
-            $this->modifiedColumns[AccountTableMap::COL_WITHDRAWALS] = true;
-        }
-
-        return $this;
-    } // setWithdrawals()
+    } // setBalance()
 
     /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
@@ -622,6 +600,10 @@ abstract class Account implements ActiveRecordInterface
      */
     public function hasOnlyDefaultValues()
     {
+            if ($this->balance !== 0) {
+                return false;
+            }
+
         // otherwise, everything was equal, so return TRUE
         return true;
     } // hasOnlyDefaultValues()
@@ -657,19 +639,16 @@ abstract class Account implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : AccountTableMap::translateFieldName('Type', TableMap::TYPE_PHPNAME, $indexType)];
             $this->type = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : AccountTableMap::translateFieldName('Deposits', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->deposits = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : AccountTableMap::translateFieldName('Balance', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->balance = (null !== $col) ? (double) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : AccountTableMap::translateFieldName('Withdrawals', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->withdrawals = (null !== $col) ? (int) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : AccountTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : AccountTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : AccountTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : AccountTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -682,7 +661,7 @@ abstract class Account implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 7; // 7 = AccountTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 6; // 6 = AccountTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\AbcBank\\Resources\\Account'), 0, $e);
@@ -931,11 +910,8 @@ abstract class Account implements ActiveRecordInterface
         if ($this->isColumnModified(AccountTableMap::COL_TYPE)) {
             $modifiedColumns[':p' . $index++]  = 'type';
         }
-        if ($this->isColumnModified(AccountTableMap::COL_DEPOSITS)) {
-            $modifiedColumns[':p' . $index++]  = 'deposits';
-        }
-        if ($this->isColumnModified(AccountTableMap::COL_WITHDRAWALS)) {
-            $modifiedColumns[':p' . $index++]  = 'withdrawals';
+        if ($this->isColumnModified(AccountTableMap::COL_BALANCE)) {
+            $modifiedColumns[':p' . $index++]  = 'balance';
         }
         if ($this->isColumnModified(AccountTableMap::COL_CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'created_at';
@@ -963,11 +939,8 @@ abstract class Account implements ActiveRecordInterface
                     case 'type':
                         $stmt->bindValue($identifier, $this->type, PDO::PARAM_STR);
                         break;
-                    case 'deposits':
-                        $stmt->bindValue($identifier, $this->deposits, PDO::PARAM_INT);
-                        break;
-                    case 'withdrawals':
-                        $stmt->bindValue($identifier, $this->withdrawals, PDO::PARAM_INT);
+                    case 'balance':
+                        $stmt->bindValue($identifier, $this->balance, PDO::PARAM_STR);
                         break;
                     case 'created_at':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -1040,15 +1013,12 @@ abstract class Account implements ActiveRecordInterface
                 return $this->getType();
                 break;
             case 3:
-                return $this->getDeposits();
+                return $this->getBalance();
                 break;
             case 4:
-                return $this->getWithdrawals();
-                break;
-            case 5:
                 return $this->getCreatedAt();
                 break;
-            case 6:
+            case 5:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -1084,23 +1054,22 @@ abstract class Account implements ActiveRecordInterface
             $keys[0] => $this->getAccountNumber(),
             $keys[1] => $this->getCustomerId(),
             $keys[2] => $this->getType(),
-            $keys[3] => $this->getDeposits(),
-            $keys[4] => $this->getWithdrawals(),
-            $keys[5] => $this->getCreatedAt(),
-            $keys[6] => $this->getUpdatedAt(),
+            $keys[3] => $this->getBalance(),
+            $keys[4] => $this->getCreatedAt(),
+            $keys[5] => $this->getUpdatedAt(),
         );
 
         $utc = new \DateTimeZone('utc');
+        if ($result[$keys[4]] instanceof \DateTime) {
+            // When changing timezone we don't want to change existing instances
+            $dateTime = clone $result[$keys[4]];
+            $result[$keys[4]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+        }
+
         if ($result[$keys[5]] instanceof \DateTime) {
             // When changing timezone we don't want to change existing instances
             $dateTime = clone $result[$keys[5]];
             $result[$keys[5]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
-        }
-
-        if ($result[$keys[6]] instanceof \DateTime) {
-            // When changing timezone we don't want to change existing instances
-            $dateTime = clone $result[$keys[6]];
-            $result[$keys[6]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -1183,15 +1152,12 @@ abstract class Account implements ActiveRecordInterface
                 $this->setType($value);
                 break;
             case 3:
-                $this->setDeposits($value);
+                $this->setBalance($value);
                 break;
             case 4:
-                $this->setWithdrawals($value);
-                break;
-            case 5:
                 $this->setCreatedAt($value);
                 break;
-            case 6:
+            case 5:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1230,16 +1196,13 @@ abstract class Account implements ActiveRecordInterface
             $this->setType($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setDeposits($arr[$keys[3]]);
+            $this->setBalance($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setWithdrawals($arr[$keys[4]]);
+            $this->setCreatedAt($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setCreatedAt($arr[$keys[5]]);
-        }
-        if (array_key_exists($keys[6], $arr)) {
-            $this->setUpdatedAt($arr[$keys[6]]);
+            $this->setUpdatedAt($arr[$keys[5]]);
         }
     }
 
@@ -1291,11 +1254,8 @@ abstract class Account implements ActiveRecordInterface
         if ($this->isColumnModified(AccountTableMap::COL_TYPE)) {
             $criteria->add(AccountTableMap::COL_TYPE, $this->type);
         }
-        if ($this->isColumnModified(AccountTableMap::COL_DEPOSITS)) {
-            $criteria->add(AccountTableMap::COL_DEPOSITS, $this->deposits);
-        }
-        if ($this->isColumnModified(AccountTableMap::COL_WITHDRAWALS)) {
-            $criteria->add(AccountTableMap::COL_WITHDRAWALS, $this->withdrawals);
+        if ($this->isColumnModified(AccountTableMap::COL_BALANCE)) {
+            $criteria->add(AccountTableMap::COL_BALANCE, $this->balance);
         }
         if ($this->isColumnModified(AccountTableMap::COL_CREATED_AT)) {
             $criteria->add(AccountTableMap::COL_CREATED_AT, $this->created_at);
@@ -1411,8 +1371,7 @@ abstract class Account implements ActiveRecordInterface
         $copyObj->setAccountNumber($this->getAccountNumber());
         $copyObj->setCustomerId($this->getCustomerId());
         $copyObj->setType($this->getType());
-        $copyObj->setDeposits($this->getDeposits());
-        $copyObj->setWithdrawals($this->getWithdrawals());
+        $copyObj->setBalance($this->getBalance());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
 
@@ -1784,12 +1743,12 @@ abstract class Account implements ActiveRecordInterface
         $this->account_number = null;
         $this->customer_id = null;
         $this->type = null;
-        $this->deposits = null;
-        $this->withdrawals = null;
+        $this->balance = null;
         $this->created_at = null;
         $this->updated_at = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
+        $this->applyDefaultValues();
         $this->resetModified();
         $this->setNew(true);
         $this->setDeleted(false);
@@ -1827,17 +1786,17 @@ abstract class Account implements ActiveRecordInterface
         return (string) $this->exportTo(AccountTableMap::DEFAULT_STRING_FORMAT);
     }
 
-    // deposits behavior
+    // balance behavior
 
     /**
-     * Computes the value of the aggregate column deposits *
+     * Computes the value of the aggregate column balance *
      * @param ConnectionInterface $con A connection object
      *
      * @return mixed The scalar result from the aggregate query
      */
-    public function computeDeposits(ConnectionInterface $con)
+    public function computeBalance(ConnectionInterface $con)
     {
-        $stmt = $con->prepare('SELECT COALESCE(SUM(amount),0.0) FROM transaction WHERE type = "deposit" AND transaction.ACCOUNT_NUMBER = :p1');
+        $stmt = $con->prepare('SELECT SUM(IF(transaction.type = "deposit", amount, 0)) - SUM(IF(transaction.type = "withdrawal", amount, 0)) FROM transaction WHERE transaction.ACCOUNT_NUMBER = :p1');
         $stmt->bindValue(':p1', $this->getAccountNumber());
         $stmt->execute();
 
@@ -1845,39 +1804,12 @@ abstract class Account implements ActiveRecordInterface
     }
 
     /**
-     * Updates the aggregate column deposits *
+     * Updates the aggregate column balance *
      * @param ConnectionInterface $con A connection object
      */
-    public function updateDeposits(ConnectionInterface $con)
+    public function updateBalance(ConnectionInterface $con)
     {
-        $this->setDeposits($this->computeDeposits($con));
-        $this->save($con);
-    }
-
-    // withdrawals behavior
-
-    /**
-     * Computes the value of the aggregate column withdrawals *
-     * @param ConnectionInterface $con A connection object
-     *
-     * @return mixed The scalar result from the aggregate query
-     */
-    public function computeWithdrawals(ConnectionInterface $con)
-    {
-        $stmt = $con->prepare('SELECT COALESCE(SUM(amount),0.0) FROM transaction WHERE type = "withdrawal" AND transaction.ACCOUNT_NUMBER = :p1');
-        $stmt->bindValue(':p1', $this->getAccountNumber());
-        $stmt->execute();
-
-        return $stmt->fetchColumn();
-    }
-
-    /**
-     * Updates the aggregate column withdrawals *
-     * @param ConnectionInterface $con A connection object
-     */
-    public function updateWithdrawals(ConnectionInterface $con)
-    {
-        $this->setWithdrawals($this->computeWithdrawals($con));
+        $this->setBalance($this->computeBalance($con));
         $this->save($con);
     }
 

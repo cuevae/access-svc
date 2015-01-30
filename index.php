@@ -358,9 +358,6 @@ $app->get(
                                                   ->filterByCustomerId( $customerId )
                                                   ->filterByAccountNumber( $accNumber )
                                                   ->find()->getFirst();
-
-        $account->getTransactions();
-
         if(!$account){
             $app->abort( 404, "Account not found." );
         }
@@ -394,13 +391,14 @@ $app->delete(
 );
 
 $app->post(
-    '/customers/{customerId}/accounts/{accNumber}/deposit/{amount}',
-    function ( $customerId, $accNumber, $amount ) use ( $app, $mustBeCustomerOrAdmin ){
+    '/customers/{customerId}/accounts/{accNumber}/deposit',
+    function ( Request $req, $customerId, $accNumber ) use ( $app, $mustBeCustomerOrAdmin ){
         $customer = $mustBeCustomerOrAdmin( $customerId );
         if(!$customer){
             $app->abort( 404, "Customer not found." );
         }
 
+        $amount = $req->request->get('Amount');
         $transaction = new \AbcBank\Resources\Transaction();
         try{
             $transaction->fromArray(

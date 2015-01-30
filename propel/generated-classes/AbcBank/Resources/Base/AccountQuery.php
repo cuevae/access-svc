@@ -23,16 +23,14 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildAccountQuery orderByAccountNumber($order = Criteria::ASC) Order by the account_number column
  * @method     ChildAccountQuery orderByCustomerId($order = Criteria::ASC) Order by the customer_id column
  * @method     ChildAccountQuery orderByType($order = Criteria::ASC) Order by the type column
- * @method     ChildAccountQuery orderByDeposits($order = Criteria::ASC) Order by the deposits column
- * @method     ChildAccountQuery orderByWithdrawals($order = Criteria::ASC) Order by the withdrawals column
+ * @method     ChildAccountQuery orderByBalance($order = Criteria::ASC) Order by the balance column
  * @method     ChildAccountQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     ChildAccountQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
  * @method     ChildAccountQuery groupByAccountNumber() Group by the account_number column
  * @method     ChildAccountQuery groupByCustomerId() Group by the customer_id column
  * @method     ChildAccountQuery groupByType() Group by the type column
- * @method     ChildAccountQuery groupByDeposits() Group by the deposits column
- * @method     ChildAccountQuery groupByWithdrawals() Group by the withdrawals column
+ * @method     ChildAccountQuery groupByBalance() Group by the balance column
  * @method     ChildAccountQuery groupByCreatedAt() Group by the created_at column
  * @method     ChildAccountQuery groupByUpdatedAt() Group by the updated_at column
  *
@@ -56,8 +54,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildAccount findOneByAccountNumber(string $account_number) Return the first ChildAccount filtered by the account_number column
  * @method     ChildAccount findOneByCustomerId(int $customer_id) Return the first ChildAccount filtered by the customer_id column
  * @method     ChildAccount findOneByType(string $type) Return the first ChildAccount filtered by the type column
- * @method     ChildAccount findOneByDeposits(int $deposits) Return the first ChildAccount filtered by the deposits column
- * @method     ChildAccount findOneByWithdrawals(int $withdrawals) Return the first ChildAccount filtered by the withdrawals column
+ * @method     ChildAccount findOneByBalance(double $balance) Return the first ChildAccount filtered by the balance column
  * @method     ChildAccount findOneByCreatedAt(string $created_at) Return the first ChildAccount filtered by the created_at column
  * @method     ChildAccount findOneByUpdatedAt(string $updated_at) Return the first ChildAccount filtered by the updated_at column *
 
@@ -67,8 +64,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildAccount requireOneByAccountNumber(string $account_number) Return the first ChildAccount filtered by the account_number column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildAccount requireOneByCustomerId(int $customer_id) Return the first ChildAccount filtered by the customer_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildAccount requireOneByType(string $type) Return the first ChildAccount filtered by the type column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildAccount requireOneByDeposits(int $deposits) Return the first ChildAccount filtered by the deposits column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildAccount requireOneByWithdrawals(int $withdrawals) Return the first ChildAccount filtered by the withdrawals column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildAccount requireOneByBalance(double $balance) Return the first ChildAccount filtered by the balance column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildAccount requireOneByCreatedAt(string $created_at) Return the first ChildAccount filtered by the created_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildAccount requireOneByUpdatedAt(string $updated_at) Return the first ChildAccount filtered by the updated_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
@@ -76,8 +72,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildAccount[]|ObjectCollection findByAccountNumber(string $account_number) Return ChildAccount objects filtered by the account_number column
  * @method     ChildAccount[]|ObjectCollection findByCustomerId(int $customer_id) Return ChildAccount objects filtered by the customer_id column
  * @method     ChildAccount[]|ObjectCollection findByType(string $type) Return ChildAccount objects filtered by the type column
- * @method     ChildAccount[]|ObjectCollection findByDeposits(int $deposits) Return ChildAccount objects filtered by the deposits column
- * @method     ChildAccount[]|ObjectCollection findByWithdrawals(int $withdrawals) Return ChildAccount objects filtered by the withdrawals column
+ * @method     ChildAccount[]|ObjectCollection findByBalance(double $balance) Return ChildAccount objects filtered by the balance column
  * @method     ChildAccount[]|ObjectCollection findByCreatedAt(string $created_at) Return ChildAccount objects filtered by the created_at column
  * @method     ChildAccount[]|ObjectCollection findByUpdatedAt(string $updated_at) Return ChildAccount objects filtered by the updated_at column
  * @method     ChildAccount[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
@@ -172,7 +167,7 @@ abstract class AccountQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT account_number, customer_id, type, deposits, withdrawals, created_at, updated_at FROM account WHERE account_number = :p0 AND customer_id = :p1 AND type = :p2';
+        $sql = 'SELECT account_number, customer_id, type, balance, created_at, updated_at FROM account WHERE account_number = :p0 AND customer_id = :p1 AND type = :p2';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key[0], PDO::PARAM_STR);
@@ -380,16 +375,16 @@ abstract class AccountQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query on the deposits column
+     * Filter the query on the balance column
      *
      * Example usage:
      * <code>
-     * $query->filterByDeposits(1234); // WHERE deposits = 1234
-     * $query->filterByDeposits(array(12, 34)); // WHERE deposits IN (12, 34)
-     * $query->filterByDeposits(array('min' => 12)); // WHERE deposits > 12
+     * $query->filterByBalance(1234); // WHERE balance = 1234
+     * $query->filterByBalance(array(12, 34)); // WHERE balance IN (12, 34)
+     * $query->filterByBalance(array('min' => 12)); // WHERE balance > 12
      * </code>
      *
-     * @param     mixed $deposits The value to use as filter.
+     * @param     mixed $balance The value to use as filter.
      *              Use scalar values for equality.
      *              Use array values for in_array() equivalent.
      *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
@@ -397,16 +392,16 @@ abstract class AccountQuery extends ModelCriteria
      *
      * @return $this|ChildAccountQuery The current query, for fluid interface
      */
-    public function filterByDeposits($deposits = null, $comparison = null)
+    public function filterByBalance($balance = null, $comparison = null)
     {
-        if (is_array($deposits)) {
+        if (is_array($balance)) {
             $useMinMax = false;
-            if (isset($deposits['min'])) {
-                $this->addUsingAlias(AccountTableMap::COL_DEPOSITS, $deposits['min'], Criteria::GREATER_EQUAL);
+            if (isset($balance['min'])) {
+                $this->addUsingAlias(AccountTableMap::COL_BALANCE, $balance['min'], Criteria::GREATER_EQUAL);
                 $useMinMax = true;
             }
-            if (isset($deposits['max'])) {
-                $this->addUsingAlias(AccountTableMap::COL_DEPOSITS, $deposits['max'], Criteria::LESS_EQUAL);
+            if (isset($balance['max'])) {
+                $this->addUsingAlias(AccountTableMap::COL_BALANCE, $balance['max'], Criteria::LESS_EQUAL);
                 $useMinMax = true;
             }
             if ($useMinMax) {
@@ -417,48 +412,7 @@ abstract class AccountQuery extends ModelCriteria
             }
         }
 
-        return $this->addUsingAlias(AccountTableMap::COL_DEPOSITS, $deposits, $comparison);
-    }
-
-    /**
-     * Filter the query on the withdrawals column
-     *
-     * Example usage:
-     * <code>
-     * $query->filterByWithdrawals(1234); // WHERE withdrawals = 1234
-     * $query->filterByWithdrawals(array(12, 34)); // WHERE withdrawals IN (12, 34)
-     * $query->filterByWithdrawals(array('min' => 12)); // WHERE withdrawals > 12
-     * </code>
-     *
-     * @param     mixed $withdrawals The value to use as filter.
-     *              Use scalar values for equality.
-     *              Use array values for in_array() equivalent.
-     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
-     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return $this|ChildAccountQuery The current query, for fluid interface
-     */
-    public function filterByWithdrawals($withdrawals = null, $comparison = null)
-    {
-        if (is_array($withdrawals)) {
-            $useMinMax = false;
-            if (isset($withdrawals['min'])) {
-                $this->addUsingAlias(AccountTableMap::COL_WITHDRAWALS, $withdrawals['min'], Criteria::GREATER_EQUAL);
-                $useMinMax = true;
-            }
-            if (isset($withdrawals['max'])) {
-                $this->addUsingAlias(AccountTableMap::COL_WITHDRAWALS, $withdrawals['max'], Criteria::LESS_EQUAL);
-                $useMinMax = true;
-            }
-            if ($useMinMax) {
-                return $this;
-            }
-            if (null === $comparison) {
-                $comparison = Criteria::IN;
-            }
-        }
-
-        return $this->addUsingAlias(AccountTableMap::COL_WITHDRAWALS, $withdrawals, $comparison);
+        return $this->addUsingAlias(AccountTableMap::COL_BALANCE, $balance, $comparison);
     }
 
     /**

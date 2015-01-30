@@ -22,16 +22,22 @@ class Account extends BaseAccount
     public function __construct()
     {
         parent::__construct();
-        $accountNumber = $this->randomNumber(static::ACCOUNT_NUMBER_LENGTH);
-        $this->setAccountNumber($accountNumber);
+        $accountNumber = $this->randomNumber( static::ACCOUNT_NUMBER_LENGTH );
+        $this->setAccountNumber( $accountNumber );
     }
 
-    protected function randomNumber($length) {
+    protected function randomNumber( $length )
+    {
         $result = '';
-        for($i = 0; $i < $length; $i++) {
-            $result .= mt_rand(0, 9);
+        for($i = 0; $i < $length; $i++){
+            $result .= mt_rand( 0, 9 );
         }
         return $result;
+    }
+
+    public function getBalance()
+    {
+        return round( $this->balance, 2, PHP_ROUND_HALF_DOWN );
     }
 
 }

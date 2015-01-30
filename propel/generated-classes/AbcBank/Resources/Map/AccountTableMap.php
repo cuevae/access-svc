@@ -59,7 +59,7 @@ class AccountTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 7;
+    const NUM_COLUMNS = 6;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class AccountTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 7;
+    const NUM_HYDRATE_COLUMNS = 6;
 
     /**
      * the column name for the account_number field
@@ -87,14 +87,9 @@ class AccountTableMap extends TableMap
     const COL_TYPE = 'account.type';
 
     /**
-     * the column name for the deposits field
+     * the column name for the balance field
      */
-    const COL_DEPOSITS = 'account.deposits';
-
-    /**
-     * the column name for the withdrawals field
-     */
-    const COL_WITHDRAWALS = 'account.withdrawals';
+    const COL_BALANCE = 'account.balance';
 
     /**
      * the column name for the created_at field
@@ -118,11 +113,11 @@ class AccountTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('AccountNumber', 'CustomerId', 'Type', 'Deposits', 'Withdrawals', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('accountNumber', 'customerId', 'type', 'deposits', 'withdrawals', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(AccountTableMap::COL_ACCOUNT_NUMBER, AccountTableMap::COL_CUSTOMER_ID, AccountTableMap::COL_TYPE, AccountTableMap::COL_DEPOSITS, AccountTableMap::COL_WITHDRAWALS, AccountTableMap::COL_CREATED_AT, AccountTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('account_number', 'customer_id', 'type', 'deposits', 'withdrawals', 'created_at', 'updated_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
+        self::TYPE_PHPNAME       => array('AccountNumber', 'CustomerId', 'Type', 'Balance', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('accountNumber', 'customerId', 'type', 'balance', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(AccountTableMap::COL_ACCOUNT_NUMBER, AccountTableMap::COL_CUSTOMER_ID, AccountTableMap::COL_TYPE, AccountTableMap::COL_BALANCE, AccountTableMap::COL_CREATED_AT, AccountTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('account_number', 'customer_id', 'type', 'balance', 'created_at', 'updated_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
 
     /**
@@ -132,11 +127,11 @@ class AccountTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('AccountNumber' => 0, 'CustomerId' => 1, 'Type' => 2, 'Deposits' => 3, 'Withdrawals' => 4, 'CreatedAt' => 5, 'UpdatedAt' => 6, ),
-        self::TYPE_CAMELNAME     => array('accountNumber' => 0, 'customerId' => 1, 'type' => 2, 'deposits' => 3, 'withdrawals' => 4, 'createdAt' => 5, 'updatedAt' => 6, ),
-        self::TYPE_COLNAME       => array(AccountTableMap::COL_ACCOUNT_NUMBER => 0, AccountTableMap::COL_CUSTOMER_ID => 1, AccountTableMap::COL_TYPE => 2, AccountTableMap::COL_DEPOSITS => 3, AccountTableMap::COL_WITHDRAWALS => 4, AccountTableMap::COL_CREATED_AT => 5, AccountTableMap::COL_UPDATED_AT => 6, ),
-        self::TYPE_FIELDNAME     => array('account_number' => 0, 'customer_id' => 1, 'type' => 2, 'deposits' => 3, 'withdrawals' => 4, 'created_at' => 5, 'updated_at' => 6, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
+        self::TYPE_PHPNAME       => array('AccountNumber' => 0, 'CustomerId' => 1, 'Type' => 2, 'Balance' => 3, 'CreatedAt' => 4, 'UpdatedAt' => 5, ),
+        self::TYPE_CAMELNAME     => array('accountNumber' => 0, 'customerId' => 1, 'type' => 2, 'balance' => 3, 'createdAt' => 4, 'updatedAt' => 5, ),
+        self::TYPE_COLNAME       => array(AccountTableMap::COL_ACCOUNT_NUMBER => 0, AccountTableMap::COL_CUSTOMER_ID => 1, AccountTableMap::COL_TYPE => 2, AccountTableMap::COL_BALANCE => 3, AccountTableMap::COL_CREATED_AT => 4, AccountTableMap::COL_UPDATED_AT => 5, ),
+        self::TYPE_FIELDNAME     => array('account_number' => 0, 'customer_id' => 1, 'type' => 2, 'balance' => 3, 'created_at' => 4, 'updated_at' => 5, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
 
     /**
@@ -159,8 +154,7 @@ class AccountTableMap extends TableMap
         $this->addPrimaryKey('account_number', 'AccountNumber', 'VARCHAR', true, 255, null);
         $this->addForeignPrimaryKey('customer_id', 'CustomerId', 'INTEGER' , 'customer', 'id', true, null, null);
         $this->addPrimaryKey('type', 'Type', 'VARCHAR', true, 255, null);
-        $this->addColumn('deposits', 'Deposits', 'INTEGER', false, null, null);
-        $this->addColumn('withdrawals', 'Withdrawals', 'INTEGER', false, null, null);
+        $this->addColumn('balance', 'Balance', 'FLOAT', false, null, 0);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
@@ -195,8 +189,7 @@ class AccountTableMap extends TableMap
     public function getBehaviors()
     {
         return array(
-            'deposits' => array('name' => 'deposits', 'expression' => 'COALESCE(SUM(amount),0.0)', 'condition' => 'type = "deposit"', 'foreign_table' => 'transaction', 'foreign_schema' => '', ),
-            'withdrawals' => array('name' => 'withdrawals', 'expression' => 'COALESCE(SUM(amount),0.0)', 'condition' => 'type = "withdrawal"', 'foreign_table' => 'transaction', 'foreign_schema' => '', ),
+            'balance' => array('name' => 'balance', 'expression' => 'SUM(IF(transaction.type = "deposit", amount, 0)) - SUM(IF(transaction.type = "withdrawal", amount, 0))', 'condition' => '', 'foreign_table' => 'transaction', 'foreign_schema' => '', ),
             'timestampable' => array('create_column' => 'created_at', 'update_column' => 'updated_at', 'disable_created_at' => 'false', 'disable_updated_at' => 'false', ),
             'validate' => array('rule1' => array ('column' => 'account_number','validator' => 'NotNull',), 'rule2' => array ('column' => 'customer_id','validator' => 'NotNull',), 'rule3' => array ('column' => 'type','validator' => 'NotNull',), ),
         );
@@ -422,16 +415,14 @@ class AccountTableMap extends TableMap
             $criteria->addSelectColumn(AccountTableMap::COL_ACCOUNT_NUMBER);
             $criteria->addSelectColumn(AccountTableMap::COL_CUSTOMER_ID);
             $criteria->addSelectColumn(AccountTableMap::COL_TYPE);
-            $criteria->addSelectColumn(AccountTableMap::COL_DEPOSITS);
-            $criteria->addSelectColumn(AccountTableMap::COL_WITHDRAWALS);
+            $criteria->addSelectColumn(AccountTableMap::COL_BALANCE);
             $criteria->addSelectColumn(AccountTableMap::COL_CREATED_AT);
             $criteria->addSelectColumn(AccountTableMap::COL_UPDATED_AT);
         } else {
             $criteria->addSelectColumn($alias . '.account_number');
             $criteria->addSelectColumn($alias . '.customer_id');
             $criteria->addSelectColumn($alias . '.type');
-            $criteria->addSelectColumn($alias . '.deposits');
-            $criteria->addSelectColumn($alias . '.withdrawals');
+            $criteria->addSelectColumn($alias . '.balance');
             $criteria->addSelectColumn($alias . '.created_at');
             $criteria->addSelectColumn($alias . '.updated_at');
         }

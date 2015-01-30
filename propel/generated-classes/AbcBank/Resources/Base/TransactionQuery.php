@@ -737,10 +737,8 @@ abstract class TransactionQuery extends ModelCriteria
      */
     protected function basePreDelete(ConnectionInterface $con)
     {
-        // aggregate_column_relation_deposits behavior
-        $this->findRelatedAccountDepositss($con);
-        // aggregate_column_relation_withdrawals behavior
-        $this->findRelatedAccountWithdrawalss($con);
+        // aggregate_column_relation_balance behavior
+        $this->findRelatedAccountBalances($con);
 
         return $this->preDelete($con);
     }
@@ -753,10 +751,8 @@ abstract class TransactionQuery extends ModelCriteria
      */
     protected function basePostDelete($affectedRows, ConnectionInterface $con)
     {
-        // aggregate_column_relation_deposits behavior
-        $this->updateRelatedAccountDepositss($con);
-        // aggregate_column_relation_withdrawals behavior
-        $this->updateRelatedAccountWithdrawalss($con);
+        // aggregate_column_relation_balance behavior
+        $this->updateRelatedAccountBalances($con);
 
         return $this->postDelete($affectedRows, $con);
     }
@@ -770,10 +766,8 @@ abstract class TransactionQuery extends ModelCriteria
      */
     protected function basePreUpdate(&$values, ConnectionInterface $con, $forceIndividualSaves = false)
     {
-        // aggregate_column_relation_deposits behavior
-        $this->findRelatedAccountDepositss($con);
-        // aggregate_column_relation_withdrawals behavior
-        $this->findRelatedAccountWithdrawalss($con);
+        // aggregate_column_relation_balance behavior
+        $this->findRelatedAccountBalances($con);
 
         return $this->preUpdate($values, $con, $forceIndividualSaves);
     }
@@ -786,10 +780,8 @@ abstract class TransactionQuery extends ModelCriteria
      */
     protected function basePostUpdate($affectedRows, ConnectionInterface $con)
     {
-        // aggregate_column_relation_deposits behavior
-        $this->updateRelatedAccountDepositss($con);
-        // aggregate_column_relation_withdrawals behavior
-        $this->updateRelatedAccountWithdrawalss($con);
+        // aggregate_column_relation_balance behavior
+        $this->updateRelatedAccountBalances($con);
 
         return $this->postUpdate($affectedRows, $con);
     }
@@ -921,14 +913,14 @@ abstract class TransactionQuery extends ModelCriteria
         return $this->addAscendingOrderByColumn(TransactionTableMap::COL_CREATED_AT);
     }
 
-    // aggregate_column_relation_deposits behavior
+    // aggregate_column_relation_balance behavior
 
     /**
      * Finds the related Account objects and keep them for later
      *
      * @param ConnectionInterface $con A connection object
      */
-    protected function findRelatedAccountDepositss($con)
+    protected function findRelatedAccountBalances($con)
     {
         $criteria = clone $this;
         if ($this->useAliasInSQL) {
@@ -937,48 +929,18 @@ abstract class TransactionQuery extends ModelCriteria
         } else {
             $alias = '';
         }
-        $this->accountDepositss = \AbcBank\Resources\AccountQuery::create()
+        $this->accountBalances = \AbcBank\Resources\AccountQuery::create()
             ->joinTransaction($alias)
             ->mergeWith($criteria)
             ->find($con);
     }
 
-    protected function updateRelatedAccountDepositss($con)
+    protected function updateRelatedAccountBalances($con)
     {
-        foreach ($this->accountDepositss as $accountDeposits) {
-            $accountDeposits->updateDeposits($con);
+        foreach ($this->accountBalances as $accountBalance) {
+            $accountBalance->updateBalance($con);
         }
-        $this->accountDepositss = array();
-    }
-
-    // aggregate_column_relation_withdrawals behavior
-
-    /**
-     * Finds the related Account objects and keep them for later
-     *
-     * @param ConnectionInterface $con A connection object
-     */
-    protected function findRelatedAccountWithdrawalss($con)
-    {
-        $criteria = clone $this;
-        if ($this->useAliasInSQL) {
-            $alias = $this->getModelAlias();
-            $criteria->removeAlias($alias);
-        } else {
-            $alias = '';
-        }
-        $this->accountWithdrawalss = \AbcBank\Resources\AccountQuery::create()
-            ->joinTransaction($alias)
-            ->mergeWith($criteria)
-            ->find($con);
-    }
-
-    protected function updateRelatedAccountWithdrawalss($con)
-    {
-        foreach ($this->accountWithdrawalss as $accountWithdrawals) {
-            $accountWithdrawals->updateWithdrawals($con);
-        }
-        $this->accountWithdrawalss = array();
+        $this->accountBalances = array();
     }
 
 } // TransactionQuery

@@ -197,8 +197,7 @@ class TransactionTableMap extends TableMap
         return array(
             'timestampable' => array('create_column' => 'created_at', 'update_column' => 'updated_at', 'disable_created_at' => 'false', 'disable_updated_at' => 'false', ),
             'validate' => array('rule1' => array ('column' => 'type','validator' => 'NotNull',), 'rule2' => array ('column' => 'amount','validator' => 'GreaterThan','options' => array ('value' => 0,),), ),
-            'aggregate_column_relation_deposits' => array('foreign_table' => 'account', 'update_method' => 'updateDeposits', 'aggregate_name' => 'Deposits', ),
-            'aggregate_column_relation_withdrawals' => array('foreign_table' => 'account', 'update_method' => 'updateWithdrawals', 'aggregate_name' => 'Withdrawals', ),
+            'aggregate_column_relation_balance' => array('foreign_table' => 'account', 'update_method' => 'updateBalance', 'aggregate_name' => 'Balance', ),
         );
     } // getBehaviors()
 
