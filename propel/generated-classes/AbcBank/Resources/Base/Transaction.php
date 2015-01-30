@@ -29,6 +29,7 @@ use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\DefaultTranslator;
 use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Validator\Constraints\NotNull;
+use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Validator\Context\ExecutionContextFactory;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 use Symfony\Component\Validator\Mapping\ClassMetadataFactory;
@@ -1653,8 +1654,9 @@ abstract class Transaction implements ActiveRecordInterface
      */
     static public function loadValidatorMetadata(ClassMetadata $metadata)
     {
-        $metadata->addPropertyConstraint('type', new NotNull());
+        $metadata->addPropertyConstraint('amount', new NotNull(array ('message' => 'Amount cannot be null',)));
         $metadata->addPropertyConstraint('amount', new GreaterThan(array ('value' => 0,)));
+        $metadata->addPropertyConstraint('amount', new Regex(array ('pattern' => '/^\\d+\\.\\d{2}$/','match' => true,'message' => 'Please enter positive amounts with 2 decimal points maximum',)));
     }
 
     /**

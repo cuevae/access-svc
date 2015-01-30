@@ -196,7 +196,7 @@ class TransactionTableMap extends TableMap
     {
         return array(
             'timestampable' => array('create_column' => 'created_at', 'update_column' => 'updated_at', 'disable_created_at' => 'false', 'disable_updated_at' => 'false', ),
-            'validate' => array('rule1' => array ('column' => 'type','validator' => 'NotNull',), 'rule2' => array ('column' => 'amount','validator' => 'GreaterThan','options' => array ('value' => 0,),), ),
+            'validate' => array('rule1' => array ('column' => 'amount','validator' => 'NotNull','options' => array ('message' => 'Amount cannot be null',),), 'rule2' => array ('column' => 'amount','validator' => 'GreaterThan','options' => array ('value' => 0,),), 'rule3' => array ('column' => 'amount','validator' => 'Regex','options' => array ('pattern' => '/^\\d+\\.\\d{2}$/','match' => true,'message' => 'Please enter positive amounts with 2 decimal points maximum',),), ),
             'aggregate_column_relation_balance' => array('foreign_table' => 'account', 'update_method' => 'updateBalance', 'aggregate_name' => 'Balance', ),
         );
     } // getBehaviors()

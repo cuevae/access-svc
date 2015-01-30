@@ -81,8 +81,10 @@
             <unique-column name="amount" />
         </unique>
         <behavior name="validate">
-            <parameter name="rule1" value="{column: type, validator: NotNull}" />
+            <parameter name="rule1" value="{column: type, validator: NotNull, options:{message:Please specify the transaction type deposit/withdrawal}}" />
+            <parameter name="rule1" value="{column: amount, validator: NotNull, options:{message:Amount cannot be null}}" />
             <parameter name="rule2" value="{column: amount, validator: GreaterThan, options: {value:0}}" />
+            <parameter name="rule3" value="{column: amount, validator: Regex, options: {pattern: &quot;/^\d+\.\d{2}$/&quot;, match: true, message: Please enter positive amounts with 2 decimal points maximum}}" />
         </behavior>
     </table>
 </database>

@@ -398,7 +398,7 @@ $app->post(
             $app->abort( 404, "Customer not found." );
         }
 
-        $amount = $req->request->get('Amount');
+        $amount = $req->request->get( 'Amount' );
         $transaction = new \AbcBank\Resources\Transaction();
         try{
             $transaction->fromArray(
@@ -406,6 +406,53 @@ $app->post(
                     'CustomerId' => $customerId,
                     'AccountNumber' => $accNumber,
                     'Type' => 'deposit',
+                    'Amount' => $amount
+                )
+            );
+            if($transaction->validate()){
+                $transaction->save();
+            }else{
+                $errors = new \StdClass();
+                $count = 1;
+                foreach($transaction->getValidationFailures() as $failure){
+                    $errors->{"error" . $count++} = "Property " . $failure->getPropertyPath(
+                        ) . ": " . $failure->getMessage();
+                }
+                return new Response(
+                    json_encode( $errors ),
+                    400,
+                    array( 'Content-type' => 'application/json' )
+                );
+            }
+        }catch( Exception $e ){
+            $app['monolog']->addError( $e->getMessage() );
+            $app->abort( 400, "Customer could not be saved." );
+        }
+
+        return new Response(
+            $transaction->toJson(),
+            201,
+            array( 'Content-type' => 'application/json' )
+        );
+    }
+);
+
+$app->post(
+    '/customers/{customerId}/accounts/{accNumber}/withdrawal',
+    function ( Request $req, $customerId, $accNumber ) use ( $app, $mustBeCustomerOrAdmin ){
+        $customer = $mustBeCustomerOrAdmin( $customerId );
+        if(!$customer){
+            $app->abort( 404, "Customer not found." );
+        }
+
+        $amount = $req->request->get( 'Amount' );
+        $transaction = new \AbcBank\Resources\Transaction();
+        try{
+            $transaction->fromArray(
+                array(
+                    'CustomerId' => $customerId,
+                    'AccountNumber' => $accNumber,
+                    'Type' => 'withdrawal',
                     'Amount' => $amount
                 )
             );
