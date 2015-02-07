@@ -7,7 +7,7 @@
         <column name="first_name" type="varchar" size="255" required="true"/>
         <column name="second_name" type="varchar" size="255" required="false"/>
         <column name="first_surname" type="varchar" size="255" required="true"/>
-        <column name="second_surname" type="varchar" size="255" required="true"/>
+        <column name="second_surname" type="varchar" size="255" required="false"/>
         <column name="address_line1" type="varchar" size="255" required="true"/>
         <column name="address_line2" type="varchar" size="255" required="false"/>
         <column name="house_number" type="varchar" size="255" required="false"/>
@@ -29,8 +29,6 @@
             <parameter name="rule3" value="{column: username, validator: NotNull}"/>
             <parameter name="rule4" value="{column: username, validator: Length, options: {min:3}}"/>
             <parameter name="rule5" value="{column: address_line1, validator: NotNull}"/>
-            <parameter name="rule6" value="{column: username, validator: NotNull}"/>
-            <parameter name="rule7" value="{column: username, validator: NotNull}"/>
             <parameter name="rule8" value="{column: postcode, validator: NotNull}"/>
             <parameter name="rule9" value="{column: country, validator: NotNull}"/>
             <parameter name="rule10" value="{column: telephone1, validator: NotNull}"/>
@@ -87,8 +85,6 @@
             <parameter name="rule1"
                        value="{column: amount, validator: NotNull, options:{message:Amount cannot be null}}"/>
             <parameter name="rule2" value="{column: amount, validator: GreaterThan, options: {value:0}}"/>
-            <parameter name="rule3"
-                       value="{column: amount, validator: Regex, options: {pattern: &quot;/^\d+\.\d{2}$/&quot;, match: true, message: Please enter positive amounts with 2 decimal points maximum}}"/>
         </behavior>
     </table>
 </database>

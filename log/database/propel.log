@@ -1,0 +1,4 @@
+[2015-01-30 18:19:46] defaultLogger.ERROR: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '1-dfasdf' for key 'account_u_297565' [] []
+[2015-02-05 23:07:33] defaultLogger.ERROR: SQLSTATE[HY000]: General error: 1364 Field 'second_surname' doesn't have a default value [] []
+[2015-02-05 23:11:21] defaultLogger.ERROR: SQLSTATE[HY000]: General error: 1364 Field 'second_surname' doesn't have a default value [] []
+[2015-02-05 23:13:33] defaultLogger.ERROR: SQLSTATE[HY000]: General error: 1364 Field 'second_surname' doesn't have a default value [] []

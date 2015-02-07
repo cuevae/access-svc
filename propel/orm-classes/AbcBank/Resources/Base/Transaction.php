@@ -29,7 +29,6 @@ use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\DefaultTranslator;
 use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Validator\Constraints\NotNull;
-use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Validator\Context\ExecutionContextFactory;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 use Symfony\Component\Validator\Mapping\ClassMetadataFactory;
@@ -471,7 +470,7 @@ abstract class Transaction implements ActiveRecordInterface
     /**
      * Set the value of [id] column.
      *
-     * @param  int $v new value
+     * @param int $v new value
      * @return $this|\AbcBank\Resources\Transaction The current object (for fluent API support)
      */
     public function setId($v)
@@ -491,7 +490,7 @@ abstract class Transaction implements ActiveRecordInterface
     /**
      * Set the value of [customer_id] column.
      *
-     * @param  int $v new value
+     * @param int $v new value
      * @return $this|\AbcBank\Resources\Transaction The current object (for fluent API support)
      */
     public function setCustomerId($v)
@@ -515,7 +514,7 @@ abstract class Transaction implements ActiveRecordInterface
     /**
      * Set the value of [account_number] column.
      *
-     * @param  string $v new value
+     * @param string $v new value
      * @return $this|\AbcBank\Resources\Transaction The current object (for fluent API support)
      */
     public function setAccountNumber($v)
@@ -539,7 +538,7 @@ abstract class Transaction implements ActiveRecordInterface
     /**
      * Set the value of [type] column.
      *
-     * @param  string $v new value
+     * @param string $v new value
      * @return $this|\AbcBank\Resources\Transaction The current object (for fluent API support)
      */
     public function setType($v)
@@ -559,7 +558,7 @@ abstract class Transaction implements ActiveRecordInterface
     /**
      * Set the value of [amount] column.
      *
-     * @param  double $v new value
+     * @param double $v new value
      * @return $this|\AbcBank\Resources\Transaction The current object (for fluent API support)
      */
     public function setAmount($v)
@@ -1622,7 +1621,6 @@ abstract class Transaction implements ActiveRecordInterface
     {
         $metadata->addPropertyConstraint('amount', new NotNull(array ('message' => 'Amount cannot be null',)));
         $metadata->addPropertyConstraint('amount', new GreaterThan(array ('value' => 0,)));
-        $metadata->addPropertyConstraint('amount', new Regex(array ('pattern' => '/^\\d+\\.\\d{2}$/','match' => true,'message' => 'Please enter positive amounts with 2 decimal points maximum',)));
     }
 
     /**

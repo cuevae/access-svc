@@ -3,7 +3,6 @@
 namespace AbcBank\Resources;
 
 use AbcBank\Resources\Base\Account as BaseAccount;
-use Propel\Runtime\Connection\ConnectionInterface;
 
 /**
  * Skeleton subclass for representing a row from the 'account' table.
@@ -17,6 +16,7 @@ use Propel\Runtime\Connection\ConnectionInterface;
  */
 class Account extends BaseAccount
 {
+
     const ACCOUNT_NUMBER_LENGTH = 12;
 
     public function __construct()

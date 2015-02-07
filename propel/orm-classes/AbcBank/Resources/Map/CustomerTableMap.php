@@ -217,7 +217,7 @@ class CustomerTableMap extends TableMap
         $this->addColumn('first_name', 'FirstName', 'VARCHAR', true, 255, null);
         $this->addColumn('second_name', 'SecondName', 'VARCHAR', false, 255, null);
         $this->addColumn('first_surname', 'FirstSurname', 'VARCHAR', true, 255, null);
-        $this->addColumn('second_surname', 'SecondSurname', 'VARCHAR', true, 255, null);
+        $this->addColumn('second_surname', 'SecondSurname', 'VARCHAR', false, 255, null);
         $this->addColumn('address_line1', 'AddressLine1', 'VARCHAR', true, 255, null);
         $this->addColumn('address_line2', 'AddressLine2', 'VARCHAR', false, 255, null);
         $this->addColumn('house_number', 'HouseNumber', 'VARCHAR', false, 255, null);
@@ -262,7 +262,7 @@ class CustomerTableMap extends TableMap
     {
         return array(
             'timestampable' => array('create_column' => 'created_at', 'update_column' => 'updated_at', 'disable_created_at' => 'false', 'disable_updated_at' => 'false', ),
-            'validate' => array('rule1' => array ('column' => 'first_name','validator' => 'NotNull',), 'rule2' => array ('column' => 'first_surname','validator' => 'NotNull',), 'rule3' => array ('column' => 'username','validator' => 'NotNull',), 'rule4' => array ('column' => 'username','validator' => 'Length','options' => array ('min' => 3,),), 'rule5' => array ('column' => 'address_line1','validator' => 'NotNull',), 'rule6' => array ('column' => 'username','validator' => 'NotNull',), 'rule7' => array ('column' => 'username','validator' => 'NotNull',), 'rule8' => array ('column' => 'postcode','validator' => 'NotNull',), 'rule9' => array ('column' => 'country','validator' => 'NotNull',), 'rule10' => array ('column' => 'telephone1','validator' => 'NotNull',), ),
+            'validate' => array('rule1' => array ('column' => 'first_name','validator' => 'NotNull',), 'rule2' => array ('column' => 'first_surname','validator' => 'NotNull',), 'rule3' => array ('column' => 'username','validator' => 'NotNull',), 'rule4' => array ('column' => 'username','validator' => 'Length','options' => array ('min' => 3,),), 'rule5' => array ('column' => 'address_line1','validator' => 'NotNull',), 'rule8' => array ('column' => 'postcode','validator' => 'NotNull',), 'rule9' => array ('column' => 'country','validator' => 'NotNull',), 'rule10' => array ('column' => 'telephone1','validator' => 'NotNull',), ),
         );
     } // getBehaviors()
 

@@ -19,6 +19,8 @@ use Monolog\Logger,
  * General configuration
  ***********************/
 
+date_default_timezone_set( 'Europe/Lisbon' );
+
 /*
  * DI config
  */
@@ -150,9 +152,21 @@ $app->before(
     }
 );
 
+$app->get('/', function(){
+    return new Response(
+        'Welcome to ABC Banking Group API',
+        200,
+        array( 'Content-type' => 'text/plain' )
+    );
+});
+
 $app->get(
     '/customers',
     function ( Request $req ) use ( $app ){
+
+        if(!$app['security']->isGranted( 'ROLE_ADMIN' )){
+            return new Response( 'Access forbidden', 403 );
+        }
 
         $query = $req->get( 'query', false );
 
@@ -179,7 +193,7 @@ $app->post(
     function ( Request $req ) use ( $app ){
 
         if(!$app['security']->isGranted( 'ROLE_ADMIN' )){
-            return new Response( '', 403 );
+            return new Response( 'Access forbidden', 403 );
         }
 
         $customer = new \AbcBank\Resources\Customer();
@@ -213,6 +227,21 @@ $app->post(
     }
 );
 
+$app->match(
+    '/customers',
+    function (){
+        return new Response(
+            "",
+            200,
+            array(
+                'Access-Control-Allow-Methods' => 'GET, PUT',
+                'Access-Control-Allow-Origin' => '*',
+                'Access-Control-Allow-Headers'=> 'Content-Type'
+            )
+        );
+    }
+)->method( 'OPTIONS' );
+
 $app->get(
     '/customers/{customerId}',
     function ( $customerId ) use ( $app, $mustBeCustomerOrAdmin ){
@@ -234,7 +263,7 @@ $app->delete(
     function ( $customerId ) use ( $app ){
 
         if(!$app['security']->isGranted( 'ROLE_ADMIN' )){
-            return new Response( '', 403 );
+            return new Response( 'Access forbidden', 403 );
         }
 
         $customer = \AbcBank\Resources\CustomerQuery::create()->findById( $customerId )->getFirst();
@@ -257,7 +286,7 @@ $app->match(
             "",
             200,
             array(
-                'Access-Control-Allow-Methods' => 'GET, PUT',
+                'Access-Control-Allow-Methods' => 'GET, PUT, DELETE',
                 'Access-Control-Allow-Origin' => '*',
                 'Access-Control-Allow-Headers'=> 'Content-Type'
             )
@@ -324,6 +353,21 @@ $app->get(
     }
 );
 
+$app->match(
+    '/customers/{customerId}/accounts',
+    function (){
+        return new Response(
+            "",
+            200,
+            array(
+                'Access-Control-Allow-Methods' => 'GET, PUT',
+                'Access-Control-Allow-Origin' => '*',
+                'Access-Control-Allow-Headers'=> 'Content-Type'
+            )
+        );
+    }
+)->method( 'OPTIONS' );
+
 $app->get(
     '/customers/{customerId}/accounts',
     function ( $customerId ) use ( $app, $mustBeCustomerOrAdmin ){
@@ -346,7 +390,7 @@ $app->post(
     function ( Request $req, $customerId ) use ( $app ){
 
         if(!$app['security']->isGranted( 'ROLE_ADMIN' )){
-            return new Response( '', 403 );
+            return new Response( 'Access forbidden', 403 );
         }
 
         $account = new \AbcBank\Resources\Account();
@@ -358,7 +402,7 @@ $app->post(
             $initialBalanceValidated = true;
             if(isset( $data['InitialBalance'] ) && $data['InitialBalance'] !== 0){
                 //Start account with initial balance
-                $balance = $data['InitialBalance'];
+                $balance = (float) $data['InitialBalance'];
                 $type = ( $balance > 0 ) ? 'deposit' : 'withdrawal';
                 $transData = array(
                     'Type' => $type,
@@ -440,7 +484,7 @@ $app->delete(
     '/customers/{customerId}/accounts/{accNumber}',
     function ( $customerId, $accNumber ) use ( $app ){
         if(!$app['security']->isGranted( 'ROLE_ADMIN' )){
-            return new Response( '', 403 );
+            return new Response( 'Access forbidden', 403 );
         }
 
         $account = \AbcBank\Resources\AccountQuery::create()->findByAccountNumber( $accNumber )->getFirst();
@@ -455,6 +499,21 @@ $app->delete(
         );
     }
 );
+
+$app->match(
+    '/customers/{customerId}/accounts/{accNumber}/deposit',
+    function (){
+        return new Response(
+            "",
+            200,
+            array(
+                'Access-Control-Allow-Methods' => 'GET, PUT',
+                'Access-Control-Allow-Origin' => '*',
+                'Access-Control-Allow-Headers'=> 'Content-Type'
+            )
+        );
+    }
+)->method( 'OPTIONS' );
 
 $app->post(
     '/customers/{customerId}/accounts/{accNumber}/deposit',
@@ -503,8 +562,23 @@ $app->post(
     }
 );
 
+$app->match(
+    '/customers/{customerId}/accounts/{accNumber}/withdraw',
+    function (){
+        return new Response(
+            "",
+            200,
+            array(
+                'Access-Control-Allow-Methods' => 'GET, PUT',
+                'Access-Control-Allow-Origin' => '*',
+                'Access-Control-Allow-Headers'=> 'Content-Type'
+            )
+        );
+    }
+)->method( 'OPTIONS' );
+
 $app->post(
-    '/customers/{customerId}/accounts/{accNumber}/withdrawal',
+    '/customers/{customerId}/accounts/{accNumber}/withdraw',
     function ( Request $req, $customerId, $accNumber ) use ( $app, $mustBeCustomerOrAdmin ){
         $customer = $mustBeCustomerOrAdmin( $customerId );
         if(!$customer){
@@ -613,11 +687,26 @@ $app->get(
     }
 );
 
+$app->match(
+    '/customers/{customerId}/accounts/{accNumber}/transactions/{transactionId}',
+    function (){
+        return new Response(
+            "",
+            200,
+            array(
+                'Access-Control-Allow-Methods' => 'GET, PUT, DELETE',
+                'Access-Control-Allow-Origin' => '*',
+                'Access-Control-Allow-Headers'=> 'Content-Type'
+            )
+        );
+    }
+)->method( 'OPTIONS' );
+
 $app->delete(
     '/customers/{customerId}/accounts/{accNumber}/transactions/{transactionId}',
     function ( $customerId, $accNumber, $transactionId ) use ( $app ){
         if(!$app['security']->isGranted( 'ROLE_ADMIN' )){
-            return new Response( '', 403 );
+            return new Response( 'Access forbidden', 403 );
         }
 
         $transaction = \AbcBank\Resources\TransactionQuery::create()
